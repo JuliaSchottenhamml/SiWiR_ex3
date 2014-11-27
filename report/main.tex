@@ -1,0 +1,60 @@
+\input{setup}   % Allgemeine Initialisierung
+
+%\includeonly{
+%
+%}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% begin document
+%%%
+
+\begin{document}
+
+% \pagenumbering{roman} %% small roman page numbers
+
+%%% include the title
+% \thispagestyle{empty}  %% no header/footer (only) on this page
+ \maketitle
+
+%%% start a new page and display the table of contents
+% \newpage
+\tableofcontents
+
+%%% start a new page and display the list of figures
+% \newpage
+% \listoffigures
+
+%%% start a new page and display the list of tables
+% \newpage
+% \listoftables
+
+%%% display the main document on a new page 
+% \newpage
+
+% \pagenumbering{arabic} %% normal page numbers (include it, if roman was used above)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% begin main document
+%%% structure: \section \subsection \subsubsection \paragraph \subparagraph
+%%%
+
+\include{2a}
+\include{2b}
+
+%%%
+%%% end main document
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \appendix  %% include it, if something (bibliography, index, ...) follows below
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% bibliography
+%%%
+%%%
+% \printbibliography
+
+\end{document}

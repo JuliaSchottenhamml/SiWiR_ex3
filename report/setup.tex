@@ -1,0 +1,249 @@
+\documentclass[
+a4paper,     %% defines the paper size: a4paper (default), a5paper, letterpaper, ...
+% landscape,   %% sets the orientation to landscape
+% twoside,     %% changes to a two-page-layout (alternatively: oneside)
+% twocolumn,   %% changes to a two-column-layout
+% headsepline, %% add a horizontal line below the column title
+% footsepline, %% add a horizontal line above the page footer
+% titlepage,   %% only the titlepage (using titlepage-environment) appears on the first page (alternatively: notitlepage)
+% parskip,     %% insert an empty line between two paragraphs (alternatively: halfparskip, ...)
+% leqno,       %% equation numbers left (instead of right)
+% fleqn,       %% equation left-justified (instead of centered)
+% tablecaptionabove, %% captions of tables are above the tables (alternatively: tablecaptionbelow)
+% draft,       %% produce only a draft version (mark lines that need manual edition and don't show graphics)
+% 10pt         %% set default font size to 10 point
+% 11pt         %% set default font size to 11 point
+12pt         %% set default font size to 12 point
+]{scrartcl}  %% article, see KOMA documentation (scrguide.dvi)
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% packages
+%%%
+
+%%%
+%%% encoding and language set
+%%%
+
+%%% ngerman: language set to new-german
+%\usepackage{ngerman}
+
+%%% babel: language set (can cause some conflicts with package ngerman)
+%%%        use it only for multi-language documents or non-german ones
+%\usepackage[ngerman]{babel}
+
+%%% inputenc: coding of german special characters
+\usepackage[utf8]{inputenc}
+
+%%% fontenc, ae, aecompl: coding of characters in PDF documents
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+
+%%%
+%%% font
+%%%
+%\usepackage{lmodern}
+%\usepackage{times}
+%\usepackage{mathpazo}                % times font plus extra support for maths
+%\usepackage{courier}
+%\usepackage{helvet}                  % helvetica as the sans serif font
+
+%%%
+%%% technical packages
+%%%
+
+%%% amsmath, amssymb, amstext: support for mathematics
+\usepackage{amsmath,amssymb,amstext,amsfonts}
+
+%%% psfrag: replace PostScript fonts
+%\usepackage{psfrag}
+
+%%% listings: include programming code
+\usepackage{listings}
+\lstset{language=C++}
+
+%%% units: technical units
+%\usepackage{units}
+
+%%% nice tables
+\usepackage{booktabs} 
+
+%%% custom colors
+\usepackage{xcolor}
+
+%%% text alignment
+\usepackage{ragged2e}
+% \RaggedLeft, \RaggedRight, \Centering
+
+%%% compact enumerations
+\usepackage{paralist}
+
+\usepackage{multicol}
+\usepackage{nicefrac}
+
+% uniform looking of units
+\usepackage[load-configurations=abbreviations]{siunitx}                 
+%SI[]{Wert}[]{Einheit}
+
+%%% deutsche Anpassung für siuntisx
+% \sisetup{
+% list-final-separator={ und },
+% range-phrase={ bis },
+% separate-uncertainty = true,
+% per-mode = fraction,
+% output-decimal-marker = {,}
+% }
+
+% bibliography
+\usepackage[backend=biber, %% Hilfsprogramm "biber" (statt "biblatex" oder "bibtex")
+style=authoryear, %% Zitierstil (siehe Dokumentation)
+natbib=true, %% Bereitstellen von natbib-kompatiblen Zitierkommandos
+hyperref=true, %% hyperref-Paket verwenden, um Links zu erstellen
+]{biblatex}
+
+%%%
+%%% layout
+%%%
+
+\usepackage[]{geometry}
+
+%%% scrpage2: KOMA heading and footer
+%%% Note: if you don't use this package, please remove 
+%%%       \pagestyle{scrheadings} and corresponding settings
+%%%       below too.
+\usepackage[automark]{scrpage2}
+
+
+%%%
+%%% PDF
+%%%
+
+%%% graphicx: support for graphics
+\usepackage[pdftex]{graphicx}
+
+\pdfcompresslevel=9
+
+%%% hyperref (hyperlinks in PDF): for more options or more detailed
+%%%          explanations, see the documentation of the hyperref-package
+\usepackage[%
+%%% general options
+%plainpages=false, %% set it to false, if pdflatex complains: ``destination with same identifier already exists''
+%
+%%% extension options
+backref,      %% adds a backlink text to the end of each item in the bibliography
+pagebackref=false, %% if true, creates backward references as a list of page numbers in the bibliography
+colorlinks=true,   %% turn on colored links (true is better for on-screen reading, false is better for printout versions)
+%
+%%% PDF-specific display options
+bookmarks=true,          %% if true, generate PDF bookmarks (requires two passes of pdflatex)
+bookmarksopen=false,     %% if true, show all PDF bookmarks expanded
+bookmarksnumbered=false, %% if true, add the section numbers to the bookmarks
+%pdfstartpage={1},        %% determines, on which page the PDF file is opened
+%pdfpagemode=UseNone         %% None, UseOutlines (=show bookmarks), UseThumbs (show thumbnails), FullScreen
+]{hyperref}
+
+
+%%% provide all graphics (also) in this format, so you don't have
+%%% to add the file extensions to the \includegraphics-command
+%%% and/or you don't have to distinguish between generating
+%%% dvi/ps (through latex) and pdf (through pdflatex)
+\DeclareGraphicsExtensions{.pdf}
+
+
+%%% sets the PDF-Information options
+%%% (see fields in Acrobat Reader: ``File -> Document properties -> Summary'')
+%%% Note: this method is better than as options of the hyperref-package (options are expanded correctly)
+\hypersetup{
+  pdftitle={}, %%
+  pdfauthor={}, %%
+  pdfsubject={}, %%
+  pdfcreator={Accomplished with LaTeX2e and pdfLaTeX with hyperref-package.}, %% 
+  pdfproducer={}, %%
+  pdfkeywords={} %%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% user defined commands
+%%%
+
+\renewcommand{\emph}{\textbf}
+\renewcommand{\vec}{\textbf}
+
+%%% formatting of paragraphs
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\baselineskip}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% define the titlepage
+%%%
+
+\subject{Simulation and Scientific Computing \\ Assignment 3}   %% subject which appears above titlehead
+% \titlehead{} %% special heading for the titlepage
+
+%%% title
+\title{The Conjugate Gradient Method and MPI Parallelization}
+
+%%% author(s)
+\author{Eibl Sebastian \and
+Schottenhamml Julia \and
+Sen Karnajit}
+
+%%% date
+\date{Erlangen, \today{}}
+
+% \publishers{}
+
+% \thanks{} %% use it instead of footnotes (only on titlepage)
+
+% \dedication{} %% generates a dedication-page after titlepage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% set heading and footer
+%%%
+
+%%% scrheadings default: 
+%%%      footer - middle: page number
+\pagestyle{scrheadings}
+
+%%% user specific
+%%% usage:
+%%% \position[heading/footer for the titlepage]{heading/footer for the rest of the document}
+
+%%% heading - left
+% \ihead[]{}
+
+%%% heading - center
+% \chead[]{}
+
+%%% heading - right
+% \ohead[]{}
+
+%%% footer - left
+% \ifoot[]{}
+
+%%% footer - center
+% \cfoot[]{}
+
+%%% footer - right
+% \ofoot[]{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% bug fixes
+%%%
+\usepackage{fixltx2e} % Bugs korrigieren
+\usepackage{mparhack} % Marginpars korrigieren
+\usepackage{microtype} % als letztes -- Verbesserter Textsatz
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% add bibliography files
+%%%
+%\addbibresource{literaturvz.bib}
