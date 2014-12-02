@@ -63,13 +63,14 @@ public:
 		ny          = StringTo<int>(argv[2]);
 		c           = StringTo<int>(argv[3]);
 		eps         = StringTo<double>(argv[4]);
-		eps2 		= eps*eps;
+		eps2 		= copysign(eps * eps, eps);
 
 		// output configuration parameters
 		std::cout << "nx," << nx << std::endl;
 		std::cout << "ny," << ny << std::endl;
 		std::cout << "c," << c << std::endl;
 		std::cout << "eps," << eps << std::endl;
+		std::cout << "eps2," << eps2 << std::endl;
 		
 		// calculate global parameters
 		hx     = 2.0 / nx;
@@ -78,17 +79,22 @@ public:
 		invHx2 = 1.0 / hx / hx;
 		invHy2 = 1.0 / hy / hy;
 
-		preF   = 1.0 / ( 2 * invHx2 + 2 * invHy2 + k*k );
+		preF   = ( 2 * invHx2 + 2 * invHy2 + k*k );
+		
+		//make real number of points
+		++nx;
+		++ny;
 	}
 	
 	inline
 	double	getXCoord(const int indexX, const int indexY){
-		indexY;
+		(void)(indexY);
 		return	hx * (indexX + offsetX);
 	}
 	
 	inline
 	double	getYCoord(const int indexX, const int indexY){
+		(void)(indexX);
 		return	hy * (indexY + offsetY);
 	}
 
