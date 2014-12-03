@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
 		for (int x = 0; x < params.bx; ++x){
 			r(x, y) = lookupF(x, y) + params.invHx2 * ( u(x - 1, y) + u(x + 1, y) ) + params.invHy2 * ( u(x, y - 1) + u(x, y + 1) ) - params.preF * u(x, y);
 			d(x, y) = r(x,y);
-			delta0 = r(x,y) * r(x,y);
+			delta0 += r(x,y) * r(x,y);
 		}
 	}
 	
