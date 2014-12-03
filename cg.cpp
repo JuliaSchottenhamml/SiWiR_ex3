@@ -15,13 +15,38 @@ int main(int argc, char **argv) {
 	///******************************************************
 	///********************** INPUT *************************
 	///******************************************************
-	Params params(argc, argv);
-		
-	params.bx      = params.nx - 2;
-	params.by      = params.ny - 2;
-	params.offsetX = 1;
-	params.offsetY = 1;
 	
+	// Initialization of MPI
+	// ----------------------------------------------------------------
+	MPI_Init( &argc, &argv );
+	// ----------------------------------------------------------------
+	
+	Params params(argc, argv);
+
+	// Determining the number of CPUs and the rank of this process
+	// ----------------------------------------------------------------
+	MPI_Comm_size( MPI_COMM_WORLD, &params.size );
+	MPI_Comm_rank( MPI_COMM_WORLD, &params.rank );
+	// ----------------------------------------------------------------
+	
+	params.subdivideGrid();
+
+	// The new MPI communicator for the Cartesian topology
+	MPI_Comm cartcomm( MPI_COMM_NULL );
+
+	// Creating the Cartesian topology:
+	//  - Creating a 2D grid with 2 processes in x- and 2 processes in y-direction
+	//  - Determining the coordinates of the processes
+	//  - Determining the neighbors in UP, DOWN, LEFT and RIGHT direction
+	// ----------------------------------------------------------------
+	MPI_Cart_create( MPI_COMM_WORLD, 2, params.dims, params.periods, params.reorder, &cartcomm );
+	MPI_Comm_rank( cartcomm, &params.cartrank );
+	MPI_Cart_coords( cartcomm, params.cartrank, 2, params.coords );
+	MPI_Cart_shift( cartcomm, 0, 1, &params.nbrs[Params::LEFT], &params.nbrs[Params::RIGHT] );
+	MPI_Cart_shift( cartcomm, 1, 1, &params.nbrs[Params::DOWN], &params.nbrs[Params::UP] );
+	// ----------------------------------------------------------------
+	
+	params.createBlock();
 	
 	Grid	lookupF(params.bx, params.by);
 	
@@ -84,16 +109,19 @@ int main(int argc, char **argv) {
 			}
 		}
 		delta0 = delta1;
-		std::cout << delta0 << std::endl;
+		//std::cout << delta0 << std::endl;
 	}
 
+	MPI_Barrier( MPI_COMM_WORLD );
 	time = timer.elapsed();
-	std::cout << "time," << time << std::endl;
+	if (params.rank == 0){
+		std::cout << "time," << time << std::endl;
+	}
 
 	///******************************************************
 	///********************** OUTPUT ************************
 	///******************************************************
-	
+	/*
 	std::ofstream	fOut("data/solution.txt");
 	for (int y = -params.offsetY; y < params.by + params.offsetY; ++y) {
 		for (int x = -params.offsetX; x < params.bx + params.offsetX; ++x) {
@@ -102,4 +130,12 @@ int main(int argc, char **argv) {
 		fOut << std::endl;
 	}
 	fOut.close();
+	*/
+	
+	// MPI finalizations
+	// ----------------------------------------------------------------
+	MPI_Finalize();
+	// ----------------------------------------------------------------
+
+	return 0;
 };

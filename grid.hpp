@@ -34,7 +34,7 @@ public:
 		ld = (sizeX + PADDING + 1) & 0xFFFFFFFE;
 		backup = (double*) memalign(ALIGNMENT, sizeof(double) * ld * sizeY);
 		data = backup + ld*borderSize + borderSize;
-		std::cout << ld << "\t" << borderSize << "\t" << backup << "\t" << data << std::endl;
+		//std::cout << ld << "\t" << borderSize << "\t" << backup << "\t" << data << std::endl;
 		memset(backup, 0, sizeof(double) * ld * sizeY);
 	}
 	
