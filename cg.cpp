@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 		for (int x = 0; x < params.bx; ++x){
 			r(x, y) = lookupF(x, y) + params.invHx2 * ( u(x - 1, y) + u(x + 1, y) ) + params.invHy2 * ( u(x, y - 1) + u(x, y + 1) ) - params.preF * u(x, y);
 			d(x, y) = r(x,y);
-			delta0 = r(x,y) * r(x,y);
+			delta0 += r(x,y) * r(x,y);
 		}
 	}
 	
@@ -84,9 +84,9 @@ int main(int argc, char **argv) {
 			}
 		}
 		delta0 = delta1;
-		std::cout << delta0 << std::endl;
 	}
 
+	std::cout << sqrt(delta0) << std::endl;
 	time = timer.elapsed();
 	std::cout << "time," << time << std::endl;
 
