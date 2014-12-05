@@ -1,0 +1,798 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Parallel I/O With MPI&nbsp;[4]</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/index.html" title="Getting Started on MPI I/O">
+<link rel="up" href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/index.html" title="Getting Started on MPI I/O">
+<link rel="prev" href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-ht5w8mp0-oswald-iostrategies.html" title="I/O Strategies&nbsp;[3]">
+<link rel="next" href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-g1s9a5n5-oswald-benchmarkresults.html" title="Benchmarks&nbsp;[5]">
+</head>
+<body style="font-weight:normal;text-decoration:none;font-family:Arial, Helvetica, MS Serif, Serif;">
+<div class="navheader">
+<table summary="Navigation header" width="100%">
+<tbody><tr><th colspan="3" align="center">Getting Started on MPI I/O
+                &nbsp;-&nbsp;
+                <a accesskey="t" href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/S-2490-40-toc.html#toc">S–2490–40</a>
+</th></tr>
+<tr>
+<td align="left" valign="bottom" width="30%">
+<span style="font-size:80%">I/O Strategies&nbsp;[3]</span><br>&nbsp;<a accesskey="p" style="font-size:80%" href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-ht5w8mp0-oswald-iostrategies.html">Previous</a>&nbsp;</td>
+<th align="center" valign="bottom" width="40%">&nbsp;</th>
+<td align="right" valign="bottom" width="30%">&nbsp;<span style="font-size:80%">Benchmarks&nbsp;[5]</span><br>&nbsp;<a accesskey="n" style="font-size:80%" href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-g1s9a5n5-oswald-benchmarkresults.html">Next</a>
+</td>
+</tr>
+</tbody></table>
+<hr>
+</div>
+<div class="chapter" lang="en">
+<div class="titlepage"><div><div><h1 class="title">
+<a name="chapter-sc4rx058-brbethke-paralleliowithmpi"></a>Parallel I/O With MPI&nbsp;[4]</h1></div></div></div>
+<p>This chapter describes the steps to take to use collective MPI I/O. 
+Collective MPI I/O is defined by the MPI Standard and has these 
+characteristics:</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>A file is opened collectively by a group of processes.</p></li>
+<li><p>A file is partitioned among processes of this group.</p></li>
+<li><p>All collective I/O calls on a file are collective over this group.</p></li>
+<li><p>An MPI file is an ordered collection of typed data items.</p></li>
+<li><p>Data access and positioning is done in terms of MPI datatypes, which can be any basic datatype or derived datatype.</p></li>
+<li><p>Derived datatypes can be constructed using any of the MPI datatype constructor routines.</p></li>
+<li><p>The physical layout of data in process memory or in a file is described in terms of the datatypes.</p></li>
+<li><p>A filetype defines a template for accessing data in a file and is specified in terms of basic or derived datatypes.</p></li>
+<li><p>A file view defines the current set of data visible to and accessible to each process.</p></li>
+<li><p>The file view can be changed during program execution to accommodate different access patterns.</p></li>
+</ul></div>
+<p>See the MPI Standard chapter 9 for a more complete definition of MPI I/O terms.</p>
+<p>Independent MPI I/O shares many of the above characteristics, but 
+because we encourage the use of collective MPI I/O, we do not draw the 
+distinctions here.</p>
+<p>When you use collective I/O, you use the "shared file, all write" 
+strategy. However, the library can optimize operations dynamically and 
+use the "shared file, subset writes" or "shared file, one writes" 
+strategy if it improves performance.</p>
+<p>Because you can use derived datatypes to define the physical layout 
+of data in both process memory and the file, data can be moved between 
+memory and a file in terms of the datatype, relieving the program from 
+directly dealing with the details of the data positions and contiguous 
+data sizes on each I/O call. Once the derived datatypes are defined and 
+committed, the library handles the details for the program.</p>
+<p>Using datatypes and complementary file views, the processes doing I/O
+ can achieve global data distribution in a single collective I/O call.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="section-zle56omo-oswald"></a>4.1&nbsp;Basic Program Steps for Collective MPI I/O</h2></div></div></div>
+<p>Follow these steps for programming collective MPI I/O.</p>
+<blockquote class="note">
+<b class="admonition">Note: </b>The following steps and examples are provided in C. For comparable Fortran or C++ information, see the man pages.</blockquote>
+<div class="orderedlist"><ol type="1">
+<li>
+<p>Optionally, create an <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">info</em></span> object.</p>
+<p>The <code class="function">MPI_Info_create()</code> call creates an opaque <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">info</em></span>
+ object that is a means of passing a variety of information to the 
+library when the file is opened. This is required if file hints will be 
+passed to the library through MPI function calls.</p>
+<p>The synopsis is:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">int MPI_Info_create(MPI_Info *<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">info</em></span>)</pre>
+</li>
+<li>
+<p>Optionally, add information to the <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">info</em></span> object.</p>
+<p>The <code class="function">MPI_Info_set()</code> call adds information to the <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">info</em></span> object created in step 1 in the form of <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">key,value</em></span>
+ pairs. These information pairs are used by the library at various 
+stages of the I/O process. Most of them are optimization hints, 
+including striping information. Pairs not understood by the library are 
+ignored. For more information about hints, see and the <tt><tt class="command">intro_mpi(3)</tt></tt> man page.</p>
+<p>The synopsis is:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">int MPI_Info_set(MPI_Info <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">info</em></span>, char *<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">key</em></span>, char *<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">value</em></span>)</pre>
+</li>
+<li>
+<p>Optionally, delete the file.</p>
+<p>The <code class="function">MPI_File_delete()</code> call deletes a 
+named file if it exists. Striping information cannot be changed on an 
+existing file, so to set the stripe count (and stripe size) for the 
+amount of parallelism you want to achieve, the file must be deleted if 
+it exists.</p>
+<p>The synopsis is:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">int MPI_File_delete(char *<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">filename</em></span>, MPI_Info <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">info</em></span>)</pre>
+</li>
+<li>
+<p>Open the file.</p>
+<p>The <code class="function">MPI_File_open()</code> call opens the file. All processes in the collective I/O group (that is, all processes in the communicator group <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">comm</em></span>) must make this call. Often, this group would be <code class="literal">MPI_COMM_WORLD</code>. The file's name and the access modes (read only, write only, read/write, and so forth) are specified. If an <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">info</em></span> object has been created, it is also specified. Otherwise, the <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">info</em></span> argument is <code class="literal">MPI_INFO_NULL</code>.</p>
+<p>The synopsis is:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">int MPI_File_open(MPI_Comm <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">comm</em></span>, char *<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">filename</em></span>, int <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">amode</em></span>, 
+MPI_Info <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable"> info</em></span>, MPI_File *<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">fh</em></span>)</pre>
+</li>
+<li>
+<p>Optionally, create a datatype to describe the physical layout of data in memory.</p>
+<p>The purpose of this step is to describe the data so that all the data
+ to be transferred to or from memory at this point in the application 
+can be done with one I/O call rather than a loop of I/O calls. Doing 
+this in one call allows the library to optimize in ways not possible 
+with many separate calls.</p>
+<p>MPI provides a set of datatype constructors that support describing 
+any arbitrary physical layout of data, either in memory or a file. The 
+format of these constructors is <code class="function">MPI_Type_<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">xxx</em></span>()</code> and <code class="function">MPI_Type_create_<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">xxx</em></span>()</code>. <a href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-sc4rx058-brbethke-paralleliowithmpi.html#section-9jdrlnnp-oswald" title="4.2&nbsp;Choose Datatype Constructors to Match Your Data Model">Choose Datatype Constructors to Match Your Data Model</a> describes many of them and shows how to use the appropriate constructor to match the data model of the application.</p>
+<p>A datatype constructor is not needed if the data to be transferred is a contiguous region of a basic datatype.</p>
+</li>
+<li>
+<p>If a datatype was created, commit it.</p>
+<p>Datatype constructors can be applied recursively to build up 
+arbitrarily complex datatypes, so there may be intermediate datatypes 
+that are only a step toward the final datatype. Therefore, it is not 
+until <code class="function">MPI_Type_commit()</code> is called does the library record the information for use in I/O calls.</p>
+<p>The synopsis is:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">int MPI_Type_commit(MPI_Datatype *<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">datatype</em></span>)</pre>
+</li>
+<li>
+<p>Optionally, create a datatype to describe the physical layout of data in the file.</p>
+<p>This is similar to the previous create-datatype step, except it 
+applies to the physical layout of data in the file. The layouts in 
+memory and in the file may match, but they are not required to do so. If
+ they do match, the same datatype can be used for both cases, and this 
+step is not needed.</p>
+</li>
+<li><p>If a datatype was created for the file, commit it.</p></li>
+<li>
+<p>Set each process's view of the file.</p>
+<p>The <code class="function">MPI_File_set_view()</code> call defines the current set of data in the file that is visible to and accessible to each process.</p>
+<p>The synopsis is:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">int MPI_File_set_view(MPI_File <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">mpi_fh</em></span>, MPI_Offset <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">disp</em></span>, 
+MPI_Datatype <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">etype</em></span>, MPI_Datatype <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">filetype</em></span>, 
+char *<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">datarep</em></span>, MPI_Info <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">info</em></span>)</pre>
+<p>The <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">disp</em></span> argument specifies the start of each process's view within the file and must be different for each process. The <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">etype</em></span> argument specifies the unit of data in the file, and the <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">filetype</em></span> argument specifies the datatype for the distribution of the <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">etype</em></span>s in the file. The <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">datarep</em></span> argument would normally be <code class="literal">native</code> if the data is created on and used on the same homogeneous system. The <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable"> info</em></span> argument can be the same <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable"> info</em></span> object used for the open call or can be different. Some of the information specified in the <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable"> info</em></span> object has no effect except at file open time.</p>
+</li>
+<li>
+<p>Read data from a file or write data to a file.</p>
+<p>The <code class="function">MPI_File_read_all()</code> call reads data
+ from the specified file into process memory according to the call 
+arguments and also the information previously passed to the library by 
+the <code class="function">MPI_File_open()</code> and <code class="function">MPI_File_set_view()</code> calls.</p>
+<p>The synopsis is:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">int MPI_File_read_all(MPI_File <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">mpi_fh</em></span>, void *<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">buf</em></span>, int <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">count</em></span>, 
+MPI_Datatype <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">datatype</em></span>, MPI_Status *<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">status</em></span>)</pre>
+<p>Similarly, the <code class="function">MPI_File_write_all()</code> 
+call writes data from process memory to the specified file according to 
+the arguments in this call and also the information previously passed to
+ the library by the <code class="function">MPI_File_open()</code> and <code class="function">MPI_File_set_view()</code> calls.</p>
+<p>The synopsis is:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">int MPI_File_write_all(MPI_File mpi_fh, void *buf, int count,
+MPI_Datatype datatype, MPI_Status *status)</pre>
+<p>The flow of data between memory and the file for a single read or 
+write call can be quite complex. However, the MPI I/O library handles 
+this complexity and can often optimize it in significant ways, making 
+the earlier steps worthwhile.</p>
+</li>
+<li>
+<p>Close the file.</p>
+<p>The <code class="function">MPI_FIle_close()</code> call causes all previous writes to the file to be transferred to the storage devices and then closes the file.</p>
+<p>The synopsis is:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">int MPI_File_close(MPI_File *<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">mpi_fh</em></span>)</pre>
+</li>
+</ol></div>
+<p>The example programs and code snippets that follow will show how this
+ information is built up and made visible to the library. Discussion of 
+the example code will describe some of the ways the library uses the 
+information.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="section-9jdrlnnp-oswald"></a>4.2&nbsp;Choose Datatype Constructors to Match Your Data Model</h2></div></div></div>
+<p><a href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-sc4rx058-brbethke-paralleliowithmpi.html#section-zle56omo-oswald" title="4.1&nbsp;Basic Program Steps for Collective MPI I/O">Basic Program Steps for Collective MPI I/O</a>
+ describes the basic steps for using collective MPI I/O. This section 
+gives a brief description of most of the datatype constructors, more 
+specific guidelines for choosing the datatype constructors that best 
+match the data model of your application, and code examples for some of 
+these.</p>
+<blockquote class="note">
+<b class="admonition">Note: </b>Descriptions and guidelines for using the <code class="function">MPI_Type_create_darray()</code> and <code class="function">MPI_Type_create_subarray()</code> datatype constructors are deferred to a future release of this guide.</blockquote>
+<p>An MPI application programmer probably already uses datatype 
+constructors for moving data from one process's memory to another. The 
+concept of using derived datatypes for moving data from process's memory
+ to a file may be new, but there is no difference conceptually.</p>
+<p>Datatypes describing multidimensional arrays of any size and shape 
+and with elements of any datatype can be created using the new type 
+created by one constructor call as an argument to another constructor 
+call.</p>
+<p>The variety of datatype-related calls suggests many possible combinations. In fact, with <code class="function">MPI_Type_create_struct()</code>,
+ any arbitrary layout can be described. The other calls are easier to 
+use and can be used when the layout is simpler or more regular.</p>
+<p>After the datatype is created, the <code class="function">MPI_Type_commit()</code>
+ routine must be called for the new datatype. This allows the 
+implementation to store all the layout information for subsequent use in
+ moving data and potentially for optimization of the movement.</p>
+<p>See the MPI Standard or the other MPI references for more complete description.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="section-ebrpels1-oswald"></a>4.2.1&nbsp;Create a Contiguous Datatype</h3></div></div></div>
+<p>The <code class="function">MPI_Type_contiguous()</code> datatype 
+constructor can be used for a contiguous 1-D array that is distributed 
+across the memory of all the processes. This constructor can also be 
+used for building up a multidimensional array, as shown in a later 
+example.</p>
+<p>This first code example shows all of the basic collective MPI I/O 
+steps, as described above, that would be used in a parallel application.
+ Comments in the code describe each step. To make this example 
+self-contained, an input data file is created first. You can copy from 
+this example the parts that you need for your application.</p>
+<div class="example">
+<a name="example-tbdvrko7-oswald"></a><a name="title.48.vuPSvmts"></a><p class="title"><b>Example&nbsp;4.&nbsp;Distributed contiguous 1-D array</b></p>
+<p>Source code of <code class="filename">basic.c</code>:</p>
+<pre class="programlisting" style="background-color:#e0e0e0">/* Include Files */
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include "mpi.h"
+
+/* For this self-contained example, the following macros are defined.
+ * They can be defined with different values here. Or the example could
+ * be expanded to take any of these as command line arguments. Of course
+ * a real application would have its own set of variables and values. */
+#define MY_INPUT_FILE "my_input"   /* name of input datafile */
+#define MY_RESULTS_FILE "my_results" /* name of output results file */
+#define MY_CHECKPOINT_FILE "my_checkpoint" /* name of checkpoint file */
+#define LOCAL_SIZE 1000000L     /* size of local array in ints */
+#define STRIPE_COUNT "4"       /* must be an ascii string */
+#define STRIPE_SIZE "1048576"    /* must be an ascii string */
+#define X_DIM 30000         /* size of 1st dimension */
+#define Y_DIM 20000         /* size of 2nd dimension, if any */
+#define Z_DIM 10000         /* size of 3rd dimension, if any */
+
+
+int
+create_my_input_file(char *file_name, int local_size, int init_value,
+    int my_rank, int comm_size)
+{
+  MPI_File fh;
+  MPI_Info info;
+
+  int *local_array;
+  int size;
+  int rc;
+  int i;
+  double t0,t1;
+
+  /* Delete any existing file so striping can be set. Striping cannot
+   * be changed on an existing file. */
+  rc = MPI_File_delete(file_name, MPI_INFO_NULL);
+
+  /* Create a local array that will contain this process's data. 
+   * In this case, every local array is the same size, though that
+   * is not necessary for collective I/O to work. */
+  local_array = (int*)malloc((size_t)(local_size * sizeof(int)));
+  if (local_array == NULL) {
+    return -1;
+  }
+
+  /* Initialize the array with data that will serve as the input data. */
+  for (i = 0; i &lt; local_size; i++) {
+    local_array[i] = init_value + i;
+  }
+
+  /* Set the stripe_count and stripe_size, that is, the striping_factor
+   * and striping_unit. Both keys and values for MPI_Info_set must be
+   * in the form of ascii strings. */
+  MPI_Info_create(&amp;info);
+  MPI_Info_set(info, "striping_factor", STRIPE_COUNT);
+  MPI_Info_set(info, "striping_unit", STRIPE_SIZE);
+// MPI_Info_set(info, "romio_cb_write", "disable");
+
+  /* All processes in the application open the file. The info object
+   * sets the striping information for the file. */
+  MPI_Barrier(MPI_COMM_WORLD);
+  t0 = MPI_Wtime();
+  rc = MPI_File_open(MPI_COMM_WORLD, file_name,
+      MPI_MODE_CREATE | MPI_MODE_RDWR, info, &amp;fh);
+
+  /* The return code will be MPI_SUCCESS if the open was successful.
+   * There are a number of options for handling unsuccessful calls. 
+   * We will return a negative status for the caller to handle. */
+  if (rc != MPI_SUCCESS) {
+    return -1;
+  }
+
+  /* Write the file as a collective call, with every process writing
+   * a part of the file. */
+  rc = MPI_File_set_view(fh, my_rank * (MPI_Offset)local_size * sizeof(int),
+      MPI_INT, MPI_INT, "native", info);
+  rc = MPI_File_write_all(fh, local_array, local_size, MPI_INT,
+      MPI_STATUS_IGNORE);
+  if (rc != MPI_SUCCESS) {
+    return -1;
+  }
+
+  /* Close the file. */
+  rc = MPI_File_close(&amp;fh);
+
+  MPI_Barrier(MPI_COMM_WORLD);
+  t1 = MPI_Wtime();
+
+  /* Print file creation information. */
+  if (my_rank == 0) {
+    MPI_Offset size = comm_size * (MPI_Offset)LOCAL_SIZE * sizeof(int);
+    double time = t1-t0;
+    double mibps = (size/time)/1048576.0;
+    printf("input data file '%s' created;\n"
+        " file_size=%ld create_time=%f6.2 MiB/sec=%f\n",
+        MY_INPUT_FILE, size, time, mibps);
+  }
+
+  return 0;
+}
+
+
+int main(int argc, char **argv)
+{
+  MPI_Aint lb, extent;
+  MPI_Datatype etype, memtype, filetype, contig;
+  MPI_Offset disp;
+  MPI_File in_fh;
+  MPI_File out_fh;
+  MPI_Info info;
+  int buf[LOCAL_SIZE];
+  int my_rank;
+  int comm_size;
+  double t0,t1;
+  int stripe_count;
+  int init_value;
+  int rc;
+
+  /* MPI Initialization */  
+  MPI_Init(&amp;argc, &amp;argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &amp;comm_size);
+
+  /* A real application would likely already have an input data file
+   * but for a self-contained example, we will create one and close it. */
+  init_value = my_rank * LOCAL_SIZE;
+  rc = create_my_input_file(MY_INPUT_FILE, LOCAL_SIZE, init_value,
+      my_rank, comm_size);
+  if (rc != 0) {
+    fprintf(stderr, "could not create input file\n");
+    MPI_Abort(MPI_COMM_WORLD, 1);
+  }
+
+  /* Create an info object for hints. Note that striping can't be
+   * changed on an existing file. */
+  MPI_Info_create(&amp;info);
+  MPI_Info_set(info, "romio_cb_read", "enable");
+
+  /* Open the input data file. */
+
+  rc = MPI_File_open(MPI_COMM_WORLD, MY_INPUT_FILE, MPI_MODE_RDONLY, 
+      info, &amp;in_fh);
+  if (rc != MPI_SUCCESS) {
+    fprintf(stderr, "could not open input file\n");
+    MPI_Abort(MPI_COMM_WORLD, 2);
+  }
+
+  /* Construct a datatype for distributing the input data across all
+   * processes. */
+  MPI_Type_contiguous(LOCAL_SIZE, MPI_INT, &amp;contig);
+  MPI_Type_commit(&amp;contig);
+
+  /* Set the file view so that each process gets its portion of the
+   * input data. */
+  disp = my_rank * LOCAL_SIZE * sizeof(int);
+  rc = MPI_File_set_view(in_fh, disp, contig, contig, "native", info);
+  if (rc != MPI_SUCCESS) {
+    fprintf(stderr, "error setting file view on input file\n");
+    MPI_Abort(MPI_COMM_WORLD, 3);
+  }
+
+  /* Read the input data file. Since we created a contiguous datatype
+   * the full size of each process's local data, the count is 1. */
+  rc = MPI_File_read(in_fh, buf, 1, contig, MPI_STATUS_IGNORE);
+  if (rc != MPI_SUCCESS) {
+    fprintf(stderr, "error reading input file\n");
+    MPI_Abort(MPI_COMM_WORLD, 3);
+  }
+  MPI_File_close(&amp;in_fh);
+
+  /* Compute. This is where you do your science. In this simple 
+   * example, we will just check that the input was read correctly and
+   * then multiply by 2. */
+
+  /* At some point, or perhaps at multiple time steps, calculated results
+   * would be written out. And perhaps checkpoint files would periodically
+   * written out. In this simple example, we will write results just
+   * once. */
+
+  /* Delete the output file if it exists so that striping can be set
+   * on the output file. */
+  rc = MPI_File_delete(MY_RESULTS_FILE, MPI_INFO_NULL);
+
+  /* Set the striping */
+
+  /* Open the results file. */
+
+  rc = MPI_File_open(MPI_COMM_WORLD, MY_RESULTS_FILE, MPI_MODE_WRONLY |
+      MPI_MODE_CREATE, MPI_INFO_NULL, &amp;out_fh);
+  if (rc != MPI_SUCCESS) {
+    fprintf(stderr, "could not open results file\n");
+    MPI_Abort(MPI_COMM_WORLD, 3);
+  }
+
+  /* Set the file view for the output file. In this example, we will
+   * use the same contiguous datatype as we used for reading the data
+   * into local memory. A better example would be to write out just
+   * part of the data, say 4 contiguous elements followed by a gap of
+   * 4 elements, and repeated. */
+
+  disp = my_rank * LOCAL_SIZE * sizeof(int);
+  MPI_File_set_view(out_fh, disp, contig, contig, "native", MPI_INFO_NULL);
+  if (rc != MPI_SUCCESS) {
+    fprintf(stderr, "error setting view on results file\n");
+    MPI_Abort(MPI_COMM_WORLD, 4);
+  }
+
+  /* MPI Collective Write */
+  t0 = MPI_Wtime();
+  rc = MPI_File_write_all(out_fh, buf, 1, contig, MPI_STATUS_IGNORE);
+  if (rc != MPI_SUCCESS) {
+    fprintf(stderr, "error writing results file\n");
+    MPI_Abort(MPI_COMM_WORLD, 5);
+  }
+  
+  /* Close Files */
+  MPI_File_close(&amp;out_fh);
+  t1 = MPI_Wtime();
+
+  /* Print time info. */
+  if (my_rank == 0) {
+    MPI_Offset size = comm_size * (MPI_Offset)LOCAL_SIZE * sizeof(int);
+    double time = t1-t0;
+    double mibps = (size/time)/1048576.0;
+    printf("results file '%s' written;\n"
+        " file_size=%ld write_time=%f6.2 MiB/sec=%f\n",
+        MY_RESULTS_FILE, size, time, mibps);
+  }
+
+  /* MPI Finalize */
+  MPI_Finalize();
+
+  return 0;
+}</pre>
+<p>Compile and run program <code class="filename">basic</code>:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">% <strong class="userinput"><code>cc -o basic basic.c</code></strong>
+% <strong class="userinput"><code>aprun -n 4 ./basic</code></strong>
+input data file 'my_input' created;
+ file_size=16000000 create_time=0.0256586.2 MiB/sec=594.696055
+results file 'my_results' written;
+ file_size=16000000 write_time=0.0254666.2 MiB/sec=599.178003
+Application 1030961 resources: utime 0, stime 0</pre>
+</div>
+<p>Performance for this I/O pattern can be quite good with collective 
+MPI I/O. Whatever the size of the 1-D array, the collective buffering 
+optimization can reorder the data in memory to do very efficient I/O.</p>
+<p>Large records, no gaps (see <a href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-g1s9a5n5-oswald-benchmarkresults.html#section-82hya04w-oswald" title="5.2.1&nbsp;Large Records with No Gaps">Large Records with No Gaps</a>).</p>
+<p>Small records, no gaps (see <a href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-g1s9a5n5-oswald-benchmarkresults.html#section-dqb79nni-oswald" title="5.2.3&nbsp;Small Records with No Gaps">Small Records with No Gaps</a>).</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="section-sr074abk-oswald"></a>4.2.2&nbsp;Create a Noncontiguous Datatype with Uniform Stride</h3></div></div></div>
+<p>The <code class="function">MPI_Type_vector()</code> datatype constructor can be used for a distributed non-uniformly segmented 1-D array.</p>
+<p>Small records, small gaps (see <a href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-g1s9a5n5-oswald-benchmarkresults.html#section-x8nw42uv-oswald" title="5.2.4&nbsp;Small Records with Small Gaps">Small Records with Small Gaps</a>).</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="section-ugubuxkx-oswald"></a>4.2.3&nbsp;Create a Noncontiguous Datatype with Non-uniform Stride</h3></div></div></div>
+<p>There are two noncontiguous datatype constructors for non-uniform stride:</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+<p>Datatypes with non-uniform stride. The <code class="function">MPI_Type_indexed()</code>
+ datatype constructor can be used for a distributed noncontiguous 2-D 
+array with ghost cells (uniformly domain-decomposed multidimensional 
+arrays).</p>
+<p>Large records, large gaps (see <a href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-g1s9a5n5-oswald-benchmarkresults.html#section-6ovscfnl-oswald" title="5.2.2&nbsp;Large Records with Large Gaps">Large Records with Large Gaps</a>).</p>
+<p>Small records, small gaps (see <a href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-g1s9a5n5-oswald-benchmarkresults.html#section-x8nw42uv-oswald" title="5.2.4&nbsp;Small Records with Small Gaps">Small Records with Small Gaps</a>).</p>
+</li>
+<li>
+<p>Datatypes with non-uniform stride with an array of different datatypes as inputs. The <code class="function">MPI_Type_create_struct()</code> can be used for a distributed noncontiguous 3-D array.</p>
+<p>Small records, large gaps (see <a href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-g1s9a5n5-oswald-benchmarkresults.html#section-ckxcybcd-oswald" title="5.2.5&nbsp;Small Records with Large Gaps">Small Records with Large Gaps</a>).</p>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="section-bjye1m39-oswald"></a>4.3&nbsp;Collective Buffering</h2></div></div></div>
+<p>With collective MPI I/O, by default you use a technique called <em class="firstterm">collective buffering</em>. As shown in <a href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-sc4rx058-brbethke-paralleliowithmpi.html#figure-qr9oinr3" title="Figure&nbsp;12.&nbsp;Aggregating Data">Figure&nbsp;12</a>,
+ collective buffering consolidates I/O requests for all processes. In 
+this example, the MPI I/O library chooses P0 and P2 as aggregators. All 
+processes transfer data to the appropriate aggregator, based on the 
+record lengths and offsets.</p>
+<div class="figure">
+<a name="figure-qr9oinr3"></a><a name="title.52.Cqvk5iVm"></a><p class="title"><b>Figure&nbsp;12.&nbsp;Aggregating Data</b></p>
+<div class="mediaobject"><img src="Parallel%20I_O%20With%20MPI%C2%A0%5B4%5D-Dateien/cb_aggregating_data.gif" alt="Aggregating Data"></div>
+</div>
+<p>After the consolidation, only the aggregators perform I/O, as shown in <a href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-sc4rx058-brbethke-paralleliowithmpi.html#figure-z9et44z2" title="Figure&nbsp;13.&nbsp;Aggregators Writing Data">Figure&nbsp;13</a>. P0) writes data to stripes 0, 2, 4, and 6. In parallel, P2 writes data to stripes 1, 3, and 5.</p>
+<div class="figure">
+<a name="figure-z9et44z2"></a><a name="title.53.3HHIYMpG"></a><p class="title"><b>Figure&nbsp;13.&nbsp;Aggregators Writing Data</b></p>
+<div class="mediaobject"><img src="Parallel%20I_O%20With%20MPI%C2%A0%5B4%5D-Dateien/cb_aggregators_writing.gif" alt="Aggregators Writing Data"></div>
+</div>
+<p>You do not have to do anything to designate a process as an 
+aggregator; the MPI I/O interface does that for you. The interface sets 
+the number of aggregators to the stripe count. This allows the 
+aggregators to use Lustre in an efficient manner, because writes to a 
+shared file are stripe aligned and therefore do not compete for the same
+ physical I/O block or OST.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="section-xwcu3go3-oswald"></a>4.4&nbsp;Collective I/O Guidelines</h2></div></div></div>
+<p>For most large-file writes (1 GB or greater), MPI I/O collective 
+buffering gives the best results. However, the overhead associated with 
+dividing the I/O workload can in some cases exceed the time otherwise 
+saved by using this method. Here are guidelines to help you decide when 
+to use collective buffering:</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>For large unaligned writes to sometimes the same stripes, use collective buffering.</p></li>
+<li><p>For small writes to often the same stripe or stripes, use collective buffering.</p></li>
+<li><p>For small writes to different stripes, do not use collective buffering.</p></li>
+<li><p>For reads, the only time collective buffering helps is if there 
+is a significant amount of data still in cache from a previous write. 
+This is not a common occurrence for the large scale jobs where I/O time 
+is a significant issue.</p></li>
+<li><p>When scaling to a large number of processes (that is, more than 
+10,000), two or three aggregators per OST may improve performance.</p></li>
+<li>
+<p>If the data access pattern for a file switches during application 
+execution from a pattern that benefits from collective buffering to a 
+pattern where collective buffering is detrimental, then change the hint 
+value for collective buffering during execution between <code class="literal">enable</code> and <code class="literal">disable</code> as follows:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">% <strong class="userinput"><code>setenv MPICH_MPIIO_HINTS myfile:romio_cb_write=disable</code></strong></pre>
+<p>If you do this, also set <code class="literal">romio_no_indep_rw</code> to <code class="literal">false</code>.</p>
+</li>
+<li><p>If an application's I/O strategy is to have a subset of the 
+processes act as writers and only the writer processes open the file, 
+then the maximum number of aggregators allowed is the number or writers.
+ If there are more OSTs available than there are writers, set the stripe
+ count to an integer multiple of the number of writers.</p></li>
+</ul></div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="section-8ik9vp6x-oswald"></a>4.5&nbsp;MPI I/O Optimization Hints</h2></div></div></div>
+<p>MPI I/O optimization hints can be passed in by two methods: either by calling <code class="literal">MPI_Info_set</code> in the application code, or by setting the <code class="envar">MPICH_MPIIO_HINTS</code>
+ environment variable. If set, the environment variable overrides the 
+default value of one or more MPI I/O hints, and also overrides any 
+values set using <code class="literal">MPI_Info_set</code>. The new values apply to the file the next time it is opened using an <code class="literal">MPI_File_open()</code> call.</p>
+<blockquote class="note">
+<b class="admonition">Note: </b>For more information about MPI-related environment variables, see the <tt><tt class="command">intro_mpi(3)</tt></tt> man page.</blockquote>
+<p>After the <code class="literal">MPI_File_open()</code> call, subsequent <code class="literal">MPI_Info_set</code>
+ calls can be used to pass new MPI I/O hints that take precedence over 
+some of the environment variable values. Other MPI I/O hints such as <code class="literal">striping_factor</code>, <code class="literal">striping_unit</code>, <code class="literal">cb_nodes</code>, and <code class="literal">cb_config_list</code> cannot be changed after the <code class="literal">MPI_File_open()</code> call, as these are evaluated and applied only during the file open process. </p>
+<p>An <code class="literal">MPI_File_close</code> call followed by an <code class="literal">MPI_File_open</code> call can be used to restart the MPI I/O hint evaluation process.</p>
+<p>The syntax for this environment variable is a comma-separated list of specifications. Each individual specification is a <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">pathname_pattern</em></span> followed by a colon-separated list of one or more <code class="literal">key=value</code> pairs. In each <code class="literal">key=value</code> pair, the <code class="literal">key</code> is the MPI-IO hint name, and the <code class="literal">value</code> is its value as it would be coded for an <code class="literal">MPI_Info_set</code> library call.</p>
+<p>For example:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">MPICH_MPIIO_HINTS=<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">spec1</em></span>[<span class="optional">,<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">spec2</em></span>,...</span>]</pre>
+<p>Where each specification has the syntax:</p>
+<pre class="literallayout" style="background-color:#e0e0e0"><span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">pathname_pattern</em></span>:<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">key1</em></span>=<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">value1</em></span>[<span class="optional">:<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">key2</em></span>=<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">value2</em></span>:...</span>]</pre>
+<p>The <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">pathname_pattern</em></span> can be an exact match with the <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">filename</em></span> argument used in the <code class="literal">MPI_File_open()</code> call or it can be a pattern as described below.</p>
+<p>When a file is opened with <code class="literal">MPI_File_open()</code>, the list of hint specifications in the <code class="envar">MPICH_MPIIO_HINTS</code> environment variable is scanned. The first <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">pathname_pattern</em></span> matching the <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">filename</em></span> argument in the <code class="literal">MPI_File_open()</code> call is selected. Any hints associated with the selected <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">pathname_pattern</em></span> are applied to the file being opened. If no pattern matches, no hints from this specification are applied to the file.</p>
+<p>The <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">pathname_pattern</em></span> follows standard shell pattern-matching rules with these meta-characters:</p>
+<div class="informaltable">
+<a name="informaltable.2.iUo1GMNI"></a><table border="1">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th align="left" valign="top">Pattern</th>
+<th align="left" valign="top">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><code class="literal">*</code></td>
+<td align="left" valign="top">Match any number of characters</td>
+</tr>
+<tr>
+<td align="left" valign="top"><code class="literal">?</code></td>
+<td align="left" valign="top">Match any single character</td>
+</tr>
+<tr>
+<td align="left" valign="top"><code class="literal">[<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">a</em></span>-<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">b</em></span>]</code></td>
+<td align="left" valign="top">Match any single character between <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">a</em></span> and <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">b</em></span>, inclusive</td>
+</tr>
+<tr>
+<td align="left" valign="top"><code class="literal">\</code></td>
+<td align="left" valign="top">Interpret the meta-character that follows literally</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The simplest <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">pathname_pattern</em></span> is <code class="literal">*</code>. Using this results in the specified hints being applied to all files opened with <code class="literal">MPI_File_open()</code>.
+ Use of this wildcard is discouraged because of the possibility that a 
+library linked with the application may also open a file for which the 
+hints are not appropriate.</p>
+<p>The following example shows how to set hints for a set of files. The final specification in this example, for file <code class="filename">/scratch/user/me/dump.*</code>, has two <code class="literal">key=value</code> pairs.</p>
+<pre class="literallayout" style="background-color:#e0e0e0">MPICH_MPIIO_HINTS=<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">file1</em></span>:direct_io=true,<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">file2</em></span>:romio_ds_write=disable,
+<code class="filename">/scratch/user/me/dump.*</code>:romio_cb_write=enable:cb_nodes=8</pre>
+<p>The following MPI-IO <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">key</em></span> values are supported on Cray systems.</p>
+<div class="variablelist">
+<a name="variablelist.2.9vhw7NsH"></a><table border="0">
+<colgroup><col align="left" valign="top">
+</colgroup><tbody>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">striping_factor</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Specifies the number of Lustre file system stripes (stripe count) to 
+assign to the file. This has no effect if the file already exists when 
+the <code class="literal">MPI_File_open()</code> call is made. File striping cannot be changed after a file is created. Currently this hint applies only when <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">2</code>.</p>
+<p>Default: the default value for the Lustre file system, or the value for the directory in which the file is created if the <tt class="command">lfs setstripe</tt> command was used to set the stripe count of the directory to a value other than the system default.</p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">striping_unit</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Specifies in bytes the size of the Lustre file system stripes (stripe
+ size) assigned to the file. This has no effect if the file already 
+exists when the <code class="literal">MPI_File_open()</code> call is made. File striping cannot be changed after a file is created. Currently this hint applies only when <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">2</code>.</p>
+<p>Default: the default value for the Lustre file system, or the value for the directory in which the file is created if the <tt class="command">lfs setstripe</tt> command was used to set the stripe size of the directory to a value other than the system default.</p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">direct_io</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Enables the <code class="literal">O_DIRECT</code> mode for the specified file. The user is responsible for aligning the write or read buffer on a <code class="literal">getpagesize()</code> boundary. MPI-IO checks for alignment and aborts if it is not aligned. Valid values are <code class="literal">true</code> or <code class="literal">false</code>.</p>
+<p>Default: <code class="literal">false</code>.</p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">romio_cb_read</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Enables collective buffering on read when collective IO operations are used. Valid values are <code class="literal">enable</code>, <code class="literal">disable</code>, and <code class="literal">automatic</code>. In automatic mode, whether or not collective buffering is done is based on runtime heuristics. When <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">2</code>, the heuristics favor collective buffering.</p>
+<p>Default: <code class="literal">automatic</code>.</p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">romio_cb_write</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Enables collective buffering on write when collective IO operations are used. Valid values are <code class="literal">enable</code>, <code class="literal">disable</code>, and <code class="literal">automatic</code>. In automatic mode, whether or not collective buffering is done is based on runtime heuristics. When <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">2</code>, the heuristics favor collective buffering.</p>
+<p>Default: <code class="literal">automatic</code>.</p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">cb_buffer_size</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Sets the buffer size in bytes for collective buffering.</p>
+<p>When <code class="literal">MPICH_MPIIO_CB_ALIGN</code> is set to 2, this hint has no effect because the buffer size is equal to the stripe size (<code class="literal">striping_unit</code>).</p>
+<p>Default: <code class="literal">16777216</code>.</p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">cb_nodes</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Specifies the number of aggregators used to perform the physical I/O 
+for collective I/O operations when collective buffering is enabled. On 
+multi-core nodes, all cores share the same node name.</p>
+<p>When <code class="literal">MPICH_MPIIO_CB_ALIGN</code> is set to 2, <code class="literal">cb_nodes</code> should be set the same as <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">striping_factor</em></span> (in other words, to the stripe count) to get the maximum benefit of Lustre stripe alignment.</p>
+<p>Default: <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">striping_factor</em></span> when <code class="literal">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">2</code>, or the number of XT compute nodes when <code class="literal">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">0</code> or <code class="literal">1</code>.</p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">cb_config_list</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Specifies by name which nodes are to serve as aggregators. The syntax for the value is:</p>
+<pre class="literallayout" style="background-color:#e0e0e0">#<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">name1</em></span>:<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">maxprocesses</em></span>[<span class="optional">,<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">name2</em></span>:<span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">maxprocesses</em></span>,...</span>]#</pre>
+<p>Where <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">name</em></span> is either <code class="literal">*</code> (match all node names) or the name returned by <code class="literal">MPI_Get_processor_name</code>, and <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">maxprocesses</em></span> specifies the maximum number of processes on that node to serve as aggregators. If the value of the <code class="option">cb_nodes</code> hint is greater than the number of XT compute nodes, the value of <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">maxprocesses</em></span> must be greater than <code class="literal">1</code> in order to assign the required number of aggregators. When <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">2</code>, the aggregators are assigned using a round-robin method across XT compute nodes. When <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">0</code> or <code class="literal">1</code>, up to <span style="font-family:'Arial, Helvetica, MS Serif, Serif'"><em class="replaceable">maxprocesses</em></span> aggregators are assigned to the first node, and so on for each node as needed.</p>
+<p>The pair of <code class="literal">#</code> characters beginning and ending the list are not part of the normal MPIIO hint syntax but are required. Because colon (<code class="literal">:</code>) characters are used in both this list and in the <code class="literal">MPICH_MPIIO_HINTS</code> environment variable syntax, the <code class="literal">#</code> characters are required in order to determine the meaning of colon (<code class="literal">:</code>) character.</p>
+<p>This value cannot be changed after the file is opened.</p>
+<p>Default: <code class="literal">*:*</code> when <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">2</code>, or <code class="literal">*:1</code> when <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">0</code> or <code class="literal">1</code>.</p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">romio_no_indep_rw</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Specifies whether deferred open is used. Valid values are <code class="literal">true</code> and <code class="literal">false</code>.</p>
+<p>Default: <code class="literal">false</code>.</p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">romio_ds_read</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Specifies if data sieving is to be done on read. Valid values are <code class="literal">enable</code>, <code class="literal">disable</code>, and <code class="literal">automatic</code>.</p>
+<p>Default: <code class="literal">disable</code> when <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">2</code>, or <code class="literal">automatic</code> when <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">0</code> or <code class="literal">1</code>.</p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">romio_ds_write</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Specifies if data sieving is to be done on write. Valid values are <code class="literal">enable</code>, <code class="literal">disable</code>, and <code class="literal">automatic</code>.</p>
+<p>Default: <code class="literal">disable</code> when <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">2</code>, or <code class="literal">automatic</code> when <code class="envar">MPICH_MPIIO_CB_ALIGN</code> is set to <code class="literal">0</code> or <code class="literal">1</code>.</p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">ind_rd_buffer_size</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Specifies in bytes the size of the buffer to be used for data sieving on read.</p>
+<p>Default: <code class="literal">4194304</code></p>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom:10px" valign="top">
+<span class="term" style="white-space:nowrap"><code class="option">ind_wr_buffer_size</code></span></td>
+<td valign="top">
+    &nbsp;
+    </td>
+<td style="padding-bottom:10px" valign="top">
+<p>Specifies in bytes the size of the buffer to be used for data sieving on write.</p>
+<p>Default: <code class="literal">524288</code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="navfooter">
+<hr>
+<table summary="Navigation footer" width="100%">
+<tbody><tr>
+<td align="left" width="30%">
+<a accesskey="p" style="font-size:80%" href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-ht5w8mp0-oswald-iostrategies.html">Previous</a>&nbsp;</td>
+<td align="center" width="40%">
+<a accesskey="h" href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/index.html">Title Page</a>&nbsp;|&nbsp;<a accesskey="t" href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/S-2490-40-toc.html#toc">Table of Contents</a>
+</td>
+<td align="right" width="30%">&nbsp;<a accesskey="n" style="font-size:80%" href="https://fs.hlrs.de/projects/craydoc/docs/books/S-2490-40/html-S-2490-40/chapter-g1s9a5n5-oswald-benchmarkresults.html">Next</a>
+</td>
+</tr>
+<tr>
+<td align="left" valign="top" width="30%">
+<span style="font-size:80%">I/O Strategies&nbsp;[3]</span>&nbsp;</td>
+<td align="center" valign="top" width="40%"><span style="font-size:80%">&nbsp;</span></td>
+<td align="right" valign="top" width="30%">&nbsp;<span style="font-size:80%">Benchmarks&nbsp;[5]</span>
+</td>
+</tr>
+</tbody></table>
+</div>
+
+
+</body></html>
