@@ -43,6 +43,9 @@ public:
 	static const int DOWNLEFT  = 6;
 	static const int DOWNRIGHT = 7;
 	
+	bool	output             = false;
+	bool	debugOutput        = false;
+	
 	int nx                     = 0;
 	int	ny                     = 0;
 	int	c                      = 0;
@@ -86,7 +89,7 @@ public:
 	int offsetY                = 0;
 		
 	Params(int argc, char **argv){
-		if (argc != 5) {
+		if (argc < 5) {
 			std::cout << "Invalid number of arguments!" << std::endl;
 			std::cout << "./rgbs nx ny c eps" << std::endl;
 			exit(EXIT_FAILURE);
@@ -120,6 +123,16 @@ public:
 		//make real number of points
 		++nx;
 		++ny;
+		
+		for (int i = 5; i < argc; ++i){
+			std::string cmd = argv[i];
+			
+			if (cmd.compare("-v") == 0)
+				output = true;
+				
+			if (cmd.compare("-vv") == 0)
+				debugOutput = true;
+		}
 	}
 	
 	void	subdivideGrid(){
@@ -159,7 +172,7 @@ public:
 			offsetY += reminder;
 		}
 		
-		std::cout << "block," << coords[0] << "\t" << coords[1] << "\t" << offsetX << "\t" << offsetY << "\t" << bx << "\t" << by << std::endl;
+		std::cout << "block," << rank << "\t" << coords[0] << "\t" << coords[1] << "\t" << offsetX << "\t" << offsetY << "\t" << bx << "\t" << by << std::endl;
 	}
 	
 	inline

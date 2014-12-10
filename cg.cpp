@@ -11,6 +11,8 @@
 #include	"grid.hpp"
 #include	"util.hpp"
 
+const	int	BORDER = 1;
+
 int main(int argc, char **argv) {
 	///******************************************************
 	///********************** INPUT *************************
@@ -48,7 +50,7 @@ int main(int argc, char **argv) {
 	
 	params.createBlock();
 	
-	Grid	lookupF(params.bx, params.by);
+	Grid	lookupF(params.bx, params.by, BORDER);
 	
 	for (int y = 0; y < params.by; ++y){
 		for (int x = 0; x < params.bx; ++x){
@@ -56,21 +58,35 @@ int main(int argc, char **argv) {
 		}
 	}
 	
-	Grid	u(params.bx, params.by);
-	for (int x = 0; x < params.bx; ++x){
-		u(x, params.by) = border(params.getXCoord(x, params.by), params.getYCoord(x,params.by));
+	Grid	u(params.bx, params.by, BORDER);
+	if (params.dims[1]-1 == params.coords[1]){
+		std::cout << "border," << params.rank << std::endl;
+		for (int x = 0; x < params.bx; ++x){
+			u(x, params.by) = border(params.getXCoord(x, params.by), params.getYCoord(x,params.by));
+		}
 	}
 	
-	Grid	r(params.bx, params.by);
-	Grid	d(params.bx, params.by);
-	Grid	z(params.bx, params.by);
+	Grid	r(params.bx, params.by, BORDER);
+	Grid	d(params.bx, params.by, BORDER);
+	Grid	z(params.bx, params.by, BORDER);
 	
-	double	delta0 = 0.0;
+	// Creating a new derived data type
+	MPI_Datatype	verticalBorderType;   
+	MPI_Type_vector( params.by, 1, u.ld, MPI_DOUBLE, &verticalBorderType );
+	MPI_Type_commit( &verticalBorderType );
+	
+	MPI_Request reqs[8];
+	MPI_Status stats[8];
+	
+	double	localDelta0 = 0.0;
+	double	delta0      = 0.0;
+	double	delta1      = 0.0;
+	double	alpha       = 0.0;
 
 	///******************************************************
 	///********************** CALCULATION *******************
 	///******************************************************
-	double time = 0;
+	double time         = 0.0;
 
 	siwir::Timer	timer;
 	
@@ -78,29 +94,33 @@ int main(int argc, char **argv) {
 		for (int x = 0; x < params.bx; ++x){
 			r(x, y) = lookupF(x, y) + params.invHx2 * ( u(x - 1, y) + u(x + 1, y) ) + params.invHy2 * ( u(x, y - 1) + u(x, y + 1) ) - params.preF * u(x, y);
 			d(x, y) = r(x,y);
-			delta0 += r(x,y) * r(x,y);
+			localDelta0 += r(x,y) * r(x,y);
 		}
 	}
 	
+	MPI_Allreduce(&localDelta0, &delta0, 1, MPI_DOUBLE, MPI_SUM, cartcomm);
+	
 	//if (delta0 < params.eps2) {...}
 	
-	for (int c = 0; c < params.c; ++c){
-		double	alpha = 0.0;
+	for (int c = 0; c < params.c; ++c){		
+		double	localAlpha = 0.0;
 		for (int y = 0; y < params.by; ++y){
 			for (int x = 0; x < params.bx; ++x){
 				z(x, y) = - params.invHx2 * ( d(x - 1, y) + d(x + 1, y) ) - params.invHy2 * ( d(x, y - 1) + d(x, y + 1) ) + params.preF * d(x, y);
-				alpha += z(x, y) * d(x, y);
+				localAlpha += z(x, y) * d(x, y);
 			}
 		}
+		MPI_Allreduce(&localAlpha, &alpha, 1, MPI_DOUBLE, MPI_SUM, cartcomm);
 		alpha = delta0 / alpha;
-		double	delta1 = 0.0;
+		double	localDelta1 = 0.0;
 		for (int y = 0; y < params.by; ++y){
 			for (int x = 0; x < params.bx; ++x){
 				u(x, y) += alpha * d(x, y);
 				r(x, y) -= alpha * z(x, y);
-				delta1 += r(x, y) * r(x, y);
+				localDelta1 += r(x, y) * r(x, y);
 			}
 		}
+		MPI_Allreduce(&localDelta1, &delta1, 1, MPI_DOUBLE, MPI_SUM, cartcomm);
 		if (delta1 < params.eps2) break;
 		double beta = delta1 / delta0;
 		for (int y = 0; y < params.by; ++y){
@@ -108,6 +128,19 @@ int main(int argc, char **argv) {
 				d(x, y) = r(x, y) + beta * d(x,y);
 			}
 		}
+		
+		MPI_Isend( &u(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[0]   );
+		MPI_Isend( &u(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[1]   );
+		MPI_Isend( &u(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[2]   );
+		MPI_Isend( &u(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[3]   );
+		
+		MPI_Irecv( &u(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[4] );
+		MPI_Irecv( &u(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[5] );
+		MPI_Irecv( &u(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[6] );
+		MPI_Irecv( &u(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[7] );
+		
+		MPI_Waitall( 8, reqs, stats );
+		
 		delta0 = delta1;
 		//std::cout << delta0 << std::endl;
 	}
@@ -115,22 +148,29 @@ int main(int argc, char **argv) {
 	MPI_Barrier( MPI_COMM_WORLD );
 	time = timer.elapsed();
 	if (params.rank == 0){
+		std::cout << "residuum," << sqrt(delta0) << std::endl;
 		std::cout << "time," << time << std::endl;
 	}
 
 	///******************************************************
 	///********************** OUTPUT ************************
 	///******************************************************
-	/*
-	std::ofstream	fOut("data/solution.txt");
-	for (int y = -params.offsetY; y < params.by + params.offsetY; ++y) {
-		for (int x = -params.offsetX; x < params.bx + params.offsetX; ++x) {
-			fOut << params.getXCoord(x, y) << "\t" << params.getYCoord(x, y) << "\t" << u(x, y) << std::endl;
+	
+	if (params.debugOutput){
+		std::stringstream	ss;
+		ss << "data/grid_" << params.coords[0] << "x" << params.coords[1] << ".txt";
+		std::ofstream	fOut(ss.str());
+		for (int y = -1; y < params.by + 1; ++y) {
+			for (int x = -1; x < params.bx + 1; ++x) {
+				fOut << params.getXCoord(x, y) << "\t" << params.getYCoord(x, y) << "\t" << u(x, y) << std::endl;
+			}
+			fOut << std::endl;
 		}
-		fOut << std::endl;
+		fOut.close();
 	}
-	fOut.close();
-	*/
+	
+	// Freeing derived data type
+	MPI_Type_free( &verticalBorderType );
 	
 	// MPI finalizations
 	// ----------------------------------------------------------------
