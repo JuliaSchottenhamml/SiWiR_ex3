@@ -1,4 +1,5 @@
 #include	<stdlib.h>
+#include	<cstdio>
 #include	<iostream>
 #include	<sstream>
 #include	<fstream>
@@ -155,6 +156,38 @@ int main(int argc, char **argv) {
 	///******************************************************
 	///********************** OUTPUT ************************
 	///******************************************************
+	
+	if (params.output){
+		if (params.rank == 0) remove("data/solution.txt");
+		MPI_Barrier( cartcomm );
+		/// run through all rows
+		for (int y = 0; y < params.ny; ++y){
+			/// run through grid rows
+			for (int dimY = 0; dimY < params.dims[1]; ++dimY){
+				/// test if row is inside grid row
+				if ((y>=(params.offsetY+params.getBottomBorderOffset())) && (y<(params.offsetY+params.getTopBorderOffset()+params.by))){
+					/// run through grid cols
+					for (int dimX = 0; dimX < params.dims[0]; ++dimX){
+						if ((dimX == params.coords[0]) && (dimY == params.coords[1])){
+							std::fstream	fOut("data/solution.txt", std::fstream::out | std::fstream::app);
+							for (int x = 0 + params.getLeftBorderOffset(); x < params.bx + params.getRightBorderOffset(); ++x) {
+								//std::cout << y << "\t" << dimY << "\t" << params.offsetY << "\t" << dimX << "\t" << x << std::endl;
+								//std::cout << "block," << params.rank << "\t" << params.coords[0] << "\t" << params.coords[1] << "\t" << params.offsetX << "\t" << params.offsetY << "\t" << x << "\t" << y << std::endl;
+								fOut << params.getXCoord(x, y - params.offsetY) << "\t" << params.getYCoord(x, y - params.offsetY) << "\t" << u(x, y - params.offsetY) << std::endl;
+							}
+							if (params.coords[0] == params.dims[0]-1) fOut << std::endl;
+							fOut.close();						
+						}
+						MPI_Barrier( cartcomm );
+					}
+				} else {	
+					for (int dimX = 0; dimX < params.dims[0]; ++dimX){
+						MPI_Barrier( cartcomm );
+					}
+				}
+			}		
+		}
+	}
 	
 	if (params.debugOutput){
 		std::stringstream	ss;

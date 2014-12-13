@@ -172,7 +172,7 @@ public:
 			offsetY += reminder;
 		}
 		
-		std::cout << "block," << rank << "\t" << coords[0] << "\t" << coords[1] << "\t" << offsetX << "\t" << offsetY << "\t" << bx << "\t" << by << std::endl;
+		//std::cout << "block," << rank << "\t" << coords[0] << "\t" << coords[1] << "\t" << offsetX << "\t" << offsetY << "\t" << bx << "\t" << by << std::endl;
 	}
 	
 	inline	
