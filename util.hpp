@@ -172,7 +172,11 @@ public:
 			offsetY += reminder;
 		}
 		
-		//std::cout << "block," << rank << "\t" << coords[0] << "\t" << coords[1] << "\t" << offsetX << "\t" << offsetY << "\t" << bx << "\t" << by << std::endl;
+		for (int i = 0; i < size; ++i){
+			if (i == rank)
+				std::cout << "block," << rank << "\t" << coords[0] << "\t" << coords[1] << "\t" << offsetX << "\t" << offsetY << "\t" << bx << "\t" << by << std::endl;
+			MPI_Barrier( MPI_COMM_WORLD );
+		}
 	}
 	
 	inline	

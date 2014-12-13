@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
 	
 	Grid	u(params.bx, params.by, BORDER);
 	if (params.dims[1]-1 == params.coords[1]){
-		std::cout << "border," << params.rank << std::endl;
+		//std::cout << "border," << params.rank << std::endl;
 		for (int x = 0; x < params.bx; ++x){
 			u(x, params.by) = border(params.getXCoord(x, params.by), params.getYCoord(x,params.by));
 		}
@@ -98,20 +98,37 @@ int main(int argc, char **argv) {
 			localDelta0 += r(x,y) * r(x,y);
 		}
 	}
-	
+	//delta0 = 0;
 	MPI_Allreduce(&localDelta0, &delta0, 1, MPI_DOUBLE, MPI_SUM, cartcomm);
+	//if (params.rank==0) std::cout << "delta0, " << delta0 << std::endl;
 	
 	//if (delta0 < params.eps2) {...}
+	
+	MPI_Isend( &d(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[0]   );
+	MPI_Isend( &d(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[1]   );
+	MPI_Isend( &d(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[2]   );
+	MPI_Isend( &d(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[3]   );
+	
+	MPI_Irecv( &d(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[4] );
+	MPI_Irecv( &d(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[5] );
+	MPI_Irecv( &d(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[6] );
+	MPI_Irecv( &d(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[7] );
+	
+	MPI_Waitall( 8, reqs, stats );
 	
 	for (int c = 0; c < params.c; ++c){		
 		double	localAlpha = 0.0;
 		for (int y = 0; y < params.by; ++y){
 			for (int x = 0; x < params.bx; ++x){
 				z(x, y) = - params.invHx2 * ( d(x - 1, y) + d(x + 1, y) ) - params.invHy2 * ( d(x, y - 1) + d(x, y + 1) ) + params.preF * d(x, y);
+				//std::cout << x + params.offsetX << "\t" << y +params.offsetY << "\t" << temp << "\t" << d(x -1, y) <<  std::endl;
+				//z(x, y) = temp;
 				localAlpha += z(x, y) * d(x, y);
 			}
 		}
+		//alpha = 0;
 		MPI_Allreduce(&localAlpha, &alpha, 1, MPI_DOUBLE, MPI_SUM, cartcomm);
+		//if (params.rank==0) std::cout << "alpha, " << alpha << std::endl;
 		alpha = delta0 / alpha;
 		double	localDelta1 = 0.0;
 		for (int y = 0; y < params.by; ++y){
@@ -121,7 +138,9 @@ int main(int argc, char **argv) {
 				localDelta1 += r(x, y) * r(x, y);
 			}
 		}
+		//delta1 = 0;
 		MPI_Allreduce(&localDelta1, &delta1, 1, MPI_DOUBLE, MPI_SUM, cartcomm);
+		//if (params.rank==0) std::cout << "delta1, " << delta1 << std::endl;
 		if (delta1 < params.eps2) break;
 		double beta = delta1 / delta0;
 		for (int y = 0; y < params.by; ++y){
@@ -130,15 +149,15 @@ int main(int argc, char **argv) {
 			}
 		}
 		
-		MPI_Isend( &u(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[0]   );
-		MPI_Isend( &u(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[1]   );
-		MPI_Isend( &u(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[2]   );
-		MPI_Isend( &u(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[3]   );
+		MPI_Isend( &d(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[0]   );
+		MPI_Isend( &d(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[1]   );
+		MPI_Isend( &d(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[2]   );
+		MPI_Isend( &d(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[3]   );
 		
-		MPI_Irecv( &u(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[4] );
-		MPI_Irecv( &u(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[5] );
-		MPI_Irecv( &u(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[6] );
-		MPI_Irecv( &u(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[7] );
+		MPI_Irecv( &d(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[4] );
+		MPI_Irecv( &d(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[5] );
+		MPI_Irecv( &d(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[6] );
+		MPI_Irecv( &d(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[7] );
 		
 		MPI_Waitall( 8, reqs, stats );
 		
