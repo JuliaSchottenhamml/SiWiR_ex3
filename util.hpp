@@ -175,6 +175,26 @@ public:
 		std::cout << "block," << rank << "\t" << coords[0] << "\t" << coords[1] << "\t" << offsetX << "\t" << offsetY << "\t" << bx << "\t" << by << std::endl;
 	}
 	
+	inline	
+	int	getBottomBorderOffset(){
+		return (coords[1] == 0) ? -1 : 0;
+	}
+	
+	inline	
+	int	getTopBorderOffset(){
+		return (coords[1] == dims[1]-1) ? 1 : 0;
+	}
+	
+	inline	
+	int	getLeftBorderOffset(){
+		return (coords[0] == 0) ? -1 : 0;
+	}
+	
+	inline	
+	int	getRightBorderOffset(){
+		return (coords[0] == dims[0]-1) ? 1 : 0;
+	}
+	
 	inline
 	double	getXCoord(const int indexX, const int indexY){
 		(void)(indexY);
