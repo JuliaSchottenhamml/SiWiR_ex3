@@ -40,7 +40,7 @@ inline double compute2norm(std::vector<double> vec)
 
 }
 
-inline std::vector<double> matMult(FdGrid& fgrid, vector<double> vec, GridCaptain& gcap,const double alpha, const double bita, const double gama)
+inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec, GridCaptain& gcap,const double alpha, const double beta, const double gama)
 {
 
    int size(0); // The total number of processes
@@ -94,8 +94,8 @@ inline std::vector<double> matMult(FdGrid& fgrid, vector<double> vec, GridCaptai
             double beta2 = 0;
 
    
-    double *sr = new double[blenx];
-    double *nr = new double[blenx];
+    //double *sr = new double[blenx];
+    //double *nr = new double[blenx];
                  
     ss=fgrid.getDataAdd(sx,sy);
     ns=fgrid.getDataAdd(ex,sy); 
@@ -155,7 +155,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, vector<double> vec, GridCaptai
 }
 
 
-inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap, double gama)
+inline std::vector<double> cal_fVec(FdGrid& fgrid, std::vector<double> vec, GridCaptain& gcap, double gama)
 {
 
    int size(0); // The total number of processes
@@ -207,7 +207,7 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap, double gam
     double *ss = new double[blenx];
     double *ns = new double[blenx];
     
-    double *sr = new double[blenx];
+    //double *sr = new double[blenx];
     //double *nr = new double[blenx];
                  
 
@@ -328,7 +328,7 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
 
         std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),beta);
 
-        std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), TVec.begin(),   std::plus<double>());
+        std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Tvec.begin(),   std::plus<double>());
 
         dt0 = dt1;
 
@@ -365,7 +365,7 @@ int main(int argc, char** argv)
 
     int totdim = nnx*nny;
 
-    FdGrid fGrid = new FdGrid (nnx,nny);
+    FdGrid* fGrid = new FdGrid (nnx,nny);
     
     std::cout << "nx," << nx << std::endl;
 	std::cout << "ny," << ny << std::endl;
