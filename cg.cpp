@@ -168,13 +168,38 @@ int main(int argc, char **argv) {
 	MPI_Barrier( MPI_COMM_WORLD );
 	time = timer.elapsed();
 	if (params.rank == 0){
-		std::cout << "residuum," << sqrt(delta0) << std::endl;
+		std::cout << "residuum," << sqrt(delta0 / ( params.nx - 2 ) / ( params.ny - 2 )) << std::endl;
 		std::cout << "time," << time << std::endl;
 	}
 
 	///******************************************************
 	///********************** OUTPUT ************************
 	///******************************************************
+	
+	MPI_Isend( &u(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[0]   );
+	MPI_Isend( &u(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[1]   );
+	MPI_Isend( &u(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[2]   );
+	MPI_Isend( &u(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[3]   );
+	
+	MPI_Irecv( &u(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[4] );
+	MPI_Irecv( &u(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[5] );
+	MPI_Irecv( &u(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[6] );
+	MPI_Irecv( &u(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[7] );
+	
+	MPI_Waitall( 8, reqs, stats );
+	
+	localDelta0 = 0;
+	for (int y = 0; y < params.by; ++y){
+		for (int x = 0; x < params.bx; ++x){
+			double temp = lookupF(x, y) + params.invHx2 * ( u(x - 1, y) + u(x + 1, y) ) + params.invHy2 * ( u(x, y - 1) + u(x, y + 1) ) - params.preF * u(x, y);
+			localDelta0 += temp * temp;
+		}
+	}
+	delta0 = 0;
+	MPI_Allreduce(&localDelta0, &delta0, 1, MPI_DOUBLE, MPI_SUM, cartcomm);
+	if (params.rank == 0){
+		std::cout << "residuum2," << sqrt(delta0 / ( params.nx - 2 ) / ( params.ny - 2 )) << std::endl;
+	}
 	
 	if (params.output){
 		if (params.rank == 0) remove("data/solution.txt");
