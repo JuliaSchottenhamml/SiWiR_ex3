@@ -269,7 +269,7 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap)
 }
 
 
-inline double * callCG(FdGrid& fgrid, int const iter, int const proc, int const err)
+inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc, int const err)
 {
 
     std::vector<double> Xvec (fgrid.totalGridPoints(),0);
@@ -289,13 +289,13 @@ inline double * callCG(FdGrid& fgrid, int const iter, int const proc, int const 
             gama = 1/hy/hy;
             alfa = -(2/gama+ 2/bita + k * k);
 
-    GridCaptain gcap = new GridCaptain(fgrid);
+    GridCaptain gcap = new GridCaptain(proc,fgrid);
     
-    Tvec = initMatMult(fgrid,Xvec,gcap,alfa, bita, gama);
+    Tvec = matMult(fgrid,Xvec,gcap,alfa, bita, gama);
     
     Fvec = cal_fVec(fgrid,gcap);
 
-    std::transform (Fvec.begin(), Fvec.end(), TVec.begin(), Rvec.begin(),  std::minus<double>());
+    std::transform (Fvec.begin(), Fvec.end(), Tvec.begin(), Rvec.begin(),  std::minus<double>());
 
     double dt0 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
@@ -371,7 +371,7 @@ int main(int argc, char** argv)
 
     int totdim = nnx*nny;
 
-    FdGrid *fGrid = new FdGrid (nnx,nny);
+    FdGrid fGrid = new FdGrid (nnx,nny);
     
     std::cout << "nx," << nx << std::endl;
 	std::cout << "ny," << ny << std::endl;
