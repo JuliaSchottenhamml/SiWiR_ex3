@@ -10,7 +10,7 @@
 
 #define BLOCKSIZE 4
 
-#define LD 6
+#define LD 3
 
 class GridCaptain{
 
@@ -43,88 +43,49 @@ public:
        n= 0;
 
        if(procn%4==0)
-           hor = 4;
+           ver = 4;
        else if (procn%5==0)
-           hor = 5;
+           ver = 5;
        else if (procn%6==0)
-           hor = 6;
+           ver = 6;
        else if (procn%7==0)
-           hor = 7;
+           ver = 7;
         
-        
-        ver = procn/hor;
-        if(dimN%hor == 0)
-        blocklenX = dimN/hor;
-        else
-        blocklenX = dimN/hor+1;
-        
-        blocklenY = dimM/ver;
-        assignWork();
+       assignWork();
    }
 
    inline void assignWork()
-   {
-
-       int remN = dimN%hor;
+   {     
        int remM = dimM%ver;
-       int bN = dimN/hor;
-       int bM = dimM/ver;              
+       int bn = dimM/ver;              
        int m =0;
-              int n =0;
-              int p =0;
+        int n =0;
+        int p =0;
+        int s = 0;
        for (int i = 0; i < ver; i++)
          {
-            int k = (i+1)*hor;
-            int l = i*hor;
-            n = 0;
-           for (int j = 0; j < hor; j++)
-            {
-                int q = i*hor*LD+j*LD;
-                worksheet[q]=p;
-                worksheet[q+2]=i+m;
-                worksheet[q+3]=n;
-                worksheet[q+4]=worksheet[q+2]+p-1;
-            
-
-                /*if(i*ver+j+1 < k)
-                    worksheet[i*proc+6]=i*ver+j+1;
-                else
-                    worksheet[i*proc+6]=-1;
-
-                if(i*ver+j-1 < l)
-                    worksheet[i*proc+7]=i*ver+j-1;
-                else
-                    worksheet[i*proc+7]=i*ver+j-1;
-
-                if(i*ver+j+hor > dimM)
-                    worksheet[i*proc+8]=i*ver+j+hor;
-                else
-                    worksheet[i*proc+8]=-1;
-
-                    worksheet[i*proc+9]=i*ver+j-hor;*/                   
-                    
-                if(j<remN)
+           
+                int q = i*LD;
+                //worksheet[q+1]=dimN;
+                worksheet[q]=n;
+                //worksheet[q+3]=0;
+                if(i<remM)
                 {
-                  worksheet[q+1]=bn+1;  
-                  n + = bn+1;
+                  m=bn+1;  
+                  worksheet[q+1]=m; 
+                  n + = m;
+                  p= m*dimN;
                 } 
                 else
                 {
                 worksheet[q+1]=bn;  
                 n + = bn;
+                p = m*dimN;
                 }
-               worksheet[q+5]=n-1;
-            }
+                worksheet[q+2]=s;
+                s + = p;                 
+               //worksheet[q+5]=dimN;
+            }           
             
-             if(i<remM)
-                {
-                  p =bm+1;
-                  m + = p; 
-                } 
-                else
-                {
-                  p =bM; 
-                  m + = p; 
-                } 
          }
    }

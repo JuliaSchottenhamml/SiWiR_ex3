@@ -41,7 +41,10 @@ public:
         dimN = n;
         totdim = (dimM+LD) * (dimN+LD);
         matarray = new double[totdim];
-        intilize();
+       for (int i=0; i < totdim ; i++)
+       {
+         matarray [i] = 0;
+       }
 
     }
 
@@ -50,8 +53,8 @@ public:
         dimM = n;
         dimN = m;
 
-        hx = (domxh-domxl)/n;
-        hy = (domyh-domyl)/m;
+        hx = (domxh-domxl)/(n+1);
+        hy = (domyh-domyl)/(m+1);
 
         int newdimN = dimN + LD;
         int newdimM = dimM + LD;
@@ -62,7 +65,6 @@ public:
         {
             for(int j=0; j<newdimN; j++)
             {
-
                 if (i< dimM && j < dimN)
                 matarray [i*newdimN +j] = data[i*(dimN+LD) +j];
                 else
@@ -77,23 +79,21 @@ public:
     {
         for (int i=0; i < totdim ; i++)
         {
-            if(i>= totdim - dimN)
+            /*if(i>= totdim - dimN)
             {
                 double x = (dimN  - i +totdim)*hx;
                 double y = domyh;
 
                 matarray [i]= border(x,y);
             }
-           else
+           else*/
                   matarray [i] = 0;
-
-
         }
     }
 
     int totalGridPoints()
     {
-        return (dimN-1)*(dimM-1);
+        return dimN*dimM;
     }
 
     inline constexpr	double fxy(const int i, const int j){
@@ -104,7 +104,7 @@ public:
         return 4.0*M_PI*M_PI*sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
     }
 
-    inline constexpr	double border(const double x, const double y){
+    inline constexpr double border(const double x, const double y){
         return sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
     }
 
@@ -144,33 +144,10 @@ public:
 
     __m256d getAVXData(int m, int n)
     {
-        //__m256d m1 = matarray[m*dimN+n];
-
         __m256d m1 = _mm256_load_pd(&matarray[m*dimN+n]);
 
         return m1;
     }
-
-   /* Matrix2D getTranspose()
-    {
-        //Matrix2D tmat = new Matrix2D(dimN,dimM);
-
-       for(int i=0;i<dimM;i++)
-        {
-            for(int j=0;j<dimN;j++)
-            {
-              //(tmat + (i%dimN)*dimM + i/dimM) =  *(matarray + i),
-
-                //tmatj*(dimM+LD)+i]= matarray[i*(dimN+LD) + j];
-                //(tmat+j*dimM+i)= *(matarray+i*dimN + j);
-                //(tmat+j*dimM+i)= *(matarray+i*dimN + j);
-               // (tmat+j*dimM+i)= *(matarray+i*dimN + j);
-
-            }
-        }
-
-       return tmat;
-    }*/
 
     int getDimM()
     {

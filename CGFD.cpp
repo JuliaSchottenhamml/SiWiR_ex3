@@ -7,8 +7,20 @@
 #include <vector>
 #include <mpi.h>
 #include <GridCaptain.h>
+#include	"Timer.h"
+
+# define k = 2.0*M_PI
 
 #define ERRLIMIT 0;
+
+inline constexpr	double fxy(const int x, const int y){
+
+         return 4.0*M_PI*M_PI*sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
+    }
+
+    inline constexpr double border(const double x, const double y){
+        return sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
+    }
 
 inline double compute2norm(std::vector vec)
 {
@@ -28,15 +40,17 @@ inline double compute2norm(std::vector vec)
 
 }
 
-
-inline std::vector matMult(FDGRID& fgrid, vector<double> vec, GridCaptain& gcap)
+inline std::vector matMult(FDGRID& fgrid, vector<double> vec, GridCaptain& gcap,const double alpha, const double bita, const double gamma)
 {
 
    int size(0); // The total number of processes
    int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
    int proc = gcap.proc;
-   int sz=vec.size();
-   double * result = new double[sz];
+   int veclen = vec.size();
+   vector<double> fresult(veclen,0);
+   int rec_cnt = new int[proc];
+   int rec_disp = new int[proc];
+   
    // Initialization of MPI
    // ----------------------------------------------------------------
    MPI_Init();
@@ -49,76 +63,53 @@ inline std::vector matMult(FDGRID& fgrid, vector<double> vec, GridCaptain& gcap)
    // ----------------------------------------------------------------   
 
    //int MPI_Cart_shift(MPI_COMM_WORLD,0,1,rank,rank+2);
-
+ 
+    int * dim = new int [2];
    if (rank == 0)
-   {
-   int * dim = new int [2];
+   {  
 
     dim[0]=fgrid.getDimM();
     dim[1]=fgrid.getDimN();
    
     MPI_Bcast(dim,1,MPI_INT,0,MPI_COMM_WORLD);
-    MPI_Bcast(result,1,MPI_INT,0,MPI_COMM_WORLD);
+    
    }
-    int sx = gcap.worksheet[2];
-    int sy = gcap.worksheet[3];
-    int ex = gcap.worksheet[4];
-    int ey = gcap.worksheet[5];
-    /*int en = gcap.worksheet[4];
-    int wn = gcap.worksheet[5];
-    int nn = gcap.worksheet[6];
-    int sn = gcap.worksheet[7];*/
-    int eval=0, wval = 0, sval = 0, nval = 0, cval = 0;
-    int blenx = gcap.worksheet[0];
-    int bleny = gcap.worksheet[1];
-
+       int eval=0, wval = 0, sval = 0, nval = 0, cval = 0;
+    int bleny =  dim[1];    
+    
+    int blenx = gcap.worksheet[rank*3+1];
+    int sx = gcap.worksheet[rank*3+0];
+    rec_disp[rank] =  gcap.worksheet[rank*3+2];
+    int sy = 0;
+    int ex = sx+blenx-1;
+    int ey = bleny;
+    int sz=blenx*bleny;
+    array[rank]=sz;
+    double * result = new double[sz];
     int gridno = 0;
 
     double *ss = new double[blenx];
     double *ns = new double[blenx];
+            double gama1 = 0;
+            double gama2 = 0;
+            double beta1 = 0;
+            double beta2 = 0;
 
-    double *es = new double[blenx];
-
-    double *ws = new double[blenx];
-
+   
     double *sr = new double[blenx];
     double *nr = new double[blenx];
-
-    double *er = new double[blenx];
-
-    double *wr = new double[blenx];
-    
+                 
     for ( int i=0; i <blenx;i++)
     {
         sr[i]=0;
         er[i]=0;
-        wr[i]=0;
-        nr[i]=0;
     }
 
     ss=fgrid.getDataAdd(sx,sy);
-    ns=fgrid.getDataAdd(ex,sy);
-    es=fgrid.getDataAdd(sx,ey);
-    ws=fgrid.getDataAdd(sx,sy);
+    ns=fgrid.getDataAdd(ex,sy);    
 
-    MPI_Datatype columntp;
-    MPI_Type_vector(bleny,1,blenx, MPI_DOUBLE, &columntp);
-    MPI_Type_commit( &columntp );
-
-    int re = MPI_Cart_shift(MPI_COMM_WORLD,1,1,rank, rank+2);
-    int rw = MPI_Cart_shift(MPI_COMM_WORLD,1,-1, rank, rank-2);
-    int rn = MPI_Cart_shift(MPI_COMM_WORLD,0,1,rank,rank+2*gcap.hor );
-    int rs = MPI_Cart_shift(MPI_COMM_WORLD,0,-1,rank,rank-2*gcap.hor);
-
-     MPI_ISend(es,1,columntp,re, MPI_COMM_WORLD);
-     MPI_ISend(ws,1,columntp,rw, MPI_COMM_WORLD);
-     MPI_ISend(ss,1,MPI_double,rs, MPI_COMM_WORLD);
-     MPI_ISend(ns,1,MPI_double,rn, MPI_COMM_WORLD);
-
-     MPI_recv((er,1,columntp,re, MPI_COMM_WORLD);
-     MPI_recv(wr,1,columntp,rw, MPI_COMM_WORLD);
-     MPI_recv(sr,1,MPI_double,rs, MPI_COMM_WORLD);
-     MPI_recv(nr,1,MPI_double,rn, MPI_COMM_WORLD);
+    int rn = MPI_Cart_shift(MPI_COMM_WORLD,0,1,rank,rank+1 );
+    int rs = MPI_Cart_shift(MPI_COMM_WORLD,0,-1,rank,rank-1);
 
     for(int i=sx; i<blenx ; i++)
     {
@@ -126,73 +117,155 @@ inline std::vector matMult(FDGRID& fgrid, vector<double> vec, GridCaptain& gcap)
         for(int j=sy; j<bleny ; j++)
         {
             
-            gridno= i*dim[1] + j;
-            
-            cval = fgrid.getDataA(i,j);
+            gama1 = 0;
+            gama2 = 0;
+            beta1 = 0;
+            beta2 = 0;
+            gridno= i*dim[1] + j;            
             int k = (j-sy)%blenx;
-                                   
-            if(i==sx)
-            {
-                  nval == nr[k];
-            }
-            else
-            {
-                nval=fgrid.getDataA(i-dimN,j);
-            }    
+            if(rn != MPI_NULL_PROC)
+             gama1 = gama;
+                        
+            if(rs != MPI_NULL_PROC)
+             gama2 = gama;
+                                                           
+            if(j!=sy)
+                beta1=beta;
             
-            if(j==sy)
-            {
-             wval == wr[l];   
-            }
-            else
-            {
-                wval=fgrid.getDataA(i,j-1);
-            }    
-            
-            if(i == blenx-1)
-            {
-                sval = sr[k];
-            }
-            else
-            {
-                sval=fgrid.getDataA(i+dimN,j);
-            }
-           
-            if(j == bleny-1)
-            {
-                eval = er[l];
-            }
-            else
-            {
-                eval=fgrid.getDataA(i,j+1);
-            }      
+            if(j != bleny-1)
+                beta2=beta;
             
             int pm = 0;
             int ppm =0;
             int fm =0;
-            int ffm =0;   
-            int cm = cval*vec[gridno];
+            int ffm =0;  
+             
+            int cm = alpha*vec[gridno];
             if(gridno-1>=0)
-            pm = wval*vec[gridno-1];
+            pm = beta1*vec[gridno-1];
             if(gridno-3>=0)
-            ppm = nval*vec[gridno-3];
+            ppm = gama1*vec[gridno-3];
             if(gridno+1<sz)
-            fm = eval*vec[gridno+1];
+            fm = beta2*vec[gridno+1];
             if(gridno+3<sz)
-            ffm = sval*vec[gridno+3];
+            ffm = gama2*vec[gridno+3];
             result[gridno]=cm+pm+ppm+fm+ffm;
 
         }
     }
 
-
-
-
+    MPI_Allgatherv(result,sz, MPI_DOUBLE, fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
     MPI_Finalize();
-
-
-
+    
+    return fresult;
 }
+
+
+inline std::vector cal_fvec(FDGRID& fgrid, GridCaptain& gcap)
+{
+
+   int size(0); // The total number of processes
+   int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
+   int proc = gcap.proc;
+   int veclen = vec.size();
+   vector<double> fresult(veclen,0);
+   int rec_cnt = new int[proc];
+   int rec_disp = new int[proc];
+   
+   // Initialization of MPI
+   // ----------------------------------------------------------------
+   MPI_Init();
+   // ----------------------------------------------------------------
+
+   // Determining the number of CPUs and the rank of this process
+   // ----------------------------------------------------------------
+   MPI_Comm_size( MPI_COMM_WORLD, &size );
+   MPI_Comm_rank( MPI_COMM_WORLD, &rank );
+   // ----------------------------------------------------------------   
+
+   //int MPI_Cart_shift(MPI_COMM_WORLD,0,1,rank,rank+2);
+   
+    int * dim = new int [2];
+   if (rank == 0)
+   {  
+
+    dim[0]=fgrid.getDimM();
+    dim[1]=fgrid.getDimN();
+   
+    MPI_Bcast(dim,1,MPI_INT,0,MPI_COMM_WORLD);
+    
+   }
+       int eval=0, wval = 0, sval = 0, nval = 0, cval = 0;
+    int bleny =  dim[1];    
+    
+    int blenx = gcap.worksheet[rank*3+1];
+    int sx = gcap.worksheet[rank*3+0];
+    rec_disp[rank] =  gcap.worksheet[rank*3+2];
+    int sy = 0;
+    int ex = sx+blenx-1;
+    int ey = bleny;
+    int sz=blenx*bleny;
+    array[rank]=sz;
+    double * result = new double[sz];
+    int gridno = 0;
+
+    double *ss = new double[blenx];
+    double *ns = new double[blenx];
+    
+    double *sr = new double[blenx];
+    double *nr = new double[blenx];
+                 
+    for ( int i=0; i <blenx;i++)
+    {
+        sr[i]=0;
+        er[i]=0;
+    }
+
+    ss=fgrid.getDataAdd(sx,sy);
+    ns=fgrid.getDataAdd(ex,sy);
+    
+    int rn = MPI_Cart_shift(MPI_COMM_WORLD,0,1,rank,rank+1 );
+    int rs = MPI_Cart_shift(MPI_COMM_WORLD,0,-1,rank,rank-1);
+
+    /* MPI_ISend(ss,1,MPI_double,rs, MPI_COMM_WORLD);
+     MPI_ISend(ns,1,MPI_double,rn, MPI_COMM_WORLD);
+
+     MPI_recv(sr,1,MPI_double,rs, MPI_COMM_WORLD);
+     MPI_recv(nr,1,MPI_double,rn, MPI_COMM_WORLD);*/
+    int x = 0;
+    int y = 0;
+
+    for(int i=sx; i<blenx ; i++)
+    {
+        for(int j=sy; j<bleny ; j++)
+        {
+            
+            gama1 = 0;
+            gama2 = 0;
+            beta1 = 0;
+            beta2 = 0;
+            gridno= i*dim[1] + j;            
+            int k = (j-sy)%blenx;
+            x = (((gridno-1)%dimN)+1)*hx;
+            y = (((gridno-1)/dimN)+1)*hy;
+            int f = fxy(x,y);
+                                  
+            if(rs == MPI_NULL_PROC)
+            {
+             gama2 = gama*border(x,y);
+             result[gridno] = f-gama2;
+            }
+            else 
+                result[gridno] = f;
+        }
+    }
+
+    MPI_Allgatherv(result,sz, MPI_DOUBLE, fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+    MPI_Finalize();
+    
+    return fresult; 
+}
+
 
 inline double * callCG(FDGRID& fgrid, int const iter, int const proc, int const err)
 {
@@ -201,14 +274,24 @@ inline double * callCG(FDGRID& fgrid, int const iter, int const proc, int const 
     std::vector<double> Rvec (fgrid.totalGridPoints(),0);
     std::vector<double> Fvec (fgrid.totalGridPoints(),0);
     std::vector<double> Tvec;
-     std::vector<double> Tmpvec;
+    std::vector<double> Tmpvec;
     double alpha = 0;
+    double hx = fgrid.hx;
+    double hy = fgrid.hx;
+    
+    double alfa=0;
+        double bita=0;
+            double gama=0;
+            
+            bita = 1/hx/hx;
+            gama = 1/hy/hy;
+            alfa = -(2/gama+ 2/bita + k * k);
 
     GridCaptain gcap = new GridCaptain(fgrid);
     
-    TVec = matMult(fgrid,Xvec,gcap);
+    TVec = initMatMult(fgrid,Xvec,gcap,alfa, bita, gama);
     
-    cal_fVec(fgrid);
+    Fvec = cal_fVec(fgrid,gcap);
 
     std::transform (Fvec.begin(), Fvec.end(), TVec.begin(), Rvec.begin(),  std::minus<double>());
 
@@ -224,7 +307,7 @@ inline double * callCG(FDGRID& fgrid, int const iter, int const proc, int const 
     for(int i = 0 ; i<iter; i++)
 
     {
-        TVec = matMult(fgrid,Dvec,gcap);
+        TVec = matMult(fgrid,Dvec,gcap,alfa, bita, gama);
 
         double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
 
@@ -281,18 +364,41 @@ int main(int argc, char** argv)
     error = StringTo<int>(argv[8]);
     proc = StringTo<int>(argv[3]);
 
-    int nnx = nx+1;
-    int nny = ny+1;
+    int nnx = nx-1;
+    int nny = ny-1;
 
-    int totdim = (nx-1)*(ny-1);
+    int totdim = nnx*nny;
 
     FDGRID fGrid = new FDGRID (nnx,nny);
+    
+    std::cout << "nx," << nx << std::endl;
+	std::cout << "ny," << ny << std::endl;
+	std::cout << "c," << c <<std::endl;
+	
+    ///******************************************************
+	///********************** CALCULATION *******************
+	///******************************************************
+	double time = 0;
+	
+#ifdef USE_LIKWID
+	likwid_markerInit();
+	likwid_markerStartRegion("dummy");
+#endif
+
+	siwir::Timer	timer;
 
     std::vector* xsol = callCG(fGrid,iter,error,proc);
+    
+    	time = timer.elapsed();
+	std::cout << "time," << time << std::endl;
+
+#ifdef USE_LIKWID
+	likwid_markerStopRegion("dummy");
+	likwid_markerClose();
+#endif
 
     for (int i= 0; i< totdim; i++ )
         std::cout << xsol[i] << ' ';
-
 
     return 0;
 
