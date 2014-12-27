@@ -285,9 +285,9 @@ inline std::vector<double> callCG(FdGrid fgrid, int const iter, int const proc, 
 
     GridCaptain* gcap = new GridCaptain(proc,fgrid);
     
-    Tvec = matMult(fgrid,Xvec,gcap,alfa, bita, gama);
+    Tvec = matMult(fgrid,Xvec,&gcap,alfa, bita, gama);
     
-    Fvec = cal_fVec(fgrid,gcap,gama);
+    Fvec = cal_fVec(fgrid,&gcap,gama);
 
     std::transform (Fvec.begin(), Fvec.end(), Tvec.begin(), Rvec.begin(),  std::minus<double>());
 
@@ -365,7 +365,7 @@ int main(int argc, char** argv)
 
     int totdim = nnx*nny;
 
-    FdGrid fGrid = new FdGrid (nnx,nny);
+    FdGrid* fGrid = new FdGrid (nnx,nny);
     
     std::cout << "nx," << nx << std::endl;
 	std::cout << "ny," << ny << std::endl;
@@ -383,7 +383,7 @@ int main(int argc, char** argv)
 
 	siwir::Timer	timer;
 
-    std::vector<double> xsol = callCG(fGrid,iter,error,proc);
+    std::vector<double> xsol = callCG(&fGrid,iter,error,proc);
     
     	time = timer.elapsed();
 	std::cout << "time," << time << std::endl;
