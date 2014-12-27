@@ -9,6 +9,7 @@
 #include "GridCaptain.h"
 #include	"Timer.h"
 #include	<cmath>
+#include <functional>
 
 # define k 2.0*M_PI
 
@@ -80,7 +81,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
     int sx = gcap.worksheet[rank*3+0];
     rec_disp[rank] =  gcap.worksheet[rank*3+2];
     int sy = 0;
-    int ex = sx+blenx-1;
+    //int ex = sx+blenx-1;
    // int ey = bleny;
     int sz=blenx*bleny;
     double * result = new double[sz];
@@ -196,7 +197,7 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama
     int sx = gcap.worksheet[rank*3+0];
     rec_disp[rank] =  gcap.worksheet[rank*3+2];
     int sy = 0;
-    int ex = sx+blenx-1;
+    //int ex = sx+blenx-1;
     //int ey = bleny;
     int sz=blenx*bleny;
     double * result = new double[sz];
