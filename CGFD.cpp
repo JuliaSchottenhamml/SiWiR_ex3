@@ -312,11 +312,13 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
 
         //std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),alpha);
         
+        __mm256d a,b,c;
+        
         for(int j=0; j< (int)Dvec.size();j+=4)
         {
-            __mm256d a = _mm256_set_pd(Dvec[j],Dvec[j+1],Dvec[j+2],Dvec[j+3]);
-             __mm256d b = _mm256_set_pd(Tmpvec[j],Tmpvec[j+1],Tmpvec[j+2],Tmpvec[j+3]);
-             __mm256d c = _mm256_mul_pd(a,b);
+            a = _mm256_set_pd(Dvec[j],Dvec[j+1],Dvec[j+2],Dvec[j+3]);
+            b = _mm256_set_pd(Tmpvec[j],Tmpvec[j+1],Tmpvec[j+2],Tmpvec[j+3]);
+            c = _mm256_mul_pd(a,b);
              Dvec[j]=c[0];
              Dvec[j+1]=c[1];
              Dvec[j+2]=c[2];
@@ -330,9 +332,9 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
         
         for(int j=0; j< (int)Dvec.size();j+=4)
         {
-            __mm256d a = _mm256_set_pd(Tvec[j],Tvec[j+1],Tvec[j+2],Tvec[j+3]);
-             __mm256d b = _mm256_set_pd(Tmpvec[j],Tmpvec[j+1],Tmpvec[j+2],Tmpvec[j+3]);
-             __mm256d c = _mm256_mul_pd(a,b);
+            a = _mm256_set_pd(Tvec[j],Tvec[j+1],Tvec[j+2],Tvec[j+3]);
+             b = _mm256_set_pd(Tmpvec[j],Tmpvec[j+1],Tmpvec[j+2],Tmpvec[j+3]);
+             c = _mm256_mul_pd(a,b);
              Tvec[j]=c[0];
              Tvec[j+1]=c[1];
              Tvec[j+2]=c[2];
@@ -354,9 +356,9 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
         
          for(int j=0; j< (int)Dvec.size();j+=4)
         {
-            __mm256d a = _mm256_set_pd(Dvec[j],Dvec[j+1],Dvec[j+2],Dvec[j+3]);
-             __mm256d b = _mm256_set_pd(Tmpvec[j],Tmpvec[j+1],Tmpvec[j+2],Tmpvec[j+3]);
-             __mm256d c = _mm256_mul_pd(a,b);
+             a = _mm256_set_pd(Dvec[j],Dvec[j+1],Dvec[j+2],Dvec[j+3]);
+             b = _mm256_set_pd(Tmpvec[j],Tmpvec[j+1],Tmpvec[j+2],Tmpvec[j+3]);
+             c = _mm256_mul_pd(a,b);
              Dvec[j]=c[0];
              Dvec[j+1]=c[1];
              Dvec[j+2]=c[2];
