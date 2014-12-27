@@ -1,4 +1,4 @@
-CC=g++
+CC=mpic++
 CFLAGS= -march=native -mtune=native -std=c++0x -Wall -Wextra -Wshadow -Werror -O3 -DNDEBUG
 LDFLAGS=
 SOURCES=CGFD.cpp
