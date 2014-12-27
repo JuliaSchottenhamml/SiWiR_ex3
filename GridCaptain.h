@@ -28,7 +28,7 @@ public:
 
     int proc, dimM , dimN, blocklenX, blocklenY;
 
-   GridCaptain(int const procn, FdGrid& fdg)
+   GridCaptain(int const procn, FdGrid fdg)
    {
        proc = procn;
 
