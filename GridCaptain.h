@@ -15,7 +15,7 @@
 class GridCaptain{
 
 
-    FdGrid FdGrid;
+    FdGrid fdgrid;
 
 
 
@@ -33,7 +33,7 @@ public:
        proc = procn;
 
 
-       FdGrid = fdg;
+       fdgrid = fdg;
        dimM= fdg.getDimM();
        dimN= fdg.getDimN();
        
@@ -87,4 +87,4 @@ public:
             }           
             
          }
-   }
+   };
