@@ -263,7 +263,7 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap, double gam
 }
 
 
-inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc, int const err)
+inline std::vector<double> callCG(const FdGrid& fgrid, int const iter, int const proc, int const err)
 {
 
     std::vector<double> Xvec (fgrid.totalGridPoints(),0);
@@ -383,7 +383,7 @@ int main(int argc, char** argv)
 
 	siwir::Timer	timer;
 
-    std::vector<double> xsol = callCG(&fGrid,iter,error,proc);
+    std::vector<double> xsol = callCG(fGrid,iter,error,proc);
     
     	time = timer.elapsed();
 	std::cout << "time," << time << std::endl;
