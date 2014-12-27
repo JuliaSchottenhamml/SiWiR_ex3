@@ -213,7 +213,7 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid, std::vector<double> vec, Grid
 
     ss=fgrid.getDataAdd(sx,sy);
     ns=fgrid.getDataAdd(ex,sy);
-    int rank1 =  rank+1;  
+    //int rank1 =  rank+1;  
     int rank2 =  rank-1; 
 
    // int rn = MPI_Cart_shift(MPI_COMM_WORLD,0,1,&rank,&rank1 );
