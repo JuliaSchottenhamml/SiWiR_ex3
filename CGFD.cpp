@@ -40,7 +40,7 @@ inline double compute2norm(std::vector<double> vec)
 
 }
 
-inline std::vector<double> matMult(const FdGrid& fgrid, std::vector<double> vec,const GridCaptain& gcap,const double alpha, const double beta, const double gama)
+inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCaptain& gcap,const double alpha, const double beta, const double gama)
 {
 
    int size(0); // The total number of processes
@@ -155,7 +155,7 @@ inline std::vector<double> matMult(const FdGrid& fgrid, std::vector<double> vec,
 }
 
 
-inline std::vector<double> cal_fVec(const FdGrid& fgrid,const GridCaptain& gcap, double gama)
+inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama)
 {
 
    int size(0); // The total number of processes
@@ -263,7 +263,7 @@ inline std::vector<double> cal_fVec(const FdGrid& fgrid,const GridCaptain& gcap,
 }
 
 
-inline std::vector<double> callCG(const FdGrid& fgrid, int const iter, int const proc, int const err)
+inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc, int const err)
 {
 
     std::vector<double> Xvec (fgrid.totalGridPoints(),0);
