@@ -1,6 +1,7 @@
 #include <iostream>
 #include <numeric>
 #include <fstream>
+#include <algorithm>
 #include "FdGrid.h"
 #include "immintrin.h"
 #include <memory>
@@ -162,7 +163,7 @@ inline std::vector matMult(FdGrid& fgrid, vector<double> vec, GridCaptain& gcap,
 }
 
 
-inline std::vector cal_fvec(FdGrid& fgrid, GridCaptain& gcap)
+inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap)
 {
 
    int size(0); // The total number of processes
@@ -274,8 +275,8 @@ inline double * callCG(FdGrid& fgrid, int const iter, int const proc, int const 
     std::vector<double> Xvec (fgrid.totalGridPoints(),0);
     std::vector<double> Rvec (fgrid.totalGridPoints(),0);
     std::vector<double> Fvec (fgrid.totalGridPoints(),0);
-    std::vector<double> Tvec;
-    std::vector<double> Tmpvec;
+    std::vector<double> Tvec (fgrid.totalGridPoints(),0);
+    std::vector<double> Tmpvec (fgrid.totalGridPoints(),0);
     double alpha = 0;
     double hx = fgrid.hx;
     double hy = fgrid.hx;
@@ -290,7 +291,7 @@ inline double * callCG(FdGrid& fgrid, int const iter, int const proc, int const 
 
     GridCaptain gcap = new GridCaptain(fgrid);
     
-    TVec = initMatMult(fgrid,Xvec,gcap,alfa, bita, gama);
+    Tvec = initMatMult(fgrid,Xvec,gcap,alfa, bita, gama);
     
     Fvec = cal_fVec(fgrid,gcap);
 
@@ -308,7 +309,7 @@ inline double * callCG(FdGrid& fgrid, int const iter, int const proc, int const 
     for(int i = 0 ; i<iter; i++)
 
     {
-        TVec = matMult(fgrid,Dvec,gcap,alfa, bita, gama);
+        Tvec = matMult(fgrid,Dvec,gcap,alfa, bita, gama);
 
         double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
 
@@ -316,7 +317,7 @@ inline double * callCG(FdGrid& fgrid, int const iter, int const proc, int const 
 
         std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),alpha);
 
-        std::transform (Xvec.begin(), Xvec.end(), Tmpvec.begin(), TVec.begin(),   std::plus<double>());
+        std::transform (Xvec.begin(), Xvec.end(), Tmpvec.begin(), Tvec.begin(),   std::plus<double>());
 
         std::transform (Tvec.begin(), Tvec.end(), Tmpvec.begin(),  std::multiplies<double>(),alpha);
 
@@ -339,7 +340,7 @@ inline double * callCG(FdGrid& fgrid, int const iter, int const proc, int const 
 
     }
 
-    return XVec;
+    return Xvec;
 
 }
 
@@ -359,22 +360,22 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    nx = StringTo<int>(argv[5]);
-    ny = StringTo<int>(argv[6]);
-    iter = StringTo<int>(argv[7]);
-    error = StringTo<int>(argv[8]);
-    proc = StringTo<int>(argv[3]);
+    nx = atoi(argv[5]);
+    ny = atoi(argv[6]);
+    iter = atoi(argv[7]);
+    error = atoi(argv[8]);
+    proc = atoi(argv[3]);
 
     int nnx = nx-1;
     int nny = ny-1;
 
     int totdim = nnx*nny;
 
-    FdGrid fGrid = new FdGrid (nnx,nny);
+    FdGrid *fGrid = new FdGrid (nnx,nny);
     
     std::cout << "nx," << nx << std::endl;
 	std::cout << "ny," << ny << std::endl;
-	std::cout << "c," << c <<std::endl;
+	std::cout << "c," << iter <<std::endl;
 	
     ///******************************************************
 	///********************** CALCULATION *******************
@@ -388,7 +389,7 @@ int main(int argc, char** argv)
 
 	siwir::Timer	timer;
 
-    std::vector* xsol = callCG(fGrid,iter,error,proc);
+    std::vector<double> xsol = callCG(fGrid,iter,error,proc);
     
     	time = timer.elapsed();
 	std::cout << "time," << time << std::endl;
