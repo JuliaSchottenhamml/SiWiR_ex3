@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS= -march=native -mtune=native -std=c++0x -Wall -Wextra -Wshadow -Werror -O3 -DNDEBUG
 LDFLAGS=
-SOURCES=CGFD.cpp
+SOURCES=MatrixMult.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=MatrixMult
 COMMON=Timer.h
