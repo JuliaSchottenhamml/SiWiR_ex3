@@ -40,7 +40,7 @@ inline double compute2norm(std::vector<double> vec)
 
 }
 
-inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec, GridCaptain& gcap,const double alpha, const double beta, const double gama)
+inline std::vector<double> matMult(const FdGrid& fgrid, std::vector<double> vec,const GridCaptain& gcap,const double alpha, const double beta, const double gama)
 {
 
    int size(0); // The total number of processes
@@ -155,7 +155,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec, GridC
 }
 
 
-inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap, double gama)
+inline std::vector<double> cal_fVec(const FdGrid& fgrid,const GridCaptain& gcap, double gama)
 {
 
    int size(0); // The total number of processes
@@ -285,9 +285,9 @@ inline std::vector<double> callCG(const FdGrid& fgrid, int const iter, int const
 
     GridCaptain* gcap = new GridCaptain(proc,fgrid);
     
-    Tvec = matMult(fgrid,Xvec,&gcap,alfa, bita, gama);
+    Tvec = matMult(fgrid,Xvec,*gcap,alfa, bita, gama);
     
-    Fvec = cal_fVec(fgrid,&gcap,gama);
+    Fvec = cal_fVec(fgrid,*gcap,gama);
 
     std::transform (Fvec.begin(), Fvec.end(), Tvec.begin(), Rvec.begin(),  std::minus<double>());
 
@@ -303,7 +303,7 @@ inline std::vector<double> callCG(const FdGrid& fgrid, int const iter, int const
     for(int i = 0 ; i<iter; i++)
 
     {
-        Tvec = matMult(fgrid,Dvec,gcap,alfa, bita, gama);
+        Tvec = matMult(fgrid,Dvec, *gcap,alfa, bita, gama);
 
         double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
 
