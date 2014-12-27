@@ -312,15 +312,15 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
 
         //std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),alpha);
         
-        for(int i=0; i<Dvec.size();i+=4)
+        for(int j=0; j< (int)Dvec.size();j+=4)
         {
-            __mm256d a = _mm256_set_pd(Dvec[i],Dvec[i+1],Dvec[i+2],Dvec[i+3]);
-             __mm256d b = _mm256_set_pd(Tmpvec[i],Tmpvec[i+1],Tmpvec[i+2],Tmpvec[i+3]);
+            __mm256d a = _mm256_set_pd(Dvec[j],Dvec[j+1],Dvec[j+2],Dvec[j+3]);
+             __mm256d b = _mm256_set_pd(Tmpvec[j],Tmpvec[j+1],Tmpvec[j+2],Tmpvec[j+3]);
              __mm256d c = _mm256_mul_pd(a,b);
-             Dvec[i]=c[0];
-             Dvec[i+1]=c[1];
-             Dvec[i+2]=c[2];
-             Dvec[i+3]=c[3];
+             Dvec[j]=c[0];
+             Dvec[j+1]=c[1];
+             Dvec[j+2]=c[2];
+             Dvec[j+3]=c[3];
         }      
         
 
@@ -328,17 +328,17 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
 
         //std::transform (Tvec.begin(), Tvec.end(), Tmpvec.begin(),  std::multiplies<double>(),alpha);
         
-        for(int i=0; i<Tvec.size();i+=4)
+        for(int j=0; j< (int)Dvec.size();j+=4)
         {
-            __mm256d a = _mm256_set_pd(Tvec[i],Tvec[i+1],Tvec[i+2],Tvec[i+3]);
-             __mm256d b = _mm256_set_pd(Tmpvec[i],Tmpvec[i+1],Tmpvec[i+2],Tmpvec[i+3]);
+            __mm256d a = _mm256_set_pd(Tvec[j],Tvec[j+1],Tvec[j+2],Tvec[j+3]);
+             __mm256d b = _mm256_set_pd(Tmpvec[j],Tmpvec[j+1],Tmpvec[j+2],Tmpvec[j+3]);
              __mm256d c = _mm256_mul_pd(a,b);
-             Tvec[i]=c[0];
-             Tvec[i+1]=c[1];
-             Tvec[i+2]=c[2];
-             Tvec[i+3]=c[3];
-        } 
-
+             Tvec[j]=c[0];
+             Tvec[j+1]=c[1];
+             Tvec[j+2]=c[2];
+             Tvec[j+3]=c[3];
+        }      
+        
         std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Rvec.begin(),  std::minus<double>());
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
@@ -352,17 +352,17 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
 
         //std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),beta);
         
-        for(int i=0; i<Dvec.size();i+=4)
+         for(int j=0; j< (int)Dvec.size();j+=4)
         {
-            __mm256d a = _mm256_set_pd(Dvec[i],Dvec[i+1],Dvec[i+2],Dvec[i+3]);
-             __mm256d b = _mm256_set_pd(Tmpvec[i],Tmpvec[i+1],Tmpvec[i+2],Tmpvec[i+3]);
+            __mm256d a = _mm256_set_pd(Dvec[j],Dvec[j+1],Dvec[j+2],Dvec[j+3]);
+             __mm256d b = _mm256_set_pd(Tmpvec[j],Tmpvec[j+1],Tmpvec[j+2],Tmpvec[j+3]);
              __mm256d c = _mm256_mul_pd(a,b);
-             Dvec[i]=c[0];
-             Dvec[i+1]=c[1];
-             Dvec[i+2]=c[2];
-             Dvec[i+3]=c[3];
-        }  
-
+             Dvec[j]=c[0];
+             Dvec[j+1]=c[1];
+             Dvec[j+2]=c[2];
+             Dvec[j+3]=c[3];
+        }      
+        
         std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Tvec.begin(),   std::plus<double>());
 
         dt0 = dt1;
