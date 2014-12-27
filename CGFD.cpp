@@ -263,12 +263,15 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama
 
 inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc, int const err)
 {
+    int len = 0;
 
-    std::vector<double> Xvec (fgrid.totalGridPoints(),0);
-    std::vector<double> Rvec (fgrid.totalGridPoints(),0);
-    std::vector<double> Fvec (fgrid.totalGridPoints(),0);
-    std::vector<double> Tvec (fgrid.totalGridPoints(),0);
-    std::vector<double> Tmpvec (fgrid.totalGridPoints(),0);
+    if(fgrid.totalGridPoints()%4 ! = 0)
+    len = fgrid.totalGridPoints() + (4-fgrid.totalGridPoints());
+    std::vector<double> Xvec (len,0);
+    std::vector<double> Rvec (len,0);
+    std::vector<double> Fvec (len,0);
+    std::vector<double> Tvec (len,0);
+    std::vector<double> Tmpvec (len,0);
     double alpha = 0;
     double hx = fgrid.getHx();
     double hy = fgrid.getHy();
@@ -307,11 +310,34 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
 
         alpha = dt0 / dt;
 
-        std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),alpha);
+        //std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),alpha);
+        
+        for(int i=0; i<Dvec.size();i+=4)
+        {
+            __mm256d a = _mm256_set_pd(Dvec[i],Dvec[i+1],Dvec[i+2],Dvec[i+3]);
+             __mm256d b = _mm256_set_pd(Tmpvec[i],Tmpvec[i+1],Tmpvec[i+2],Tmpvec[i+3]);
+             __mm256d c = _mm256_mul_pd(a,b);
+             Dvec[i]=c[0];
+             Dvec[i+1]=c[1];
+             Dvec[i+2]=c[2];
+             Dvec[i+3]=c[3];
+        }      
+        
 
         std::transform (Xvec.begin(), Xvec.end(), Tmpvec.begin(), Tvec.begin(),   std::plus<double>());
 
-        std::transform (Tvec.begin(), Tvec.end(), Tmpvec.begin(),  std::multiplies<double>(),alpha);
+        //std::transform (Tvec.begin(), Tvec.end(), Tmpvec.begin(),  std::multiplies<double>(),alpha);
+        
+        for(int i=0; i<Tvec.size();i+=4)
+        {
+            __mm256d a = _mm256_set_pd(Tvec[i],Tvec[i+1],Tvec[i+2],Tvec[i+3]);
+             __mm256d b = _mm256_set_pd(Tmpvec[i],Tmpvec[i+1],Tmpvec[i+2],Tmpvec[i+3]);
+             __mm256d c = _mm256_mul_pd(a,b);
+             Tvec[i]=c[0];
+             Tvec[i+1]=c[1];
+             Tvec[i+2]=c[2];
+             Tvec[i+3]=c[3];
+        } 
 
         std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Rvec.begin(),  std::minus<double>());
 
@@ -324,7 +350,18 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
 
         double beta = dt1/dt0;
 
-        std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),beta);
+        //std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),beta);
+        
+        for(int i=0; i<Dvec.size();i+=4)
+        {
+            __mm256d a = _mm256_set_pd(Dvec[i],Dvec[i+1],Dvec[i+2],Dvec[i+3]);
+             __mm256d b = _mm256_set_pd(Tmpvec[i],Tmpvec[i+1],Tmpvec[i+2],Tmpvec[i+3]);
+             __mm256d c = _mm256_mul_pd(a,b);
+             Dvec[i]=c[0];
+             Dvec[i+1]=c[1];
+             Dvec[i+2]=c[2];
+             Dvec[i+3]=c[3];
+        }  
 
         std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Tvec.begin(),   std::plus<double>());
 
