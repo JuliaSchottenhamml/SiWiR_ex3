@@ -148,7 +148,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
         }
     }
 
-    MPI_Allgatherv(result,sz, MPI_DOUBLE, fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+    MPI_Allgatherv(result,sz, MPI_DOUBLE, (void*)&fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
     MPI_Finalize();
     
     return fresult;
@@ -256,7 +256,7 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama
         }
     }
 
-    MPI_Allgatherv(result,sz, MPI_DOUBLE, fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+    MPI_Allgatherv(result,sz, MPI_DOUBLE,  (void*)&fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
     MPI_Finalize();
     
     return fresult; 
