@@ -1,7 +1,7 @@
-#ifndef FDGRID_H
-#define FDGRID_H
+#ifndef FdGrid_H
+#define FdGrid_H
 
-#endif // FDGRID_H
+#endif // FdGrid_H
 
 
 #include <iostream>
@@ -17,17 +17,17 @@
 using namespace std;
 
 
-class FDGRID{
+class FdGrid{
 
     int dimM, dimN,hx,hy;
     int totdim;
 
     //__declspec(align(16,sizeof(double)))
-    double * matarray, bx;
+    double * matarray, *bx;
 
 public:
 
-    FDGRID()
+    FdGrid()
     {
         dimM = 0;
         dimN = 0;
@@ -35,7 +35,7 @@ public:
 
     }
 
-    FDGRID(int m, int n)
+    FdGrid(int m, int n)
     {
         dimM = m;
         dimN = n;
@@ -48,7 +48,7 @@ public:
 
     }
 
-    FDGRID(const int m, const int n, const double * data)
+    FdGrid(const int m, const int n, const double * data)
     {
         dimM = n;
         dimN = m;
@@ -96,7 +96,7 @@ public:
         return dimN*dimM;
     }
 
-    inline constexpr	double fxy(const int i, const int j){
+    inline double fxy(const int i, const int j){
 
         double x = j*hx;
         double y = i*hy;
@@ -104,7 +104,7 @@ public:
         return 4.0*M_PI*M_PI*sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
     }
 
-    inline constexpr double border(const double x, const double y){
+    inline  double border(const double x, const double y){
         return sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
     }
 
@@ -127,12 +127,12 @@ public:
 
     void storeDataB(int m ,double data)
     {
-        bx [m] = data;
+        bx[m] = data;
     }
 
     double getDataB(int m)
     {
-        return bx [m];
+        return bx[m];
     }
 
     void storeAVXData(int m, int n, __m256d data)
@@ -159,7 +159,7 @@ public:
         return dimN;
     }
 
-    ~Matrix2D()
+    ~FdGrid()
     {
         delete matarray;
     }

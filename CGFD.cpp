@@ -1,28 +1,29 @@
 #include <iostream>
 #include <numeric>
 #include <fstream>
-#include "FDGRID.h"
+#include "FdGrid.h"
 #include "immintrin.h"
 #include <memory>
 #include <vector>
 #include <mpi.h>
 #include "GridCaptain.h"
 #include	"Timer.h"
+#include	<cmath>
 
 # define k = 2.0*M_PI
 
 #define ERRLIMIT 0;
 
-inline constexpr	double fxy(const int x, const int y){
+inline double fxy(const int x, const int y){
 
          return 4.0*M_PI*M_PI*sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
     }
 
-    inline constexpr double border(const double x, const double y){
+inline double border(const double x, const double y){
         return sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
     }
 
-inline double compute2norm(std::vector vec)
+inline double compute2norm(std::vector<double> vec)
 {
 
     __m256d a, r;
@@ -40,7 +41,7 @@ inline double compute2norm(std::vector vec)
 
 }
 
-inline std::vector matMult(FDGRID& fgrid, vector<double> vec, GridCaptain& gcap,const double alpha, const double bita, const double gamma)
+inline std::vector matMult(FdGrid& fgrid, vector<double> vec, GridCaptain& gcap,const double alpha, const double bita, const double gamma)
 {
 
    int size(0); // The total number of processes
@@ -161,7 +162,7 @@ inline std::vector matMult(FDGRID& fgrid, vector<double> vec, GridCaptain& gcap,
 }
 
 
-inline std::vector cal_fvec(FDGRID& fgrid, GridCaptain& gcap)
+inline std::vector cal_fvec(FdGrid& fgrid, GridCaptain& gcap)
 {
 
    int size(0); // The total number of processes
@@ -267,7 +268,7 @@ inline std::vector cal_fvec(FDGRID& fgrid, GridCaptain& gcap)
 }
 
 
-inline double * callCG(FDGRID& fgrid, int const iter, int const proc, int const err)
+inline double * callCG(FdGrid& fgrid, int const iter, int const proc, int const err)
 {
 
     std::vector<double> Xvec (fgrid.totalGridPoints(),0);
@@ -354,7 +355,7 @@ int main(int argc, char** argv)
 
     if (argc != 6)
     {
-        std::cout << 'invalid number of argument.. Program exiting..';
+        std::cout << "invalid number of argument.. Program exiting..";
         exit(EXIT_FAILURE);
     }
 
@@ -369,7 +370,7 @@ int main(int argc, char** argv)
 
     int totdim = nnx*nny;
 
-    FDGRID fGrid = new FDGRID (nnx,nny);
+    FdGrid fGrid = new FdGrid (nnx,nny);
     
     std::cout << "nx," << nx << std::endl;
 	std::cout << "ny," << ny << std::endl;

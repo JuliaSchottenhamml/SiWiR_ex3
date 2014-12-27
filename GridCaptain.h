@@ -5,17 +5,17 @@
 
 #include <iostream>
 #include "immintrin.h"
-#include "FDGRID.h"
+#include "FdGrid.h"
 #include <memory>
 
 #define BLOCKSIZE 4
 
-#define LD 3
+#define LD1 3
 
 class GridCaptain{
 
 
-    FDGRID fdgrid;
+    FdGrid FdGrid;
 
 
 
@@ -24,21 +24,20 @@ public:
     double * worksheet;
 
     int hor,ver;
-    int m,n;
+    //int m,n;
 
-    int const proc, dimM , dimN, blocklenX, blocklenY;
+    int proc, dimM , dimN, blocklenX, blocklenY;
 
-   GridCaptain(int const procn, FDGRID& fdg)
+   GridCaptain(int const procn, FdGrid& fdg)
    {
        proc = procn;
 
 
-       fdgrid = fdg;
+       FdGrid = fdg;
        dimM= fdg.getDimM();
        dimN= fdg.getDimN();
-       blocksz = BLOCKSIZE;
-
-       worksheet = new double[proc*LD];
+       
+       worksheet = new double[proc*LD1];
        m = 0;
        n= 0;
 
@@ -65,7 +64,7 @@ public:
        for (int i = 0; i < ver; i++)
          {
            
-                int q = i*LD;
+                int q = i*LD1;
                 //worksheet[q+1]=dimN;
                 worksheet[q]=n;
                 //worksheet[q+3]=0;
@@ -73,17 +72,17 @@ public:
                 {
                   m=bn+1;  
                   worksheet[q+1]=m; 
-                  n + = m;
+                  n += m;
                   p= m*dimN;
                 } 
                 else
                 {
                 worksheet[q+1]=bn;  
-                n + = bn;
+                n += bn;
                 p = m*dimN;
                 }
                 worksheet[q+2]=s;
-                s + = p;                 
+                s += p;                 
                //worksheet[q+5]=dimN;
             }           
             
