@@ -155,14 +155,14 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec, GridC
 }
 
 
-inline std::vector<double> cal_fVec(FdGrid& fgrid, std::vector<double> vec, GridCaptain& gcap, double gama)
+inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap, double gama)
 {
 
    int size(0); // The total number of processes
    int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
    int proc = gcap.proc;
-   int veclen = (int)vec.size();
-   vector<double> fresult(veclen,0);
+   //int veclen = (int)vec.size();
+   vector<double> fresult(fgrid.totalGridPoints(),0);
    int *rec_cnt = new int[proc];
    int *rec_disp = new int[proc];
    

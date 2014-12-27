@@ -160,17 +160,19 @@ public:
         return dimN;
     }
     
+    
     double getHx()
     {
         return hx;
     }
+    
 
     double getHy()
     {
         return hy;
     }
     
-
+    
     ~FdGrid()
     {
         delete matarray;
