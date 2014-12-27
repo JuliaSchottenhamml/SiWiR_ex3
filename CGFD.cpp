@@ -97,8 +97,8 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
     //double *sr = new double[blenx];
     //double *nr = new double[blenx];
                  
-    ss=fgrid.getDataAdd(sx,sy);
-    ns=fgrid.getDataAdd(ex,sy); 
+    //ss=fgrid.getDataAdd(sx,sy);
+    //ns=fgrid.getDataAdd(ex,sy); 
     int rank1 =  rank+1;  
     int rank2 =  rank-1; 
 
@@ -211,8 +211,8 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama
     //double *nr = new double[blenx];
                  
 
-    ss=fgrid.getDataAdd(sx,sy);
-    ns=fgrid.getDataAdd(ex,sy);
+  //  ss=fgrid.getDataAdd(sx,sy);
+    //ns=fgrid.getDataAdd(ex,sy);
     //int rank1 =  rank+1;  
     int rank2 =  rank-1; 
 
