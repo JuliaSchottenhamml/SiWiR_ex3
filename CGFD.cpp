@@ -312,7 +312,7 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
 
         //std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),alpha);
         
-        __mm256d a,b,c;
+        __m256d a,b,c;
         
         for(int j=0; j< (int)Dvec.size();j+=4)
         {
