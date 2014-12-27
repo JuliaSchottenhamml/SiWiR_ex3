@@ -383,7 +383,7 @@ int main(int argc, char** argv)
 
 	siwir::Timer	timer;
 
-    std::vector<double> xsol = callCG(fGrid,iter,error,proc);
+    std::vector<double> xsol = callCG(*fGrid,iter,error,proc);
     
     	time = timer.elapsed();
 	std::cout << "time," << time << std::endl;
