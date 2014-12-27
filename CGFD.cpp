@@ -40,20 +40,20 @@ inline double compute2norm(std::vector<double> vec)
 
 }
 
-inline std::vector matMult(FdGrid& fgrid, vector<double> vec, GridCaptain& gcap,const double alpha, const double bita, const double gamma)
+inline std::vector<double> matMult(FdGrid& fgrid, vector<double> vec, GridCaptain& gcap,const double alpha, const double bita, const double gama)
 {
 
    int size(0); // The total number of processes
    int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
    int proc = gcap.proc;
-   int veclen = vec.size();
+   int veclen = (int)vec.size();
    vector<double> fresult(veclen,0);
-   int rec_cnt = new int[proc];
-   int rec_disp = new int[proc];
+   int *rec_cnt = new int[proc];
+   int *rec_disp = new int[proc];
    
    // Initialization of MPI
    // ----------------------------------------------------------------
-   MPI_Init();
+   MPI_Init(NULL,NULL);
    // ----------------------------------------------------------------
 
    // Determining the number of CPUs and the rank of this process
@@ -74,7 +74,6 @@ inline std::vector matMult(FdGrid& fgrid, vector<double> vec, GridCaptain& gcap,
     MPI_Bcast(dim,1,MPI_INT,0,MPI_COMM_WORLD);
     
    }
-       int eval=0, wval = 0, sval = 0, nval = 0, cval = 0;
     int bleny =  dim[1];    
     
     int blenx = gcap.worksheet[rank*3+1];
@@ -82,9 +81,8 @@ inline std::vector matMult(FdGrid& fgrid, vector<double> vec, GridCaptain& gcap,
     rec_disp[rank] =  gcap.worksheet[rank*3+2];
     int sy = 0;
     int ex = sx+blenx-1;
-    int ey = bleny;
+   // int ey = bleny;
     int sz=blenx*bleny;
-    array[rank]=sz;
     double * result = new double[sz];
     int gridno = 0;
 
@@ -99,17 +97,13 @@ inline std::vector matMult(FdGrid& fgrid, vector<double> vec, GridCaptain& gcap,
     double *sr = new double[blenx];
     double *nr = new double[blenx];
                  
-    for ( int i=0; i <blenx;i++)
-    {
-        sr[i]=0;
-        er[i]=0;
-    }
-
     ss=fgrid.getDataAdd(sx,sy);
-    ns=fgrid.getDataAdd(ex,sy);    
+    ns=fgrid.getDataAdd(ex,sy); 
+    int rank1 =  rank+1;  
+    int rank2 =  rank-1; 
 
-    int rn = MPI_Cart_shift(MPI_COMM_WORLD,0,1,&rank,&(rank+1) );
-    int rs = MPI_Cart_shift(MPI_COMM_WORLD,0,-1,&rank,&(rank-1));
+    int rn = MPI_Cart_shift(MPI_COMM_WORLD,0,1,&rank,&rank1 );
+    int rs = MPI_Cart_shift(MPI_COMM_WORLD,0,-1,&rank,&rank2);
 
     for(int i=sx; i<blenx ; i++)
     {
@@ -161,20 +155,20 @@ inline std::vector matMult(FdGrid& fgrid, vector<double> vec, GridCaptain& gcap,
 }
 
 
-inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap)
+inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap, double gama)
 {
 
    int size(0); // The total number of processes
    int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
    int proc = gcap.proc;
-   int veclen = vec.size();
+   int veclen = (int)vec.size();
    vector<double> fresult(veclen,0);
-   int rec_cnt = new int[proc];
-   int rec_disp = new int[proc];
+   int *rec_cnt = new int[proc];
+   int *rec_disp = new int[proc];
    
    // Initialization of MPI
    // ----------------------------------------------------------------
-   MPI_Init();
+   MPI_Init(NULL,NULL);
    // ----------------------------------------------------------------
 
    // Determining the number of CPUs and the rank of this process
@@ -203,9 +197,8 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap)
     rec_disp[rank] =  gcap.worksheet[rank*3+2];
     int sy = 0;
     int ex = sx+blenx-1;
-    int ey = bleny;
+    //int ey = bleny;
     int sz=blenx*bleny;
-    array[rank]=sz;
     double * result = new double[sz];
     int gridno = 0;
     double hx = fgrid.getHx();
@@ -215,19 +208,16 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap)
     double *ns = new double[blenx];
     
     double *sr = new double[blenx];
-    double *nr = new double[blenx];
+    //double *nr = new double[blenx];
                  
-    for ( int i=0; i <blenx;i++)
-    {
-        sr[i]=0;
-        er[i]=0;
-    }
 
     ss=fgrid.getDataAdd(sx,sy);
     ns=fgrid.getDataAdd(ex,sy);
-    
-       int rn = MPI_Cart_shift(MPI_COMM_WORLD,0,1,&rank,&(rank+1) );
-    int rs = MPI_Cart_shift(MPI_COMM_WORLD,0,-1,&rank,&(rank-1));
+    int rank1 =  rank+1;  
+    int rank2 =  rank-1; 
+
+   // int rn = MPI_Cart_shift(MPI_COMM_WORLD,0,1,&rank,&rank1 );
+    int rs = MPI_Cart_shift(MPI_COMM_WORLD,0,-1,&rank,&rank2);
 
     /* MPI_ISend(ss,1,MPI_double,rs, MPI_COMM_WORLD);
      MPI_ISend(ns,1,MPI_double,rn, MPI_COMM_WORLD);
@@ -297,7 +287,7 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
     
     Tvec = matMult(fgrid,Xvec,gcap,alfa, bita, gama);
     
-    Fvec = cal_fVec(fgrid,gcap);
+    Fvec = cal_fVec(fgrid,gcap,gama);
 
     std::transform (Fvec.begin(), Fvec.end(), Tvec.begin(), Rvec.begin(),  std::minus<double>());
 

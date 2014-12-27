@@ -19,7 +19,8 @@ using namespace std;
 
 class FdGrid{
 
-    int dimM, dimN,hx,hy;
+    int dimM, dimN;
+    double hx,hy;
     int totdim;
 
     //__declspec(align(16,sizeof(double)))
@@ -159,12 +160,12 @@ public:
         return dimN;
     }
     
-    int getHx()
+    double getHx()
     {
         return hx;
     }
 
-    int getHy()
+    double getHy()
     {
         return hy;
     }
