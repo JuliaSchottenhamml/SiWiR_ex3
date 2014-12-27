@@ -135,7 +135,7 @@ public:
         return bx[m];
     }
 
-    void storeAVXData(int m, int n, __m256d data)
+   /* void storeAVXData(int m, int n, __m256d data)
     {
 
         _mm256_store_pd(&matarray[m*(dimN+LD)+n], data);
@@ -147,7 +147,7 @@ public:
         __m256d m1 = _mm256_load_pd(&matarray[m*dimN+n]);
 
         return m1;
-    }
+    }*/
 
     int getDimM()
     {
