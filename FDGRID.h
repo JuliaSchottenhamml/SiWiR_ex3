@@ -158,6 +158,16 @@ public:
     {
         return dimN;
     }
+    
+    int getHx()
+    {
+        return hx;
+    }
+
+    int getHy()
+    {
+        return hy;
+    }
 
     ~FdGrid()
     {
