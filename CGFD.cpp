@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 #include <mpi.h>
-#include <GridCaptain.h>
+#include "GridCaptain.h"
 #include	"Timer.h"
 
 # define k = 2.0*M_PI
