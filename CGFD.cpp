@@ -86,8 +86,8 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
     double * result = new double[sz];
     int gridno = 0;
 
-    double *ss = new double[blenx];
-    double *ns = new double[blenx];
+//    double *ss = new double[blenx];
+  //  double *ns = new double[blenx];
             double gama1 = 0;
             double gama2 = 0;
             double beta1 = 0;
@@ -204,8 +204,8 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama
     double hx = fgrid.getHx();
     double hy = fgrid.getHy();
 
-    double *ss = new double[blenx];
-    double *ns = new double[blenx];
+    //double *ss = new double[blenx];
+    //double *ns = new double[blenx];
     
     //double *sr = new double[blenx];
     //double *nr = new double[blenx];
@@ -224,10 +224,10 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama
 
      MPI_recv(sr,1,MPI_double,rs, MPI_COMM_WORLD);
      MPI_recv(nr,1,MPI_double,rn, MPI_COMM_WORLD);*/
-     double gama1 = 0;
+     //double gama1 = 0;
      double gama2 = 0;
-     double beta1 = 0;
-     double beta2 = 0;
+     //double beta1 = 0;
+     //double beta2 = 0;
     int x = 0;
     int y = 0;
 
@@ -236,10 +236,7 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama
         for(int j=sy; j<bleny ; j++)
         {
             
-            gama1 = 0;
             gama2 = 0;
-            beta1 = 0;
-            beta2 = 0;
             gridno= i*dim[1] + j;            
             //int k = (j-sy)%blenx;
             x = (((gridno-1)%dim[1])+1)*hx;
