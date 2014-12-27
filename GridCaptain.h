@@ -38,8 +38,6 @@ public:
        dimN= fdg.getDimN();
        
        worksheet = new double[proc*LD1];
-       m = 0;
-       n= 0;
 
        if(procn%4==0)
            ver = 4;
