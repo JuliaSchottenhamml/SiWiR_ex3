@@ -32,15 +32,15 @@ inline double compute2norm(std::vector<double> vec)
 
     for(int i = 0 ; i< (int) vec.size(); i+=4)
     {
-        a = _mm256_load_pd(vec[i]);
-        r = _mm256_add_pd(_mm256_mul_ps(a,a),r);
+        a = _mm256_load_pd((__m256d) vec[i]);
+        r = _mm256_add_pd(_mm256_mul_pd(a,a),r);
     }
 
-    return r[0]+r[1]+r[2]+r[3];
+    return (double) r[0]+r[1]+r[2]+r[3];
 
 }
 
-inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec, GridCaptain& gcap,const double alpha, const double beta, const double gama)
+inline std::vector<double> matMult(FdGrid fgrid, std::vector<double> vec, GridCaptain& gcap,const double alpha, const double beta, const double gama)
 {
 
    int size(0); // The total number of processes
@@ -148,7 +148,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec, GridC
         }
     }
 
-    MPI_Allgatherv(result,sz, MPI_DOUBLE, fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+    MPI_Allgatherv(result,sz, MPI_DOUBLE,(void*) fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
     MPI_Finalize();
     
     return fresult;
@@ -256,14 +256,14 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid, GridCaptain& gcap, double gam
         }
     }
 
-    MPI_Allgatherv(result,sz, MPI_DOUBLE, fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+    MPI_Allgatherv(result,sz, MPI_DOUBLE, (void*) fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
     MPI_Finalize();
     
     return fresult; 
 }
 
 
-inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc, int const err)
+inline std::vector<double> callCG(FdGrid fgrid, int const iter, int const proc, int const err)
 {
 
     std::vector<double> Xvec (fgrid.totalGridPoints(),0);
