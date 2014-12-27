@@ -2,7 +2,6 @@
 #include <numeric>
 #include <fstream>
 #include <algorithm>
-#include "FdGrid.h"
 #include "immintrin.h"
 #include <memory>
 #include <vector>
