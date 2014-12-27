@@ -283,7 +283,7 @@ inline std::vector<double> callCG(FdGrid fgrid, int const iter, int const proc, 
             gama = 1/hy/hy;
             alfa = -(2/gama+ 2/bita + k * k);
 
-    GridCaptain gcap = new GridCaptain(proc,fgrid);
+    GridCaptain* gcap = new GridCaptain(proc,fgrid);
     
     Tvec = matMult(fgrid,Xvec,gcap,alfa, bita, gama);
     
@@ -365,7 +365,7 @@ int main(int argc, char** argv)
 
     int totdim = nnx*nny;
 
-    FdGrid* fGrid = new FdGrid (nnx,nny);
+    FdGrid fGrid = new FdGrid (nnx,nny);
     
     std::cout << "nx," << nx << std::endl;
 	std::cout << "ny," << ny << std::endl;
