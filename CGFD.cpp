@@ -320,9 +320,9 @@ int main(int argc, char** argv)
         for(int i = 0 ; i<iter; i++)
        {
         
-        MPI_Bcast(Dvec,1,MPI_INT,0,MPI_COMM_WORLD);
+        MPI_Bcast((void*)&Dvec,1,MPI_INT,0,MPI_COMM_WORLD);
         
-        Tvec = matMult(Dvec,*gcap, alfa, bita, gama, size, rank);
+        Tvec = matMult(Dvec,*gcap, alfa, bita, gama,dim, size, rank);
         
         if(rank == 0)
         {
