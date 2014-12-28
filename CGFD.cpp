@@ -50,14 +50,14 @@ inline double * matMult( std::vector<double> vec,GridCaptain gcap,const double a
    std::cout << "1 " << "\n";
    
    
-    int *rec_cnt = new int[size];
-   int *rec_disp = new int[size];
+   // int *rec_cnt = new int[size];
+ //   int *rec_disp = new int[size];
     int bleny =  dim[1];  
    //  int proc = size;  
     
     int blenx = gcap.worksheet[rank*3+1];
     int sx = gcap.worksheet[rank*3+0];
-    rec_disp[rank] =  gcap.worksheet[rank*3+2];
+   // rec_disp[rank] =  gcap.worksheet[rank*3+2];
     int sy = 0;
     //int ex = sx+blenx-1;
    // int ey = bleny;
@@ -72,7 +72,7 @@ std::cout << "3 " << "\n";
             double beta2 = 0;
 
 
-    int destn = 0, dests = 0;  
+  
     
 std::cout << "2### " << "\n";
     //MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
@@ -136,14 +136,14 @@ double hy, int dests)
 { 
    vector<double> fresult(tgrdpoint,0);
 
-    int *rec_cnt = new int[size];
-   int *rec_disp = new int[size];
+    //int *rec_cnt = new int[size];
+   //int *rec_disp = new int[size];
 
     int bleny =  dim[1];    
     
     int blenx = gcap.worksheet[rank*3+1];
     int sx = gcap.worksheet[rank*3+0];
-    rec_disp[rank] =  gcap.worksheet[rank*3+2];
+    
     int sy = 0;
     int sz=blenx*bleny;
     double * result = new double[sz];
@@ -267,6 +267,7 @@ int main(int argc, char** argv)
     std::vector<double> Tmpvec (len,0);
     int * dim = new int [2];         
     GridCaptain* gcap = NULL;
+    
     //double * result=NULL;
     double alpha = 0;
     double * tresult = NULL, fresult = NULL;
@@ -274,6 +275,8 @@ int main(int argc, char** argv)
     double alfa=0;
     double bita=0;
     double gama=0;
+    int *rec_cnt = new int[size];
+   int *rec_disp = new int[size];
             
             bita = 1/hx/hx;
             gama = 1/hy/hy;
@@ -299,7 +302,13 @@ int main(int argc, char** argv)
     MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
     // std::cout << "3 " << "\n";
    }
-     
+   
+   
+     int bleny =  dim[1];    
+    
+     int blenx = gcap.worksheet[rank*3+1];
+     rec_disp[rank] =  gcap.worksheet[rank*3+2];
+     rec_cnt[rank] = blenx*bleny;
     //GridCaptain* gcap = new GridCaptain(proc,fgrid);
     
     MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
@@ -322,8 +331,6 @@ int main(int argc, char** argv)
     resd = compute2norm(Rvec);
      
     }
-    
-    
 
     if(resd > error)
      {       
