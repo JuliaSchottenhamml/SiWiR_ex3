@@ -72,11 +72,11 @@ std::cout << "3 " << "\n";
             double beta2 = 0;
 
 
-    int rank1 =  rank+1;  
-    int rank2 =  rank-1; 
+    int source, destn, dests;  
+    
 std::cout << "2### " << "\n";
-    int rn = MPI_Cart_shift(MPI_COMM_WORLD,0,1,&rank,&rank1 );
-    int rs = MPI_Cart_shift(MPI_COMM_WORLD,0,-1,&rank,&rank2);
+    MPI_Cart_shift(MPI_COMM_WORLD,0,1,&source,&destn );
+   MPI_Cart_shift(MPI_COMM_WORLD,0,-1,&source,&dests);
     
     std::cout << "2@@@ " << "\n";
 
@@ -92,10 +92,10 @@ std::cout << "2### " << "\n";
             beta2 = 0;
             gridno= i*dim[1] + j;            
             //int kl = (j-sy)%blenx;
-            if(rn != MPI_PROC_NULL)
+            if(destn != MPI_PROC_NULL)
              gama1 = gama;
                         
-            if(rs != MPI_PROC_NULL)
+            if(dests != MPI_PROC_NULL)
              gama2 = gama;
                                                            
             if(j!=sy)
@@ -150,9 +150,9 @@ inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const i
     
 
 
-    int rank2 =  rank-1; 
+    int dests; 
 
-    int rs = MPI_Cart_shift(MPI_COMM_WORLD,0,-1,&rank,&rank2);
+    MPI_Cart_shift(MPI_COMM_WORLD,0,-1,&rank,&dests);
    
      double gama2 = 0;
 
@@ -171,7 +171,7 @@ inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const i
             y = (((gridno-1)/dim[1])+1)*hy;
             int f = fxy(x,y);
                                   
-            if(rs == MPI_PROC_NULL)
+            if(dests == MPI_PROC_NULL)
             {
              gama2 = gama*border(x,y);
              result[gridno] = f-gama2;
