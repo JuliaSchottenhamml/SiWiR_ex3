@@ -41,8 +41,8 @@ inline double compute2norm(std::vector<double> vec)
 
 }
 
-inline std::vector<double> matMult( std::vector<double> vec,GridCaptain gcap,const double alpha, const double beta, const double gama,
- const int * dim ,int size, int rank)
+inline double * matMult( std::vector<double> vec,GridCaptain gcap,const double alpha, const double beta, const double gama,
+ const int * dim ,int size, int rank, int destn, int dests)
 {  
    int veclen = (int)vec.size();
    vector<double> fresult(veclen,0);
@@ -123,15 +123,16 @@ std::cout << "2### " << "\n";
         }
     }
 
-    MPI_Allgatherv(result,sz, MPI_DOUBLE, (void*)&fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+    //MPI_Allgatherv(result,sz, MPI_DOUBLE, (void*)&fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
    // MPI_Finalize();
     
     
-    return fresult;
+    return result;
     
 }
 
-inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const int * dim, int size, int rank, int tgrdpoint, double hx, double hy)
+inline double *std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const int * dim, int size, int rank, int tgrdpoint, double hx, 
+double hy, int dests)
 { 
    vector<double> fresult(tgrdpoint,0);
 
@@ -150,9 +151,9 @@ inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const i
     
 
 
-    int dests, destn; 
+    //int dests, destn; 
 
-    MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
+   // MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
    
      double gama2 = 0;
 
@@ -181,9 +182,9 @@ inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const i
         }
     }
 
-    MPI_Allgatherv(result,sz, MPI_DOUBLE,  (void*)&fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+   // MPI_Allgatherv(result,sz, MPI_DOUBLE,  (void*)&fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
     //MPI_Finalize();
-       return fresult;
+       return result;
    
 }
 
@@ -255,6 +256,7 @@ int main(int argc, char** argv)
     //std::vector<double> xsol = callCG(*fGrid,iter,error);
         
     int len = 0;
+    int dests=0, destn=0; 
 
     if(gridpoint%4 != 0)
     len = gridpoint + (4-gridpoint%4);
@@ -267,6 +269,7 @@ int main(int argc, char** argv)
     GridCaptain* gcap = NULL;
     //double * result=NULL;
     double alpha = 0;
+    double * tresult = NULL, fresult = NULL;
       
     double alfa=0;
     double bita=0;
@@ -299,9 +302,15 @@ int main(int argc, char** argv)
      
     //GridCaptain* gcap = new GridCaptain(proc,fgrid);
     
-    Tvec = matMult(Xvec,*gcap, alfa, bita,gama, dim, size, rank);    
+    MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
+    
+    tresult = matMult(Xvec,*gcap, alfa, bita,gama, dim, size, rank,destn,dests);    
        
-    Fvec = cal_fVec(*gcap,gama, dim, size, rank, gridpoint,hx ,hy);
+    MPI_Allgatherv(tresult,sz, MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+       
+    fresult = cal_fVec(*gcap,gama, dim, size, rank, gridpoint,hx ,hy,dests);
+    
+    MPI_Allgatherv(fresult,sz, MPI_DOUBLE,  (void*)&Fvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
     
     if(rank==0)
     {
@@ -324,7 +333,7 @@ int main(int argc, char** argv)
         
         MPI_Bcast((void*)&Dvec,1,MPI_INT,0,MPI_COMM_WORLD);
         
-        Tvec = matMult(Dvec,*gcap, alfa, bita, gama,dim, size, rank);
+        Tvec = matMult(Dvec,*gcap, alfa, bita, gama,dim, size, rank,destn,dests);
         
         if(rank == 0)
         {
