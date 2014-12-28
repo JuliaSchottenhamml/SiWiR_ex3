@@ -49,8 +49,6 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,/*Grid
   // int proc = gcap.proc;
    int veclen = (int)vec.size();
    vector<double> fresult(veclen,0);
-   int *rec_cnt = new int[proc];
-   int *rec_disp = new int[proc];
    
    std::cout << "1 " << "\n";
    
@@ -66,11 +64,14 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,/*Grid
    // ----------------------------------------------------------------   
  std::cout << "2 " << "\n";
    //int MPI_Cart_shift(MPI_COMM_WORLD,0,1,rank,rank+2);
- 
+    int *rec_cnt = new int[size];
+   int *rec_disp = new int[size];
+   
     int * dim = new int [2];
+    GridCaptain* gcap = null;
    if (rank == 0)
    {  
-    GridCaptain* gcap = new GridCaptain(size,fgrid);
+    gcap = new GridCaptain(size,fgrid);
     dim[0]=fgrid.getDimM();
     dim[1]=fgrid.getDimN();
    
@@ -168,8 +169,7 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,/*GridCaptain& gcap,*/ double 
   // int proc = gcap.proc;
    //int veclen = (int)vec.size();
    vector<double> fresult(fgrid.totalGridPoints(),0);
-   int *rec_cnt = new int[proc];
-   int *rec_disp = new int[proc];
+  
    
    // Initialization of MPI
    // ----------------------------------------------------------------
@@ -197,6 +197,9 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,/*GridCaptain& gcap,*/ double 
     MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
     
    }
+   
+    int *rec_cnt = new int[size];
+   int *rec_disp = new int[size];
    
         int proc = size;
        //int eval=0, wval = 0, sval = 0, nval = 0, cval = 0;
@@ -384,7 +387,7 @@ int main(int argc, char** argv)
     int nx = 0;
     int ny = 0;
     int iter = 0;
-    int proc = 0;
+    //int proc = 0;
     int error=0;
  
   for (int i = 0; i<argc; i++)
