@@ -52,7 +52,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
    int *rec_cnt = new int[proc];
    int *rec_disp = new int[proc];
    
-   cout << "1 " << "\n";
+   std::cout << "1 " << "\n";
    
    // Initialization of MPI
    // ----------------------------------------------------------------
@@ -64,7 +64,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
    MPI_Comm_size( MPI_COMM_WORLD, &size );
    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
    // ----------------------------------------------------------------   
- cout << "2 " << "\n";
+ std::cout << "2 " << "\n";
    //int MPI_Cart_shift(MPI_COMM_WORLD,0,1,rank,rank+2);
  
     int * dim = new int [2];
@@ -75,7 +75,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
     dim[1]=fgrid.getDimN();
    
     MPI_Bcast(dim,1,MPI_INT,0,MPI_COMM_WORLD);
-     cout << "3 " << "\n";
+     std::cout << "3 " << "\n";
    }
     int bleny =  dim[1];    
     
@@ -380,11 +380,13 @@ int main(int argc, char** argv)
     int proc = 0;
     int error=0;
  
-
+  for (int i = 0; i<5; i++)
+        std::cout << argv[i] << "\n";
+        
     if (argc != 5)
     {
         for (int i = 0; i<5; i++)
-        cout << argv[i] << "\n";
+        std::cout << argv[i] << "\n";
         
         std::cout << argc << "= invalid number of argument.. Program exiting..";
         exit(EXIT_FAILURE);
