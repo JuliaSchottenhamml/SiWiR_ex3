@@ -41,7 +41,7 @@ inline double compute2norm(std::vector<double> vec)
 
 }
 
-inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCaptain& gcap,const double alpha, const double beta, const double gama)
+inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,/*GridCaptain& gcap,*/const double alpha, const double beta, const double gama)
 {
 
    int size(0); // The total number of processes
@@ -70,11 +70,12 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
     int * dim = new int [2];
    if (rank == 0)
    {  
-
+    GridCaptain* gcap = new GridCaptain(size,fgrid);
     dim[0]=fgrid.getDimM();
     dim[1]=fgrid.getDimN();
    
     MPI_Bcast(dim,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
      std::cout << "3 " << "\n";
    }
     int bleny =  dim[1];    
@@ -158,7 +159,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
 }
 
 
-inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama)
+inline std::vector<double> cal_fVec(FdGrid& fgrid,/*GridCaptain& gcap,*/ double gama)
 {
 
    int size(0); // The total number of processes
@@ -179,6 +180,8 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama
    MPI_Comm_size( MPI_COMM_WORLD, &size );
    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
    // ----------------------------------------------------------------   
+   
+   
 
    //int MPI_Cart_shift(MPI_COMM_WORLD,0,1,rank,rank+2);
    
@@ -186,10 +189,12 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama
    if (rank == 0)
    {  
 
+    GridCaptain* gcap = new GridCaptain(size,fgrid);
     dim[0]=fgrid.getDimM();
     dim[1]=fgrid.getDimN();
    
     MPI_Bcast(dim,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
     
    }
        //int eval=0, wval = 0, sval = 0, nval = 0, cval = 0;
@@ -263,7 +268,7 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,GridCaptain& gcap, double gama
 }
 
 
-inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc, int const err)
+inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const err)
 {
     int len = 0;
 
@@ -288,9 +293,9 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
 
     GridCaptain* gcap = new GridCaptain(proc,fgrid);
     
-    Tvec = matMult(fgrid,Xvec,*gcap,alfa, bita, gama);
+    Tvec = matMult(fgrid,Xvec,alfa, bita, gama);
     
-    Fvec = cal_fVec(fgrid,*gcap,gama);
+    Fvec = cal_fVec(fgrid,gama);
 
     std::transform (Fvec.begin(), Fvec.end(), Tvec.begin(), Rvec.begin(),  std::minus<double>());
 
@@ -306,7 +311,7 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const proc,
     for(int i = 0 ; i<iter; i++)
 
     {
-        Tvec = matMult(fgrid,Dvec, *gcap,alfa, bita, gama);
+        Tvec = matMult(fgrid,Dvec, alfa, bita, gama);
 
         double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
 
@@ -380,7 +385,7 @@ int main(int argc, char** argv)
     int proc = 0;
     int error=0;
  
-  for (int i = 0; i<5; i++)
+  for (int i = 0; i<argc; i++)
         std::cout << argv[i] << "\n";
         
     if (argc != 5)
@@ -394,16 +399,18 @@ int main(int argc, char** argv)
         
     }
 
-    nx = atoi(argv[5]);
-    ny = atoi(argv[6]);
-    iter = atoi(argv[7]);
-    error = atoi(argv[8]);
-    proc = atoi(argv[3]);
+    nx = atoi(argv[1]);
+    ny = atoi(argv[2]);
+    iter = atoi(argv[3]);
+    error = atoi(argv[4]);
+   // proc = atoi(argv[3]);
 
     int nnx = nx-1;
     int nny = ny-1;
 
     int totdim = nnx*nny;
+    
+     std::cout << "111 " << "\n";
 
     FdGrid* fGrid = new FdGrid (nnx,nny);
     
@@ -423,7 +430,7 @@ int main(int argc, char** argv)
 
 	siwir::Timer	timer;
 
-    std::vector<double> xsol = callCG(*fGrid,iter,error,proc);
+    std::vector<double> xsol = callCG(*fGrid,iter,error);
     
     	time = timer.elapsed();
 	std::cout << "time," << time << std::endl;
