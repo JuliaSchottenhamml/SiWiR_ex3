@@ -41,8 +41,8 @@ inline double compute2norm(std::vector<double> vec)
 
 }
 
-inline double * matMult( std::vector<double> vec,GridCaptain gcap,const double alpha, const double beta, const double gama,
- const int * dim ,int size, int rank, int tgrdpoint)
+inline std::vector<double> matMult( std::vector<double> vec,GridCaptain gcap,const double alpha, const double beta, const double gama,
+ const int * dim ,int size, int rank)
 {  
    int veclen = (int)vec.size();
    vector<double> fresult(veclen,0);
@@ -127,11 +127,11 @@ inline double * matMult( std::vector<double> vec,GridCaptain gcap,const double a
     if(rank == 0)
     return fresult;
     else
-    return NULL;
+    return;
 }
 
 
-inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const int * dim, int size, int rank, int tgrdpoint)
+inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const int * dim, int size, int rank, int tgrdpoint, double hx, double hy)
 { 
    vector<double> fresult(tgrdpoint,0);
 
@@ -147,8 +147,7 @@ inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const i
     int sz=blenx*bleny;
     double * result = new double[sz];
     int gridno = 0;
-    double hx = fgrid.getHx();
-    double hy = fgrid.getHy();
+    
 
 
     int rank2 =  rank-1; 
@@ -187,7 +186,7 @@ inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const i
     if(rank == 0)
     return fresult;
     else
-    return NULL;
+    return;
 }
 
 
@@ -232,13 +231,15 @@ int main(int argc, char** argv)
     
      //std::cout << "111 " << "\n";
 
-    FdGrid* fGrid = new FdGrid (nnx,nny);
+    FdGrid* fgrid = new FdGrid (nnx,nny);
     
     std::cout << "nx," << nx << std::endl;
 	std::cout << "ny," << ny << std::endl;
 	std::cout << "c," << iter <<std::endl;
 	
 	int gridpoint = fgrid->totalGridPoints();
+	double hx = fgrid->getHx();
+    double hy = fgrid->getHy();
    	
     ///******************************************************
 	///********************** CALCULATION *******************
@@ -293,8 +294,8 @@ int main(int argc, char** argv)
    if (rank == 0)
    {  
     gcap = new GridCaptain(size,fgrid);
-    dim[0]=fgrid.getDimM();
-    dim[1]=fgrid.getDimN();   
+    dim[0]=fgrid->getDimM();
+    dim[1]=fgrid->getDimN();   
     MPI_Bcast(dim,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
     // std::cout << "3 " << "\n";
@@ -302,9 +303,9 @@ int main(int argc, char** argv)
      
     //GridCaptain* gcap = new GridCaptain(proc,fgrid);
     
-    Tvec = matMult(Xvec,*gcap, alfa, bita,gama, dim, size, rank,gridpoint);    
+    Tvec = matMult(Xvec,*gcap, alfa, bita,gama, dim, size, rank);    
        
-    Fvec = cal_fVec(*gcap,gama, size, rank, gridpoint);
+    Fvec = cal_fVec(*gcap,gama, size, rank, gridpoint,hx ,hy);
     
     if(rank==0)
     {
@@ -324,7 +325,7 @@ int main(int argc, char** argv)
         
         MPI_Bcast(Dvec,1,MPI_INT,0,MPI_COMM_WORLD);
         
-        Tvec = matMult(Dvec,*gcap, alfa, bita, gama, size, rank, gridpoint);
+        Tvec = matMult(Dvec,*gcap, alfa, bita, gama, size, rank);
         
         if(rank == 0)
         {
