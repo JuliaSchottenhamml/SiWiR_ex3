@@ -54,7 +54,7 @@ inline std::vector<double> matMult( std::vector<double> vec,GridCaptain gcap,con
    int *rec_disp = new int[size];
     int bleny =  dim[1];  
    //  int proc = size;  
-    std::cout << "2 " << "\n";
+    
     int blenx = gcap.worksheet[rank*3+1];
     int sx = gcap.worksheet[rank*3+0];
     rec_disp[rank] =  gcap.worksheet[rank*3+2];
@@ -83,7 +83,7 @@ std::cout << "3 " << "\n";
        // int l = (i-sx)%bleny;
         for(int j=sy; j<bleny ; j++)
         {
-            
+            std::cout << "2 " << "\n";
             gama1 = 0;
             gama2 = 0;
             beta1 = 0;
