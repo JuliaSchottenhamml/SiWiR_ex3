@@ -75,7 +75,7 @@ std::cout << "3 " << "\n";
     int destn, dests;  
     
 std::cout << "2### " << "\n";
-    MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
+    //MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
    //MPI_Cart_shift(MPI_COMM_WORLD,0,0,&source,&dests);
     
     std::cout << "2@@@ " << "\n";
