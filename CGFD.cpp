@@ -311,7 +311,7 @@ int main(int argc, char** argv)
      rec_cnt[rank] = blenx*bleny;
     //GridCaptain* gcap = new GridCaptain(proc,fgrid);
     
-    MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
+   // MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests);
     
     tresult = matMult(Xvec,*gcap, alfa, bita,gama, dim, rank,destn,dests);    
        
