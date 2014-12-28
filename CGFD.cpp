@@ -379,10 +379,15 @@ int main(int argc, char** argv)
     int error=0;
  
 
-    if (argc != 8)
+    if (argc != 5)
     {
+        for (int i = 0; i<5; i++)
+        cout << argv[i] << "\n";
+        
         std::cout << argc << "= invalid number of argument.. Program exiting..";
         exit(EXIT_FAILURE);
+        
+        
     }
 
     nx = atoi(argv[5]);
