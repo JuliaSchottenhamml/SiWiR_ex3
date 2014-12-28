@@ -68,7 +68,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,/*Grid
    int *rec_disp = new int[size];
    
     int * dim = new int [2];
-    GridCaptain* gcap = null;
+    GridCaptain* gcap = NULL;
    if (rank == 0)
    {  
     gcap = new GridCaptain(size,fgrid);
@@ -80,11 +80,11 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,/*Grid
      std::cout << "3 " << "\n";
    }
     int bleny =  dim[1];  
-     int proc = size;  
+   //  int proc = size;  
     
-    int blenx = gcap.worksheet[rank*3+1];
-    int sx = gcap.worksheet[rank*3+0];
-    rec_disp[rank] =  gcap.worksheet[rank*3+2];
+    int blenx = gcap->worksheet[rank*3+1];
+    int sx = gcap->worksheet[rank*3+0];
+    rec_disp[rank] =  gcap->worksheet[rank*3+2];
     int sy = 0;
     //int ex = sx+blenx-1;
    // int ey = bleny;
@@ -184,12 +184,12 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,/*GridCaptain& gcap,*/ double 
    
 
    //int MPI_Cart_shift(MPI_COMM_WORLD,0,1,rank,rank+2);
-   
+   GridCaptain* gcap = NULL;
     int * dim = new int [2];
    if (rank == 0)
    {  
 
-    GridCaptain* gcap = new GridCaptain(size,fgrid);
+    gcap = new GridCaptain(size,fgrid);
     dim[0]=fgrid.getDimM();
     dim[1]=fgrid.getDimN();
    
@@ -201,13 +201,13 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,/*GridCaptain& gcap,*/ double 
     int *rec_cnt = new int[size];
    int *rec_disp = new int[size];
    
-        int proc = size;
+     //   int proc = size;
        //int eval=0, wval = 0, sval = 0, nval = 0, cval = 0;
     int bleny =  dim[1];    
     
-    int blenx = gcap.worksheet[rank*3+1];
-    int sx = gcap.worksheet[rank*3+0];
-    rec_disp[rank] =  gcap.worksheet[rank*3+2];
+    int blenx = gcap->worksheet[rank*3+1];
+    int sx = gcap->worksheet[rank*3+0];
+    rec_disp[rank] =  gcap->worksheet[rank*3+2];
     int sy = 0;
     //int ex = sx+blenx-1;
     //int ey = bleny;
