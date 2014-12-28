@@ -377,10 +377,11 @@ int main(int argc, char** argv)
     int iter = 0;
     int proc = 0;
     int error=0;
+ 
 
     if (argc != 8)
     {
-        std::cout << "invalid number of argument.. Program exiting..";
+        std::cout << argc << "= invalid number of argument.. Program exiting..";
         exit(EXIT_FAILURE);
     }
 
