@@ -42,7 +42,7 @@ inline double compute2norm(std::vector<double> vec)
 }
 
 inline double * matMult( std::vector<double> vec,GridCaptain gcap,const double alpha, const double beta, const double gama,
- const int * dim ,int size, int rank, int destn, int dests)
+ const int * dim , int rank, int destn, int dests)
 {  
    int veclen = (int)vec.size();
    vector<double> fresult(veclen,0);
@@ -131,7 +131,7 @@ std::cout << "2### " << "\n";
     
 }
 
-inline double *std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const int * dim, int size, int rank, int tgrdpoint, double hx, 
+inline double * cal_fVec(GridCaptain gcap, const double gama, const int * dim, int rank, int tgrdpoint, double hx, 
 double hy, int dests)
 { 
    vector<double> fresult(tgrdpoint,0);
@@ -313,11 +313,11 @@ int main(int argc, char** argv)
     
     MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
     
-    tresult = matMult(Xvec,*gcap, alfa, bita,gama, dim, size, rank,destn,dests);    
+    tresult = matMult(Xvec,*gcap, alfa, bita,gama, dim, rank,destn,dests);    
        
     MPI_Allgatherv(tresult,sz, MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
        
-    fresult = cal_fVec(*gcap,gama, dim, size, rank, gridpoint,hx ,hy,dests);
+    fresult = cal_fVec(*gcap,gama, dim, rank, gridpoint,hx ,hy,dests);
     
     MPI_Allgatherv(fresult,sz, MPI_DOUBLE,  (void*)&Fvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
     
@@ -340,7 +340,7 @@ int main(int argc, char** argv)
         
         MPI_Bcast((void*)&Dvec,1,MPI_INT,0,MPI_COMM_WORLD);
         
-        Tvec = matMult(Dvec,*gcap, alfa, bita, gama,dim, size, rank,destn,dests);
+        Tvec = matMult(Dvec,*gcap, alfa, bita, gama,dim, rank,destn,dests);
         
         if(rank == 0)
         {
