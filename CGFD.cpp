@@ -72,7 +72,7 @@ std::cout << "3 " << "\n";
             double beta2 = 0;
 
 
-    int destn, dests;  
+    int destn = 0, dests = 0;  
     
 std::cout << "2### " << "\n";
     //MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
