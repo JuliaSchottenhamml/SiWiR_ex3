@@ -74,16 +74,18 @@ std::cout << "3 " << "\n";
 
     int rank1 =  rank+1;  
     int rank2 =  rank-1; 
-
+std::cout << "2### " << "\n";
     int rn = MPI_Cart_shift(MPI_COMM_WORLD,0,1,&rank,&rank1 );
     int rs = MPI_Cart_shift(MPI_COMM_WORLD,0,-1,&rank,&rank2);
+    
+    std::cout << "2@@@ " << "\n";
 
     for(int i=sx; i<blenx ; i++)
     {
        // int l = (i-sx)%bleny;
         for(int j=sy; j<bleny ; j++)
         {
-            std::cout << "2 " << "\n";
+            
             gama1 = 0;
             gama2 = 0;
             beta1 = 0;
