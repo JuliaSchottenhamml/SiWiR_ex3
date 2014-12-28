@@ -127,7 +127,7 @@ inline std::vector<double> matMult( std::vector<double> vec,GridCaptain gcap,con
     if(rank == 0)
     return fresult;
     else
-    return;
+    return 0;
 }
 
 
@@ -186,7 +186,7 @@ inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const i
     if(rank == 0)
     return fresult;
     else
-    return;
+    return 0;
 }
 
 
@@ -267,11 +267,9 @@ int main(int argc, char** argv)
     std::vector<double> Tmpvec (len,0);
     int * dim = new int [2];         
     GridCaptain* gcap = NULL;
-    double * result=NULL;
+    //double * result=NULL;
     double alpha = 0;
-    double hx = fgrid->getHx();
-    double hy = fgrid->getHy();
-    
+      
     double alfa=0;
     double bita=0;
     double gama=0;
@@ -293,7 +291,7 @@ int main(int argc, char** argv)
 
    if (rank == 0)
    {  
-    gcap = new GridCaptain(size,fgrid);
+    gcap = new GridCaptain(size,*fgrid);
     dim[0]=fgrid->getDimM();
     dim[1]=fgrid->getDimN();   
     MPI_Bcast(dim,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -318,7 +316,7 @@ int main(int argc, char** argv)
       std::vector<double> Dvec (Rvec);
     }
 
-    if(resd > err)
+    if(resd > error)
      {            
         for(int i = 0 ; i<iter; i++)
        {
@@ -359,8 +357,8 @@ int main(int argc, char** argv)
 
         resd = compute2norm(Rvec);
 
-        if(resd < err)
-            return Xvec;
+        if(resd < error)
+            break;
 
         double beta = dt1/dt0;
 
