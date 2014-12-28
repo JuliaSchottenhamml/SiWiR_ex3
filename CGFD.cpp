@@ -52,6 +52,8 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
    int *rec_cnt = new int[proc];
    int *rec_disp = new int[proc];
    
+   cout << "1 " << "\n";
+   
    // Initialization of MPI
    // ----------------------------------------------------------------
    MPI_Init(NULL,NULL);
@@ -62,7 +64,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
    MPI_Comm_size( MPI_COMM_WORLD, &size );
    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
    // ----------------------------------------------------------------   
-
+ cout << "2 " << "\n";
    //int MPI_Cart_shift(MPI_COMM_WORLD,0,1,rank,rank+2);
  
     int * dim = new int [2];
@@ -73,7 +75,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,GridCa
     dim[1]=fgrid.getDimN();
    
     MPI_Bcast(dim,1,MPI_INT,0,MPI_COMM_WORLD);
-    
+     cout << "3 " << "\n";
    }
     int bleny =  dim[1];    
     
