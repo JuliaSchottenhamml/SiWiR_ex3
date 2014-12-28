@@ -270,7 +270,7 @@ int main(int argc, char** argv)
     
     //double * result=NULL;
     double alpha = 0;
-    double * tresult , fresult;
+    double * tresult , *fresult;
       
     double alfa=0;
     double bita=0;
@@ -315,11 +315,11 @@ int main(int argc, char** argv)
     
     tresult = matMult(Xvec,*gcap, alfa, bita,gama, dim, rank,destn,dests);    
        
-    MPI_Allgatherv(tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+    MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
        
     fresult = cal_fVec(*gcap,gama, dim, rank, gridpoint,hx ,hy,dests);
     
-    MPI_Allgatherv(fresult,rec_cnt[rank], MPI_DOUBLE,  (void*)&Fvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+    MPI_Allgatherv((void*)fresult,rec_cnt[rank], MPI_DOUBLE,  (void*)&Fvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
     
     if(rank==0)
     {
@@ -342,7 +342,7 @@ int main(int argc, char** argv)
         
         tresult = matMult(Dvec,*gcap, alfa, bita, gama,dim, rank,destn,dests);
         
-        MPI_Allgatherv(tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+        MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
         
         if(rank == 0)
         {
