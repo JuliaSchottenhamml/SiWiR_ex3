@@ -124,12 +124,10 @@ inline std::vector<double> matMult( std::vector<double> vec,GridCaptain gcap,con
     MPI_Allgatherv(result,sz, MPI_DOUBLE, (void*)&fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
    // MPI_Finalize();
     
-    if(rank == 0)
+    
     return fresult;
-    else
-    return 0;
+    
 }
-
 
 inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const int * dim, int size, int rank, int tgrdpoint, double hx, double hy)
 { 
@@ -183,10 +181,8 @@ inline std::vector<double> cal_fVec(GridCaptain gcap, const double gama, const i
 
     MPI_Allgatherv(result,sz, MPI_DOUBLE,  (void*)&fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
     //MPI_Finalize();
-    if(rank == 0)
-    return fresult;
-    else
-    return 0;
+       return fresult;
+   
 }
 
 
@@ -303,7 +299,7 @@ int main(int argc, char** argv)
     
     Tvec = matMult(Xvec,*gcap, alfa, bita,gama, dim, size, rank);    
        
-    Fvec = cal_fVec(*gcap,gama, size, rank, gridpoint,hx ,hy);
+    Fvec = cal_fVec(*gcap,gama, dim, size, rank, gridpoint,hx ,hy);
     
     if(rank==0)
     {
@@ -313,11 +309,14 @@ int main(int argc, char** argv)
     dt0 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
     resd = compute2norm(Rvec);
-      std::vector<double> Dvec (Rvec);
+     
     }
+    
+    
 
     if(resd > error)
-     {            
+     {       
+        std::vector<double> Dvec (Rvec);     
         for(int i = 0 ; i<iter; i++)
        {
         
