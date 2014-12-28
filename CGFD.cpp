@@ -46,7 +46,7 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,/*Grid
 
    int size(0); // The total number of processes
    int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
-   int proc = gcap.proc;
+  // int proc = gcap.proc;
    int veclen = (int)vec.size();
    vector<double> fresult(veclen,0);
    int *rec_cnt = new int[proc];
@@ -78,7 +78,8 @@ inline std::vector<double> matMult(FdGrid& fgrid, std::vector<double> vec,/*Grid
     MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
      std::cout << "3 " << "\n";
    }
-    int bleny =  dim[1];    
+    int bleny =  dim[1];  
+     int proc = size;  
     
     int blenx = gcap.worksheet[rank*3+1];
     int sx = gcap.worksheet[rank*3+0];
@@ -164,7 +165,7 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,/*GridCaptain& gcap,*/ double 
 
    int size(0); // The total number of processes
    int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
-   int proc = gcap.proc;
+  // int proc = gcap.proc;
    //int veclen = (int)vec.size();
    vector<double> fresult(fgrid.totalGridPoints(),0);
    int *rec_cnt = new int[proc];
@@ -181,7 +182,6 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,/*GridCaptain& gcap,*/ double 
    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
    // ----------------------------------------------------------------   
    
-   
 
    //int MPI_Cart_shift(MPI_COMM_WORLD,0,1,rank,rank+2);
    
@@ -197,6 +197,8 @@ inline std::vector<double> cal_fVec(FdGrid& fgrid,/*GridCaptain& gcap,*/ double 
     MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
     
    }
+   
+        int proc = size;
        //int eval=0, wval = 0, sval = 0, nval = 0, cval = 0;
     int bleny =  dim[1];    
     
@@ -291,7 +293,7 @@ inline std::vector<double> callCG(FdGrid& fgrid, int const iter, int const err)
             gama = 1/hy/hy;
             alfa = -(2/gama+ 2/bita + k * k);
 
-    GridCaptain* gcap = new GridCaptain(proc,fgrid);
+    //GridCaptain* gcap = new GridCaptain(proc,fgrid);
     
     Tvec = matMult(fgrid,Xvec,alfa, bita, gama);
     
