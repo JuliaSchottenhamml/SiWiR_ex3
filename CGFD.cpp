@@ -24,7 +24,7 @@ inline double border(const double x, const double y){
         return sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
     }
 
-inline double compute2norm(std::vector<double> vec)
+inline double compute2norm(double * vec)
 {
 
     __m256d a, r;
@@ -92,10 +92,10 @@ std::cout << "2### " << "\n";
             beta2 = 0;
             gridno= i*dim[1] + j;            
             //int kl = (j-sy)%blenx;
-            if(destn != MPI_PROC_NULL)
+            if(destn != NULL)
              gama1 = gama;
                         
-            if(dests != MPI_PROC_NULL)
+            if(dests != NULL)
              gama2 = gama;
                                                            
             if(j!=sy)
@@ -172,7 +172,7 @@ double hy, int dests)
             y = (((gridno-1)/dim[1])+1)*hy;
             int f = fxy(x,y);
                                   
-            if(dests == MPI_PROC_NULL)
+            if(dests == NULL)
             {
              gama2 = gama*border(x,y);
              result[gridno] = f-gama2;
@@ -270,7 +270,7 @@ int main(int argc, char** argv)
     
     //double * result=NULL;
     double alpha = 0;
-    double * tresult , *fresult;
+    double * tresult , *fresult, *mresult, *nresult;
       
     double alfa=0;
     double bita=0;
@@ -307,32 +307,52 @@ int main(int argc, char** argv)
      int bleny =  dim[1];    
     
      int blenx = gcap->worksheet[rank*3+1];
-     rec_disp[rank] =  gcap->worksheet[rank*3+2];
+     //rec_disp[rank] =  gcap->worksheet[rank*3+2];
      rec_cnt[rank] = blenx*bleny;
-    //GridCaptain* gcap = new GridCaptain(proc,fgrid);
     
-   // MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests);
+    if(rank == 0)
+    destn = NULL;
+    else 
+    destn = rank -1;
     
-    tresult = matMult(Xvec,*gcap, alfa, bita,gama, dim, rank,destn,dests);    
-       
-    MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
-       
+    if(rank == size)
+    dests = NULL;
+    else 
+    destn = rank +1;
+    
+    
+    tresult = matMult(Xvec,*gcap, alfa, bita,gama, dim, rank,destn,dests);        
+     
     fresult = cal_fVec(*gcap,gama, dim, rank, gridpoint,hx ,hy,dests);
     
-    MPI_Allgatherv((void*)fresult,rec_cnt[rank], MPI_DOUBLE,  (void*)&Fvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+    for(int i = 0; i< sizeof(tresult); i++)
+    {
+        mresult[i] = fresult[i]-tresult[i];
+        
+    } 
+      
+    iresd = compute2norm(mresult);
+    
+    MPI_Reduce(&iresd, &dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
+    
+    MPI_Isend(mresult,sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD);
+    
+    int j=0;
     
     if(rank==0)
     {
-
-    std::transform (Fvec.begin(), Fvec.end(), Tvec.begin(), Rvec.begin(),  std::minus<double>());
-
-    dt0 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
-
-    resd = compute2norm(Rvec);
-     
-    }
-
-    if(resd > error)
+     for( int i=0; i< size; i++)
+    {
+      MPI_Recv(nresult,sizeof(mresult), MPI_DOUBLE, i, i, MPI_COMM_WORLD);
+      
+      for(int l=0; l< sizeof(nresult);l++)
+          Rvec[++j]= nresult[l];
+    }         
+    }     
+    
+}  
+    
+    if(dt0 > error)
      {       
         std::vector<double> Dvec (Rvec);     
         for(int i = 0 ; i<iter; i++)
