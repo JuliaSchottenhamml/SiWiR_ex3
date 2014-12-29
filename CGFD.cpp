@@ -288,7 +288,7 @@ int main(int argc, char** argv)
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
     
-    // std::cout << "3 " << "\n";
+     std::cout << "3 " << "\n";
    }
    
    if(gridpoint%4 != 0)
