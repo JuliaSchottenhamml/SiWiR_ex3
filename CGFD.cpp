@@ -262,7 +262,7 @@ int main(int argc, char** argv)
 	///******************************************************
 	double time = 0;
 	double  dt0[1];
-	double  iresd[1];
+	double  iresd[size];
 #ifdef USE_LIKWID
 	likwid_markerInit();
 	likwid_markerStartRegion("dummy");
@@ -356,8 +356,8 @@ int main(int argc, char** argv)
     } 
       
       std::cout << "1### " << "\n";
-    *iresd = compute2norm(mresult);
-    std::cout << "2### " << *iresd ;
+    iresd[rank] = compute2norm(mresult);
+    std::cout << "2### " << iresd[rank] ;
     MPI_Reduce(iresd, dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
     std::cout << "3### " << "\n";
     MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
