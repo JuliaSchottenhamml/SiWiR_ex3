@@ -261,8 +261,8 @@ int main(int argc, char** argv)
 	///********************** CALCULATION *******************
 	///******************************************************
 	double time = 0;
-	double * dt0 = new double[1];
-	double * iresd =  new double[1];
+	double  dt0[1];
+	double  iresd[1];
 #ifdef USE_LIKWID
 	likwid_markerInit();
 	likwid_markerStartRegion("dummy");
