@@ -66,38 +66,23 @@ inline double * matMult( std::vector<double> vec,GridCaptain gcap,const double a
    
    std::cout << "1 " << "\n";
    
-   
-   // int *rec_cnt = new int[size];
- //   int *rec_disp = new int[size];
     int bleny =  dim[1];  
    //  int proc = size;  
     
     int blenx = gcap.worksheet[rank*3+1];
     int sx = gcap.worksheet[rank*3+0];
-   // rec_disp[rank] =  gcap.worksheet[rank*3+2];
     int sy = 0;
-    //int ex = sx+blenx-1;
-   // int ey = bleny;
     int sz=blenx*bleny;
     double * result = new double[sz];
     int gridno = 0;
-std::cout << "3 " << "\n";
-
-            double gama1 = 0;
-            double gama2 = 0;
-            double beta1 = 0;
-            double beta2 = 0;
-
-
-  
-    
+    double gama1 = 0;
+    double gama2 = 0;
+    double beta1 = 0;
+    double beta2 = 0;
 
     //MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
    //MPI_Cart_shift(MPI_COMM_WORLD,0,0,&source,&dests);
-    
-  
-
-    for(int i=sx; i<blenx ; i++)
+  for(int i=sx; i<blenx ; i++)
     {
        // int l = (i-sx)%bleny;
         for(int j=sy; j<bleny ; j++)
@@ -140,21 +125,13 @@ std::cout << "3 " << "\n";
         }
     }
 
-    //MPI_Allgatherv(result,sz, MPI_DOUBLE, (void*)&fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
-   // MPI_Finalize();
-    
-    
     return result;
     
 }
 
-inline double * cal_fVec(GridCaptain gcap, const double gama, const int * dim, int rank, int tgrdpoint, double hx, 
-double hy, int dests)
+inline double * cal_fVec(GridCaptain gcap, const double gama, const int * dim, int rank, int tgrdpoint, double hx, double hy, int dests)
 { 
-   vector<double> fresult(tgrdpoint,0);
-
-    //int *rec_cnt = new int[size];
-   //int *rec_disp = new int[size];
+  // vector<double> fresult(tgrdpoint,0);
 
     int bleny =  dim[1];    
     
@@ -165,13 +142,7 @@ double hy, int dests)
     int sz=blenx*bleny;
     double * result = new double[sz];
     int gridno = 0;
-    
-
-
-    //int dests, destn; 
-
-   // MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
-   
+     
      double gama2 = 0;
 
     int x = 0;
@@ -199,8 +170,6 @@ double hy, int dests)
         }
     }
 
-   // MPI_Allgatherv(result,sz, MPI_DOUBLE,  (void*)&fresult, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
-    //MPI_Finalize();
        return result;
    
 }
@@ -247,15 +216,13 @@ int main(int argc, char** argv)
     
      //std::cout << "111 " << "\n";
 
-    FdGrid* fgrid = new FdGrid (nnx,nny);
+    FdGrid* fgrid;
     
     std::cout << "nx," << nx << std::endl;
 	std::cout << "ny," << ny << std::endl;
 	std::cout << "c," << iter <<std::endl;
 	
-	int gridpoint = fgrid->totalGridPoints();
-	double hx = fgrid->getHx();
-    double hy = fgrid->getHy();
+
    	
     ///******************************************************
 	///********************** CALCULATION *******************
@@ -271,33 +238,7 @@ int main(int argc, char** argv)
 	siwir::Timer	timer;
 
     //std::vector<double> xsol = callCG(*fGrid,iter,error);
-        
-    int len = 0;
-    int dests=0, destn=0; 
-
-    if(gridpoint%4 != 0)
-    len = gridpoint + (4-gridpoint%4);
-    
-    
-    std::vector<double> Xvec (len,0);
-    std::vector<double> Rvec (len,0);
-    std::vector<double> Fvec (len,0);
-    std::vector<double> Tvec (len,0);
-    std::vector<double> Tmpvec (len,0);
-    int * dim = new int [2];         
-    GridCaptain* gcap = NULL;
-
-    double alfa=0;
-    double bita=0;
-    double gama=0;
-    int *rec_cnt = new int[size];
-    int *rec_disp = new int[size];
-            
-            bita = 1/hx/hx;
-            gama = 1/hy/hy;
-            alfa = -(2/gama+ 2/bita + k * k);
-            
- // Initialization of MPI
+       // Initialization of MPI
    // ----------------------------------------------------------------
    MPI_Init(&argc, &argv);
    // ----------------------------------------------------------------
@@ -309,31 +250,67 @@ int main(int argc, char** argv)
    // ----------------------------------------------------------------   
 
          MPI_Request request;
-         MPI_Status status;
+         MPI_Status status;  
+    
 
+    double alfa=0;
+    double bita=0;
+    double gama=0;
+    int *rec_cnt = new int[size];
+    int *rec_disp = new int[size];
+    int gridpoint = 0;
+    double hx = 0.0, hy=0.0;
+    int len = 0;
+    int dests=0, destn=0; 
+ 
+    int * dim = new int [2];         
+    GridCaptain* gcap = NULL;
+    double alpha = 0;
+ 
    if (rank == 0)
-   {  
+   { 
+     fgrid = new FdGrid (nnx,nny); 
+     gridpoint = fgrid->totalGridPoints();
+	 hx = fgrid->getHx();
+     hy = fgrid->getHy();
+    bita = 1/hx/hx;
+    gama = 1/hy/hy;
+    alfa = -(2/gama+ 2/bita + k * k);
     gcap = new GridCaptain(size,*fgrid);
     dim[0]=fgrid->getDimM();
     dim[1]=fgrid->getDimN();   
     MPI_Bcast(dim,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&gridpoint,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&hx,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&hy,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&alfa,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
+    
     // std::cout << "3 " << "\n";
    }
- 
+   
+   if(gridpoint%4 != 0)
+    len = gridpoint + (4-gridpoint%4);
+        
+    std::vector<double> Xvec (len,0);
+    std::vector<double> Rvec (len,0);
+    std::vector<double> Fvec (len,0);
+    std::vector<double> Tvec (len,0);
+    std::vector<double> Tmpvec (len,0); 
 
-    int bleny =  dim[1];  
+    int bleny =  dim[1];     
+    int blenx = gcap->worksheet[rank*3+1];
     
-     int blenx = gcap->worksheet[rank*3+1];
-    double alpha = 0;
     int sz=blenx*bleny;
     double * tresult = new double[sz];
     double * fresult = new double[sz];
-        double * mresult = new double[sz];
-            double * nresult = new double[sz];
-            double resd =0.0;
+    double * mresult = new double[sz];
+    double * nresult = new double[sz];
+    double resd =0.0;
      //rec_disp[rank] =  gcap->worksheet[rank*3+2];
-     rec_cnt[rank] = blenx*bleny;
+    // rec_cnt[rank] = blenx*bleny;
     
     if(rank == 0)
     destn = -1;
@@ -343,8 +320,7 @@ int main(int argc, char** argv)
     if(rank == size)
     dests = -1;
     else 
-    destn = rank +1;
-    
+    destn = rank +1;    
     
     tresult = matMult(Xvec,*gcap, alfa, bita,gama, dim, rank,destn,dests);        
      
@@ -354,7 +330,6 @@ int main(int argc, char** argv)
     {
         mresult[i] = fresult[i]-tresult[i];
         std::cout << "\n" << rank << " " << mresult[i];
-        
     } 
      double resdlocal=0.0; 
       std::cout << "1### " << resdlocal;
@@ -378,8 +353,6 @@ int main(int argc, char** argv)
     }         
     }     
     
-  
-    
     if(*dt0 > error)
      {       
         std::vector<double> Dvec (Rvec);     
@@ -390,10 +363,19 @@ int main(int argc, char** argv)
         
         tresult = matMult(Dvec,*gcap, alfa, bita, gama,dim, rank,destn,dests);
         
-        MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+       // MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+        MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank+10, MPI_COMM_WORLD,&request);
         
         if(rank == 0)
         {
+            int jk = 0;
+            for( int km=0; km < size; km++)
+            {
+              MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE, , km+10, MPI_COMM_WORLD,&status);
+             // std::cout << "5### " << "\n";
+              for(int l=0; l< (int)sizeof(nresult);l++)
+                  Rvec[++jk]= nresult[l];
+             }  
         double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
 
         alpha = *dt0 / dt;
