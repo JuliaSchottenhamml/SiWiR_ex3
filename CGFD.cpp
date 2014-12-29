@@ -356,7 +356,7 @@ int main(int argc, char** argv)
     } 
       
       std::cout << "1### " << "\n";
-    iresd = compute2norm(mresult);
+    *iresd = compute2norm(mresult);
     std::cout << "2### " << "\n";
     MPI_Reduce(iresd, dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
     std::cout << "3### " << "\n";
@@ -377,7 +377,7 @@ int main(int argc, char** argv)
     
   
     
-    if(dt0 > error)
+    if(*dt0 > error)
      {       
         std::vector<double> Dvec (Rvec);     
         for(int i = 0 ; i<iter; i++)
@@ -393,7 +393,7 @@ int main(int argc, char** argv)
         {
         double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
 
-        alpha = dt0 / dt;
+        alpha = *dt0 / dt;
               
         for(int j=0; j< (int)Dvec.size();j+=4)
         {
@@ -419,12 +419,12 @@ int main(int argc, char** argv)
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
-        iresd = compute2normVec(Rvec);
+        *iresd = compute2normVec(Rvec);
 
-        if(iresd < error)
+        if(*iresd < error)
             break;
 
-        double beta = dt1/dt0;
+        double beta = dt1/(*dt0);
 
         //std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),beta);
         
@@ -438,7 +438,7 @@ int main(int argc, char** argv)
         
         std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Tvec.begin(),   std::plus<double>());
 
-        dt0 = dt1;
+        *dt0 = dt1;
         }
     }
 
