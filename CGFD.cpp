@@ -30,7 +30,7 @@ inline double compute2norm(double * vec)
     __m256d a, r;
 
     r = _mm256_setzero_pd();
-
+     std::cout << "+++++++++ " << "\n";
     for(int i = 0 ; i< (int)sizeof(vec); i+=4)
     {
         a = _mm256_load_pd( &vec[i]);
@@ -317,7 +317,7 @@ int main(int argc, char** argv)
         mresult[i] = fresult[i]-tresult[i];
         std::cout << "\n" << rank << " " << mresult[i];
     } 
-    std::cout << "\n----3333---" << "\n"; 
+     
      double resdlocal=0.0; 
       std::cout << "1### " << resdlocal;
     //  std::cout << "2### " <<  ;
