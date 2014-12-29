@@ -31,7 +31,7 @@ inline double compute2norm(double * vec)
 
     r = _mm256_setzero_pd();
 
-    for(int i = 0 ; i< (int) vec.size(); i+=4)
+    for(int i = 0 ; i< (int)sizeof(vec); i+=4)
     {
         a = _mm256_load_pd( &vec[i]);
         r = _mm256_add_pd(_mm256_mul_pd(a,a),r);
@@ -92,10 +92,10 @@ std::cout << "2### " << "\n";
             beta2 = 0;
             gridno= i*dim[1] + j;            
             //int kl = (j-sy)%blenx;
-            if(destn != NULL)
+            if(destn != -1)
              gama1 = gama;
                         
-            if(dests != NULL)
+            if(dests != -1)
              gama2 = gama;
                                                            
             if(j!=sy)
@@ -172,7 +172,7 @@ double hy, int dests)
             y = (((gridno-1)/dim[1])+1)*hy;
             int f = fxy(x,y);
                                   
-            if(dests == NULL)
+            if(dests == -1)
             {
              gama2 = gama*border(x,y);
              result[gridno] = f-gama2;
@@ -267,6 +267,7 @@ int main(int argc, char** argv)
     std::vector<double> Tmpvec (len,0);
     int * dim = new int [2];         
     GridCaptain* gcap = NULL;
+
     
     //double * result=NULL;
     double alpha = 0;
@@ -293,6 +294,10 @@ int main(int argc, char** argv)
    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
    // ----------------------------------------------------------------   
 
+
+         MPI_Request request;
+         MPI_Status status;
+
    if (rank == 0)
    {  
     gcap = new GridCaptain(size,*fgrid);
@@ -311,12 +316,12 @@ int main(int argc, char** argv)
      rec_cnt[rank] = blenx*bleny;
     
     if(rank == 0)
-    destn = NULL;
+    destn = -1;
     else 
     destn = rank -1;
     
     if(rank == size)
-    dests = NULL;
+    dests = -1;
     else 
     destn = rank +1;
     
@@ -325,7 +330,7 @@ int main(int argc, char** argv)
      
     fresult = cal_fVec(*gcap,gama, dim, rank, gridpoint,hx ,hy,dests);
     
-    for(int i = 0; i< sizeof(tresult); i++)
+    for(int i = 0; i< (int)sizeof(tresult); i++)
     {
         mresult[i] = fresult[i]-tresult[i];
         
@@ -335,7 +340,7 @@ int main(int argc, char** argv)
     
     MPI_Reduce(&iresd, &dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
     
-    MPI_Isend(mresult,sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD);
+    MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
     
     int j=0;
     
@@ -343,14 +348,14 @@ int main(int argc, char** argv)
     {
      for( int i=0; i< size; i++)
     {
-      MPI_Recv(nresult,sizeof(mresult), MPI_DOUBLE, i, i, MPI_COMM_WORLD);
+      MPI_Recv(nresult,(int)sizeof(mresult), MPI_DOUBLE, i, i, MPI_COMM_WORLD.&status);
       
       for(int l=0; l< sizeof(nresult);l++)
           Rvec[++j]= nresult[l];
     }         
     }     
     
-}  
+  
     
     if(dt0 > error)
      {       
