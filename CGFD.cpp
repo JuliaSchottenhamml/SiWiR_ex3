@@ -261,8 +261,8 @@ int main(int argc, char** argv)
 	///********************** CALCULATION *******************
 	///******************************************************
 	double time = 0;
-	double dt0 = 0.0;
-	double iresd = 0.0;
+	double * dt0 = new double[1];
+	double * iresd =  new double[1];
 #ifdef USE_LIKWID
 	likwid_markerInit();
 	likwid_markerStartRegion("dummy");
@@ -277,6 +277,8 @@ int main(int argc, char** argv)
 
     if(gridpoint%4 != 0)
     len = gridpoint + (4-gridpoint%4);
+    
+    
     std::vector<double> Xvec (len,0);
     std::vector<double> Rvec (len,0);
     std::vector<double> Fvec (len,0);
@@ -285,17 +287,11 @@ int main(int argc, char** argv)
     int * dim = new int [2];         
     GridCaptain* gcap = NULL;
 
-    
-    //double * result=NULL;
-       
-     
-  
-      
     double alfa=0;
     double bita=0;
     double gama=0;
     int *rec_cnt = new int[size];
-   int *rec_disp = new int[size];
+    int *rec_disp = new int[size];
             
             bita = 1/hx/hx;
             gama = 1/hy/hy;
@@ -312,7 +308,6 @@ int main(int argc, char** argv)
    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
    // ----------------------------------------------------------------   
 
-
          MPI_Request request;
          MPI_Status status;
 
@@ -325,7 +320,7 @@ int main(int argc, char** argv)
     MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
     // std::cout << "3 " << "\n";
    }
-   
+ 
 
     int bleny =  dim[1];  
     
@@ -363,7 +358,7 @@ int main(int argc, char** argv)
       std::cout << "1### " << "\n";
     iresd = compute2norm(mresult);
     std::cout << "2### " << "\n";
-    MPI_Reduce(&iresd, &dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
+    MPI_Reduce(iresd, dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
     std::cout << "3### " << "\n";
     MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
     std::cout << "4### " << "\n";
