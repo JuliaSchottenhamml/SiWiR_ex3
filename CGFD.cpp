@@ -41,6 +41,23 @@ inline double compute2norm(double * vec)
 
 }
 
+inline double compute2normVec(vector<double> vec)
+{
+
+    __m256d a, r;
+
+    r = _mm256_setzero_pd();
+
+    for(int i = 0 ; i< (int)vec).size(); i+=4)
+    {
+        a = _mm256_load_pd( &vec[i]);
+        r = _mm256_add_pd(_mm256_mul_pd(a,a),r);
+    }
+
+    return (double) r[0]+r[1]+r[2]+r[3];
+
+}
+
 inline double * matMult( std::vector<double> vec,GridCaptain gcap,const double alpha, const double beta, const double gama,
  const int * dim , int rank, int destn, int dests)
 {  
@@ -342,16 +359,16 @@ int main(int argc, char** argv)
     
     MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
     
-    int j=0;
+    int jn=0;
     
     if(rank==0)
     {
      for( int i=0; i< size; i++)
     {
-      MPI_Recv(nresult,(int)sizeof(mresult), MPI_DOUBLE, i, i, MPI_COMM_WORLD.&status);
+      MPI_Recv(nresult,(int)sizeof(mresult), MPI_DOUBLE, i, i, MPI_COMM_WORLD,&status);
       
-      for(int l=0; l< sizeof(nresult);l++)
-          Rvec[++j]= nresult[l];
+      for(int l=0; l< (int)sizeof(nresult);l++)
+          Rvec[++jn]= nresult[l];
     }         
     }     
     
@@ -399,7 +416,7 @@ int main(int argc, char** argv)
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
-        resd = compute2norm(Rvec);
+        resd = compute2normVec(Rvec);
 
         if(resd < error)
             break;
