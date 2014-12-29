@@ -174,9 +174,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
 int main(int argc, char** argv)
 {
 
-     for (int i = 0; i<argc; i++)
-        std::cout << argv[i] << "\n";
-        
+            
     if (argc < 5)
     {
         for (int i = 0; i<5; i++)
@@ -301,8 +299,7 @@ int main(int argc, char** argv)
     std::vector<double> Tmpvec (len,0); 
  
     int bleny =  dim[1];  
-    std::cout << "3222 " << "\n";   
-       
+           
     int sz=blenx*bleny;
     
     double * tresult = new double[sz];
@@ -324,12 +321,13 @@ int main(int argc, char** argv)
     tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
      
     fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests);
-        
+    std::cout << "3222 " << "\n";     
     for(int i = 0; i< (int)sizeof(tresult); i++)
     {
         mresult[i] = fresult[i]-tresult[i];
         std::cout << "\n" << rank << " " << mresult[i];
     } 
+    std::cout << "3333 " << "\n"; 
      double resdlocal=0.0; 
       std::cout << "1### " << resdlocal;
     //  std::cout << "2### " <<  ;
