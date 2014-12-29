@@ -262,7 +262,7 @@ int main(int argc, char** argv)
 	///******************************************************
 	double time = 0;
 	double  dt0[1];
-	double  iresd;
+	//double  iresd;
 #ifdef USE_LIKWID
 	likwid_markerInit();
 	likwid_markerStartRegion("dummy");
@@ -331,7 +331,7 @@ int main(int argc, char** argv)
     double * fresult = new double[sz];
         double * mresult = new double[sz];
             double * nresult = new double[sz];
-            double resd;
+            double resd =0.0;
      //rec_disp[rank] =  gcap->worksheet[rank*3+2];
      rec_cnt[rank] = blenx*bleny;
     
