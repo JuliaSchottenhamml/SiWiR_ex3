@@ -311,13 +311,13 @@ int main(int argc, char** argv)
     tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
      
     fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests);
-    std::cout << "3222 " << sizeof(mresult) << " " << sizeof(fresult) << " "<< sizeof(tresult) << "\n";     
+    //std::cout << "3222 " << sizeof(mresult) << " " << sizeof(fresult) << " "<< sizeof(tresult) << "\n";     
     for(int i = 0; i< (int)sizeof(tresult); i++)
     {
         mresult[i] = fresult[i]-tresult[i];
         std::cout << "\n" << rank << " " << mresult[i];
     } 
-    std::cout << "3333 " << "\n"; 
+    std::cout << "\n----3333---" << "\n"; 
      double resdlocal=0.0; 
       std::cout << "1### " << resdlocal;
     //  std::cout << "2### " <<  ;
