@@ -401,7 +401,7 @@ int main(int argc, char** argv)
      for( int i=0; i< size; i++)
     {
       MPI_Recv(nresult,(int)sizeof(mresult), MPI_DOUBLE, i, i, MPI_COMM_WORLD,&status);
-      std::cout << "5### " << "\n";
+    
       for(int l=0; l< (int)sizeof(nresult);l++)
           Rvec[++jn]= nresult[l];
     }         
@@ -422,6 +422,7 @@ int main(int argc, char** argv)
         MPI_Barrier(MPI_COMM_WORLD);
         if(rank == 0)
         {
+              std::cout << "4### " << "\n";
             int jk = 0;
             for( int km=0; km < size; km++)
             {
@@ -433,7 +434,7 @@ int main(int argc, char** argv)
         double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
 
         alpha = *dt0 / dt;
-              
+             std::cout << "5### " << "\n";   
         for(int j=0; j< (int)Dvec.size();j+=4)
         {
             Tmpvec[j] = alpha * Dvec[j];
@@ -442,9 +443,9 @@ int main(int argc, char** argv)
                Tmpvec[j+3] = alpha * Dvec[j+3]; 
             
         }     
-
+  std::cout << "6### " << "\n";
         std::transform (Xvec.begin(), Xvec.end(), Tmpvec.begin(), Tvec.begin(),   std::plus<double>());
-        
+          std::cout << "7### " << "\n";
         for(int j=0; j< (int)Tvec.size();j+=4)
         {
            Tmpvec[j] = alpha * Tvec[j];
