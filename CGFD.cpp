@@ -188,7 +188,7 @@ int main(int argc, char** argv)
   for (int i = 0; i<argc; i++)
         std::cout << argv[i] << "\n";
         
-    if (argc != 5)
+    if (argc != 6)
     {
         for (int i = 0; i<5; i++)
         std::cout << argv[i] << "\n";
@@ -307,12 +307,7 @@ int main(int argc, char** argv)
     double * mresult = new double[sz];
     double * nresult = new double[sz];
     double resd =0.0;
-     //rec_disp[rank] =  gcap->worksheet[rank*3+2];
-    // rec_cnt[rank] = blenx*bleny;
-    
-    //int blenx = gcap.worksheet[rank*3+1];
-    
-    
+   
     if(rank == 0)
     destn = -1;
     else 
