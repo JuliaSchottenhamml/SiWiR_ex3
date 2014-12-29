@@ -385,6 +385,9 @@ int main(int argc, char** argv)
      for(int i = 0 ; i< (int)sizeof(mresult); i+=4)
     {   
         resdlocal += mresult[i] * mresult[i];
+        resdlocal += mresult[i+1] * mresult[i+1];
+        resdlocal += mresult[i+2] * mresult[i+2];
+        resdlocal += mresult[i+3] * mresult[i+3];
     }
     
    
@@ -457,9 +460,12 @@ int main(int argc, char** argv)
 
         resd = compute2normVec(Rvec);
         
-         for(int i = 0 ; i< (int)Rvec.size(); i+=4)
+         for(int il = 0 ; il< (int)Rvec.size(); il+=4)
         {   
-        resd += Rvec[i] * Rvec[i];
+        resd += Rvec[il] * Rvec[il];
+         resd += Rvec[il+1] * Rvec[il+1];
+          resd += Rvec[il+2] * Rvec[il+2];
+           resd += Rvec[il+3] * Rvec[il+3];
         }
 
         if(resd < error)
