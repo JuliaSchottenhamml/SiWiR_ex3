@@ -381,7 +381,12 @@ int main(int argc, char** argv)
      double resdlocal=0.0; 
       std::cout << "1### " << resdlocal;
     //  std::cout << "2### " <<  ;
-    resdlocal = compute2norm(mresult);
+    
+     for(int i = 0 ; i< (int)sizeof(mresult); i+=4)
+    {   
+        resdlocal += mresult[i] * mresult[i];
+    }
+    
     std::cout << "2### " << resdlocal ;
     MPI_Reduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
     std::cout << "3### " << "\n";
