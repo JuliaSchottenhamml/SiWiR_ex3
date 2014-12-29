@@ -230,12 +230,12 @@ int main(int argc, char** argv)
     int len = 0;
     int dests=0, destn=0; 
  
-    int * dim = new int [2];         
-    GridCaptain* gcap = NULL;
+    int * dim = new int [2]; 
+            std::cout << "37777 " << "\n";
+    GridCaptain* gcap = NULL ;
+    std::cout << "3888 " << "\n";
     double alpha = 0;
     int nnx =0, nny=0;
-    
-    std::cout << "\n3=== " << alpha;
  
    if (rank == 0)
    { 
