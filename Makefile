@@ -8,8 +8,10 @@ COMMON=Timer.h
 
 all: $(SOURCES) $(EXECUTABLE)
 	
-$(EXECUTABLE): $(OBJECTS)
-	$(CC) $(CFLAGS) $(OBJECTS) -o $@
+test: 
+	$(CC) $(CFLAGS) $(SOURCES) -o cg
 
-.cpp.o: $(COMMON)
-	$(CC) $(CFLAGS) $< -o $@
+clean:
+	rm -f *.o cg
+
+.PHONY : all clean
