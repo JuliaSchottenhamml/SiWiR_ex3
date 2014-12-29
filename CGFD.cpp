@@ -297,6 +297,8 @@ int main(int argc, char** argv)
     
     if(sz%4 != 0)
     len = sz + (4-sz%4);
+    else
+    len = sz;
     
     double * tresult = new double[len];
     double * fresult = new double[len];
