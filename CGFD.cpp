@@ -412,7 +412,7 @@ int main(int argc, char** argv)
         std::vector<double> Dvec (Rvec);     
         for(int i = 0 ; i<iter; i++)
        {
-        
+        std::cout << "4%%% " << "\n";
         MPI_Bcast((void*)&Dvec,1,MPI_INT,0,MPI_COMM_WORLD);
          std::cout << "4### " << "\n";
         
