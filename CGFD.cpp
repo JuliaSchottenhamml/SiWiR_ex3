@@ -327,11 +327,11 @@ int main(int argc, char** argv)
      int blenx = gcap->worksheet[rank*3+1];
     double alpha = 0;
     int sz=blenx*bleny;
-    double * tresult = new double[sz];
-    double * fresult = new double[sz];
-        double * mresult = new double[sz];
-            double * nresult = new double[sz];
-            double resd =0.0;
+    double tresult[sz];
+    double fresult[sz];
+    double mresult[sz];
+    double nresult[sz];
+    double resd =0.0;
      //rec_disp[rank] =  gcap->worksheet[rank*3+2];
      rec_cnt[rank] = blenx*bleny;
     
