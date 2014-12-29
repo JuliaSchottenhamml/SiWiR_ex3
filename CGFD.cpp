@@ -152,8 +152,8 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
             gama2 = 0;
             gridno= i*bleny + j;            
             //int k = (j-sy)%blenx;
-            x = (((gridno-1)%dim[1])+1)*hx;
-            y = (((gridno-1)/dim[1])+1)*hy;
+            x = (((gridno-1)%bleny)+1)*hx;
+            y = (((gridno-1)/bleny)+1)*hy;
             int f = fxy(x,y);
                                   
             if(dests == -1)
