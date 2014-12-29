@@ -292,11 +292,12 @@ int main(int argc, char** argv)
     std::vector<double> Fvec (len,0);
     std::vector<double> Tvec (len,0);
     std::vector<double> Tmpvec (len,0); 
- std::cout << "3333 " << "\n";
+ 
     int bleny =  dim[1];     
     int blenx = gcap->worksheet[rank*3+1];
     int sx = gcap->worksheet[rank*3+0];    
     int sz=blenx*bleny;
+    std::cout << "3333 " << "\n";
     double * tresult = new double[sz];
     double * fresult = new double[sz];
     double * mresult = new double[sz];
