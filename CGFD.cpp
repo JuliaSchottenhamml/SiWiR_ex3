@@ -188,7 +188,7 @@ int main(int argc, char** argv)
   for (int i = 0; i<argc; i++)
         std::cout << argv[i] << "\n";
         
-    if (argc > 5)
+    if (argc < 5)
     {
         for (int i = 0; i<5; i++)
         std::cout << argv[i] << "\n";
