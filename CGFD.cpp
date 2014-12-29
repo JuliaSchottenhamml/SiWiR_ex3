@@ -233,14 +233,18 @@ int main(int argc, char** argv)
     int * dim = new int [2];         
     GridCaptain* gcap;
     double alpha = 0;
+    int nnx =0, nny=0;
     
     std::cout << "\n3=== " << alpha;
  
    if (rank == 0)
    { 
     std::cout << "3 " << "\n";
+    
     nx = atoi(argv[1]);
     ny = atoi(argv[2]);
+    nnx = nx-1;
+    nny = ny-1;
     iter = atoi(argv[3]);
     error = atoi(argv[4]);
      fgrid = new FdGrid (nnx,nny); 
@@ -253,6 +257,8 @@ int main(int argc, char** argv)
     gcap = new GridCaptain(size,*fgrid);
     dim[0]=fgrid->getDimM();
     dim[1]=fgrid->getDimN();
+    MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&iter,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -272,8 +278,6 @@ int main(int argc, char** argv)
    }
    
    
-     int nnx = nx-1;
-    int nny = ny-1; 
     int totdim = nnx*nny;
     
    MPI_Barrier(MPI_COMM_WORLD);
