@@ -295,12 +295,15 @@ int main(int argc, char** argv)
            
     int sz=blenx*bleny;
     
-    double * tresult = new double[sz];
-    double * fresult = new double[sz];
-    double * mresult = new double[sz];
-    double * nresult = new double[sz];
+    if(sz%4 != 0)
+    len = sz + (4-sz%4);
     
-    for(int h=0;h<sz;h+=4)
+    double * tresult = new double[len];
+    double * fresult = new double[len];
+    double * mresult = new double[len];
+    double * nresult = new double[len];
+    
+    for(int h=0;h<len;h+=4)
     {
       tresult[h]=0;  
       tresult[h+1]=0;
