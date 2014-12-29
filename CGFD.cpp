@@ -231,13 +231,13 @@ int main(int argc, char** argv)
     int dests=0, destn=0; 
  
     int * dim = new int [2]; 
-            std::cout << "37777 " << "\n";
+        
     GridCaptain* gcap = NULL ;
     
     double alpha = 0;
     std::cout << "3888 " << "\n";
     int nnx =0, nny=0;
-  std::cout << "39999 " << "\n";
+ 
    if (rank == 0)
    { 
     std::cout << "3 " << "\n";
@@ -278,19 +278,21 @@ int main(int argc, char** argv)
 	std::cout << "c," << iter <<std::endl;
    }
    
+    std::cout << "39999 " << "\n";
    
     int totdim = nnx*nny;
     
    MPI_Barrier(MPI_COMM_WORLD);
+    std::cout << "31111 " << "\n";
    if(gridpoint%4 != 0)
     len = gridpoint + (4-gridpoint%4);
-        
+       std::cout << "3222 " << "\n";  
     std::vector<double> Xvec (len,0);
     std::vector<double> Rvec (len,0);
     std::vector<double> Fvec (len,0);
     std::vector<double> Tvec (len,0);
     std::vector<double> Tmpvec (len,0); 
-
+ std::cout << "3333 " << "\n";
     int bleny =  dim[1];     
     int blenx = gcap->worksheet[rank*3+1];
     int sx = gcap->worksheet[rank*3+0];    
