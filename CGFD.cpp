@@ -231,7 +231,7 @@ int main(int argc, char** argv)
     int dests=0, destn=0; 
  
     int * dim = new int [2];         
-    GridCaptain* gcap;
+    GridCaptain* gcap = NULL;
     double alpha = 0;
     int nnx =0, nny=0;
     
