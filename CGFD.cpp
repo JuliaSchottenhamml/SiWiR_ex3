@@ -36,7 +36,7 @@ inline double compute2norm(double * vec)
         a = _mm256_load_pd( &vec[i]);
         r = _mm256_add_pd(_mm256_mul_pd(a,a),r);
     }
-
+std::cout << "-------------- " << "\n";
     return (double) r[0]+r[1]+r[2]+r[3];
 
 }
