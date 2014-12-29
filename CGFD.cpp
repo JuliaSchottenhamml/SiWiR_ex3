@@ -228,7 +228,7 @@ int main(int argc, char** argv)
     int gridpoint = 0;
     double hx = 0.0, hy=0.0;
     int len = 0;
-    int dests=0, destn=0; 
+    int dests=0, destn=0, blenx=0, sx =0; 
  
     int * dim = new int [2]; 
         
@@ -255,6 +255,14 @@ int main(int argc, char** argv)
     gama = 1/hy/hy;
     alfa = -(2/gama+ 2/bita + k * k);
     gcap = new GridCaptain(size,*fgrid);
+    
+    for(int t=0;t<size;t++)
+    {
+    blenx = gcap->worksheet[t*3+1];
+    sx = gcap->worksheet[t*3+0];
+    MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
+    MPI_Isend(&sx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
+    }
     dim[0]=fgrid->getDimM();
     dim[1]=fgrid->getDimN();
     MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -277,9 +285,9 @@ int main(int argc, char** argv)
 	std::cout << "c," << iter <<std::endl;
    }
    
-    
-   
     int totdim = nnx*nny;
+    MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
+    MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     
    MPI_Barrier(MPI_COMM_WORLD);
    
@@ -294,9 +302,7 @@ int main(int argc, char** argv)
  
     int bleny =  dim[1];  
     std::cout << "3222 " << "\n";   
-    int blenx = gcap->worksheet[rank*3+1];
-    std::cout << "3333 " << "\n";
-    int sx = gcap->worksheet[rank*3+0];    
+       
     int sz=blenx*bleny;
     
     double * tresult = new double[sz];
