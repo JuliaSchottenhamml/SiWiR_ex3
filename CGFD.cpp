@@ -90,7 +90,7 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
             gama2 = 0;
             beta1 = 0;
             beta2 = 0;
-            gridno= i*dim[1] + j;            
+            gridno= i*bleny + j;            
             //int kl = (j-sy)%blenx;
             if(destn != -1)
              gama1 = gama;
@@ -150,7 +150,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
         {
             
             gama2 = 0;
-            gridno= i*dim[1] + j;            
+            gridno= i*bleny + j;            
             //int k = (j-sy)%blenx;
             x = (((gridno-1)%dim[1])+1)*hx;
             y = (((gridno-1)/dim[1])+1)*hy;
