@@ -30,14 +30,15 @@ inline double compute2norm(double * vec)
     __m256d a, r;
 
     r = _mm256_setzero_pd();
-     std::cout << "+++++++++ " << "\n";
+     std::cout << "+++++++++ " << (int)sizeof(vec) << "\n";
     for(int i = 0 ; i< (int)sizeof(vec); i+=4)
     {
-        std::cout << "-------------- " << "\n";
+        
         a = _mm256_load_pd( &vec[i]);
-        std::cout << "**************** " << "\n";
+        
         r = _mm256_add_pd(_mm256_mul_pd(a,a),r);
     }
+    std::cout << "------ " << (int)sizeof(vec) << "\n";
 
     return (double) r[0]+r[1]+r[2]+r[3];
 
