@@ -66,16 +66,28 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
 {  
    
     int sy = 0;
+    int len=0;
     int sz=blenx*bleny;
-    double * result = new double[sz];
+    if(sz%4 != 0)
+    len = sz + (4-sz%4);
+    else
+    len = sz;
+    double * result = new double[len];
     int gridno = 0;
     double gama1 = 0;
     double gama2 = 0;
     double beta1 = 0;
     double beta2 = 0;
+    for(int h=0;h<len;h+=4)
+    {
+      result[h]=0;  
+      result[h+1]=0;
+      result[h+2]=0;
+      result[h+3]=0;
+    }
 
   for(int i=sx; i<blenx ; i++)
-    {
+      {
        // int l = (i-sx)%bleny;
         for(int j=sy; j<bleny ; j++)
         {
@@ -128,14 +140,28 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
     
        
     int sy = 0;
+    int len=0;
     int sz=blenx*bleny;
-    double * result = new double[sz];
+    if(sz%4 != 0)
+    len = sz + (4-sz%4);
+    else
+    len = sz;
+    double * result = new double[len];
+    
     int gridno = 0;
      
      double gama2 = 0;
 
     int x = 0;
     int y = 0;
+
+     for(int h=0;h<len;h+=4)
+    {
+      result[h]=0;  
+      result[h+1]=0;
+      result[h+2]=0;
+      result[h+3]=0;
+    }
 
     for(int i=sx; i<blenx ; i++)
     {
