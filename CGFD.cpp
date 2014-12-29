@@ -59,7 +59,7 @@ inline double compute2normVec(vector<double> vec)
 }
 
 inline double * matMult( std::vector<double> vec,int blenx,int sx,const double alpha, const double beta, const double gama,
- const int * dim , int rank, int destn, int dests)
+ const int * dim ,  int destn, int dests)
 {  
    //int veclen = (int)vec.size();
   // vector<double> fresult(veclen,0);
@@ -127,7 +127,7 @@ inline double * matMult( std::vector<double> vec,int blenx,int sx,const double a
     
 }
 
-inline double * cal_fVec(int blenx, int sx,const double gama, const int * dim, int rank,  double hx, double hy, int dests)
+inline double * cal_fVec(int blenx, int sx,const double gama, const int * dim,  double hx, double hy, int dests)
 { 
   // vector<double> fresult(tgrdpoint,0);
 
@@ -323,9 +323,9 @@ int main(int argc, char** argv)
     else 
     destn = rank +1;    
     
-    tresult = matMult(Xvec,blenx,sx, alfa, bita,gama, dim, rank,destn,dests);        
+    tresult = matMult(Xvec,blenx,sx, alfa, bita,gama, dim, destn,dests);        
      
-    fresult = cal_fVec(blenx,sx,gama, dim, rank, hx ,hy,dests);
+    fresult = cal_fVec(blenx,sx,gama, dim, hx ,hy,dests);
         
     for(int i = 0; i< (int)sizeof(tresult); i++)
     {
@@ -362,7 +362,7 @@ int main(int argc, char** argv)
         
         MPI_Bcast((void*)&Dvec,1,MPI_INT,0,MPI_COMM_WORLD);
         
-        tresult = matMult(Dvec,*gcap, alfa, bita, gama,dim, rank,destn,dests);
+        tresult = matMult(Dvec, blenx,sx, alfa, bita, gama,dim, destn,dests);
         
        // MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank+10, MPI_COMM_WORLD,&request);
