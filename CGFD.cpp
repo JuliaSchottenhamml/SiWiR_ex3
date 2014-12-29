@@ -269,6 +269,7 @@ int main(int argc, char** argv)
  
    if (rank == 0)
    { 
+        std::cout << "3 " << "\n";
      fgrid = new FdGrid (nnx,nny); 
      gridpoint = fgrid->totalGridPoints();
 	 hx = fgrid->getHx();
@@ -287,10 +288,11 @@ int main(int argc, char** argv)
     MPI_Bcast(&alfa,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
-    
+       
      std::cout << "3 " << "\n";
    }
    
+   MPI_Barrier(MPI_COMM_WORLD);
    if(gridpoint%4 != 0)
     len = gridpoint + (4-gridpoint%4);
         
