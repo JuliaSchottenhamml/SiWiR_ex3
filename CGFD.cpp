@@ -331,6 +331,7 @@ int main(int argc, char** argv)
     double * fresult = new double[sz];
         double * mresult = new double[sz];
             double * nresult = new double[sz];
+            double resd;
      //rec_disp[rank] =  gcap->worksheet[rank*3+2];
      rec_cnt[rank] = blenx*bleny;
     
@@ -419,9 +420,9 @@ int main(int argc, char** argv)
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
-        *iresd = compute2normVec(Rvec);
+        resd = compute2normVec(Rvec);
 
-        if(*iresd < error)
+        if(resd < error)
             break;
 
         double beta = dt1/(*dt0);
