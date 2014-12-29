@@ -288,7 +288,12 @@ int main(int argc, char** argv)
     
     //double * result=NULL;
     double alpha = 0;
-    double * tresult , *fresult, *mresult, *nresult;
+    int sz=blenx*bleny;
+    double * tresult = new double[sz];
+    double * fresult = new double[sz];
+        double * mresult = new double[sz];
+            double * nresult = new double[sz];
+  
       
     double alfa=0;
     double bita=0;
