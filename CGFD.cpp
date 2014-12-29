@@ -233,10 +233,11 @@ int main(int argc, char** argv)
     int * dim = new int [2]; 
             std::cout << "37777 " << "\n";
     GridCaptain* gcap = NULL ;
-    std::cout << "3888 " << "\n";
+    
     double alpha = 0;
+    std::cout << "3888 " << "\n";
     int nnx =0, nny=0;
- 
+  std::cout << "39999 " << "\n";
    if (rank == 0)
    { 
     std::cout << "3 " << "\n";
