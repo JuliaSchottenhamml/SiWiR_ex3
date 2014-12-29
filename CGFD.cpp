@@ -299,6 +299,30 @@ int main(int argc, char** argv)
     double * fresult = new double[sz];
     double * mresult = new double[sz];
     double * nresult = new double[sz];
+    
+    for(int h=0;h<sz;h+=4)
+    {
+      tresult[h]=0;  
+      tresult[h+1]=0;
+      tresult[h+2]=0;
+      tresult[h+3]=0;
+      
+      fresult[h]=0;  
+      fresult[h+1]=0;
+      fresult[h+2]=0;
+      fresult[h+3]=0;
+      
+      mresult[h]=0;  
+      mresult[h+1]=0;
+      mresult[h+2]=0;
+      mresult[h+3]=0;
+      
+      nresult[h]=0;  
+      nresult[h+1]=0;
+      nresult[h+2]=0;
+      nresult[h+3]=0;
+    }
+    
     double resd =0.0;
    
     if(rank == 0)
