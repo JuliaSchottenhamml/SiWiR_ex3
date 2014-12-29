@@ -91,11 +91,11 @@ std::cout << "3 " << "\n";
 
   
     
-std::cout << "2### " << "\n";
+
     //MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
    //MPI_Cart_shift(MPI_COMM_WORLD,0,0,&source,&dests);
     
-    std::cout << "2@@@ " << "\n";
+  
 
     for(int i=sx; i<blenx ; i++)
     {
@@ -360,12 +360,13 @@ int main(int argc, char** argv)
         
     } 
       
+      std::cout << "1### " << "\n";
     iresd = compute2norm(mresult);
-    
+    std::cout << "2### " << "\n";
     MPI_Reduce(&iresd, &dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
-    
+    std::cout << "3### " << "\n";
     MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
-    
+    std::cout << "4### " << "\n";
     int jn=0;
     
     if(rank==0)
@@ -373,7 +374,7 @@ int main(int argc, char** argv)
      for( int i=0; i< size; i++)
     {
       MPI_Recv(nresult,(int)sizeof(mresult), MPI_DOUBLE, i, i, MPI_COMM_WORLD,&status);
-      
+      std::cout << "5### " << "\n";
       for(int l=0; l< (int)sizeof(nresult);l++)
           Rvec[++jn]= nresult[l];
     }         
