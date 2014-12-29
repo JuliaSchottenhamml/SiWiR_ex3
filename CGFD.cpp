@@ -48,7 +48,7 @@ inline double compute2normVec(vector<double> vec)
 
     r = _mm256_setzero_pd();
 
-    for(int i = 0 ; i< (int)vec).size(); i+=4)
+    for(int i = 0 ; i< (int)vec.size(); i+=4)
     {
         a = _mm256_load_pd( &vec[i]);
         r = _mm256_add_pd(_mm256_mul_pd(a,a),r);
@@ -262,7 +262,7 @@ int main(int argc, char** argv)
 	///******************************************************
 	double time = 0;
 	double dt0 = 0.0;
-	double resd = 0.0;
+	double iresd = 0.0;
 #ifdef USE_LIKWID
 	likwid_markerInit();
 	likwid_markerStartRegion("dummy");
