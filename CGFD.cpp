@@ -284,6 +284,8 @@ int main(int argc, char** argv)
    
    if(gridpoint%4 != 0)
     len = gridpoint + (4-gridpoint%4);
+   else 
+   len = gridpoint;
          
     std::vector<double> Xvec (len,0);
     std::vector<double> Rvec (len,0);
