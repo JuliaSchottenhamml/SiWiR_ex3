@@ -287,12 +287,8 @@ int main(int argc, char** argv)
 
     
     //double * result=NULL;
-    double alpha = 0;
-    int sz=blenx*bleny;
-    double * tresult = new double[sz];
-    double * fresult = new double[sz];
-        double * mresult = new double[sz];
-            double * nresult = new double[sz];
+       
+     
   
       
     double alfa=0;
@@ -330,10 +326,16 @@ int main(int argc, char** argv)
     // std::cout << "3 " << "\n";
    }
    
-   
-     int bleny =  dim[1];    
+
+    int bleny =  dim[1];  
     
      int blenx = gcap->worksheet[rank*3+1];
+    double alpha = 0;
+    int sz=blenx*bleny;
+    double * tresult = new double[sz];
+    double * fresult = new double[sz];
+        double * mresult = new double[sz];
+            double * nresult = new double[sz];
      //rec_disp[rank] =  gcap->worksheet[rank*3+2];
      rec_cnt[rank] = blenx*bleny;
     
