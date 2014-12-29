@@ -256,7 +256,7 @@ int main(int argc, char** argv)
  
    if (rank == 0)
    { 
-    std::cout << "3 " << "\n";
+    //std::cout << "3 " << "\n";
     
     nx = atoi(argv[1]);
     ny = atoi(argv[2]);
@@ -333,7 +333,7 @@ int main(int argc, char** argv)
     double * mresult = new double[len];
     double * nresult = new double[len];
     
-    for(int h=0;h<len;h+=4)
+   /* for(int h=0;h<len;h+=4)
     {
       tresult[h]=0;  
       tresult[h+1]=0;
@@ -354,7 +354,7 @@ int main(int argc, char** argv)
       nresult[h+1]=0;
       nresult[h+2]=0;
       nresult[h+3]=0;
-    }
+    }*/
     
     double resd =0.0;
    
@@ -375,11 +375,11 @@ int main(int argc, char** argv)
     for(int i = 0; i< (int)sizeof(tresult); i++)
     {
         mresult[i] = fresult[i]-tresult[i];
-        std::cout << "\n" << rank << " " << mresult[i];
+        //std::cout << "\n" << rank << " " << mresult[i];
     } 
      
      double resdlocal=0.0; 
-      std::cout << "1### " << resdlocal;
+      
     //  std::cout << "2### " <<  ;
     
      for(int i = 0 ; i< (int)sizeof(mresult); i+=4)
@@ -387,12 +387,11 @@ int main(int argc, char** argv)
         resdlocal += mresult[i] * mresult[i];
     }
     
-    std::cout << "2### " << resdlocal ;
+   
     MPI_Reduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
-    std::cout << "3### " << "\n";
+    
     MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
-    std::cout << "4### " << "\n";
-    int jn=0;
+     int jn=0;
     MPI_Barrier(MPI_COMM_WORLD);
     if(rank==0)
     {
@@ -457,6 +456,11 @@ int main(int argc, char** argv)
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
         resd = compute2normVec(Rvec);
+        
+         for(int i = 0 ; i< (int)Rvec.size(); i+=4)
+        {   
+        resd += Rvec[i] * Rvec[i];
+        }
 
         if(resd < error)
             break;
