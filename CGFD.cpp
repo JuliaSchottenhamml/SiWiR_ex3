@@ -224,7 +224,7 @@ int main(int argc, char** argv)
    // proc = atoi(argv[3]);
 
     int nnx = nx-1;
-    int nny = ny-1;
+    int nny = ny-1; 
 
     int totdim = nnx*nny;
     
