@@ -327,11 +327,11 @@ int main(int argc, char** argv)
      int blenx = gcap->worksheet[rank*3+1];
     double alpha = 0;
     int sz=blenx*bleny;
-    double tresult[sz];
-    double fresult[sz];
-    double mresult[sz];
-    double nresult[sz];
-    double resd =0.0;
+    double * tresult = new double[sz];
+    double * fresult = new double[sz];
+        double * mresult = new double[sz];
+            double * nresult = new double[sz];
+            double resd =0.0;
      //rec_disp[rank] =  gcap->worksheet[rank*3+2];
      rec_cnt[rank] = blenx*bleny;
     
@@ -353,11 +353,12 @@ int main(int argc, char** argv)
     for(int i = 0; i< (int)sizeof(tresult); i++)
     {
         mresult[i] = fresult[i]-tresult[i];
+        std::cout << "\n" << rank << " " << mresult[i];
         
     } 
      double resdlocal=0.0; 
-      std::cout << "1### " << "\n";
-      std::cout << "2### " ;
+      std::cout << "1### " << resdlocal;
+    //  std::cout << "2### " <<  ;
     resdlocal = compute2norm(mresult);
     std::cout << "2### " << resdlocal ;
     MPI_Reduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
