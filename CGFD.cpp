@@ -61,8 +61,8 @@ inline double compute2normVec(vector<double> vec)
 inline double * matMult( std::vector<double> vec,GridCaptain gcap,const double alpha, const double beta, const double gama,
  const int * dim , int rank, int destn, int dests)
 {  
-   int veclen = (int)vec.size();
-   vector<double> fresult(veclen,0);
+   //int veclen = (int)vec.size();
+  // vector<double> fresult(veclen,0);
    
    std::cout << "1 " << "\n";
    
@@ -129,7 +129,7 @@ inline double * matMult( std::vector<double> vec,GridCaptain gcap,const double a
     
 }
 
-inline double * cal_fVec(GridCaptain gcap, const double gama, const int * dim, int rank, int tgrdpoint, double hx, double hy, int dests)
+inline double * cal_fVec(GridCaptain gcap, const double gama, const int * dim, int rank,  double hx, double hy, int dests)
 { 
   // vector<double> fresult(tgrdpoint,0);
 
@@ -256,8 +256,8 @@ int main(int argc, char** argv)
     double alfa=0;
     double bita=0;
     double gama=0;
-    int *rec_cnt = new int[size];
-    int *rec_disp = new int[size];
+    //int *rec_cnt = new int[size];
+    //int *rec_disp = new int[size];
     int gridpoint = 0;
     double hx = 0.0, hy=0.0;
     int len = 0;
@@ -324,7 +324,7 @@ int main(int argc, char** argv)
     
     tresult = matMult(Xvec,*gcap, alfa, bita,gama, dim, rank,destn,dests);        
      
-    fresult = cal_fVec(*gcap,gama, dim, rank, gridpoint,hx ,hy,dests);
+    fresult = cal_fVec(*gcap,gama, dim, rank, hx ,hy,dests);
     
     for(int i = 0; i< (int)sizeof(tresult); i++)
     {
@@ -371,7 +371,7 @@ int main(int argc, char** argv)
             int jk = 0;
             for( int km=0; km < size; km++)
             {
-              MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE, , km+10, MPI_COMM_WORLD,&status);
+              MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE, km+10, MPI_COMM_WORLD,&status);
              // std::cout << "5### " << "\n";
               for(int l=0; l< (int)sizeof(nresult);l++)
                   Rvec[++jk]= nresult[l];
