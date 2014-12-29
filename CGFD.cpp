@@ -174,18 +174,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
 int main(int argc, char** argv)
 {
 
-    int size(0); // The total number of processes
-   int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
-  // int proc = gcap.proc;
-   //int veclen = (int)vec.size();
-   
-   int nx = 0;
-    int ny = 0;
-    int iter = 0;
-    //int proc = 0;
-    int error=0;
- 
-  for (int i = 0; i<argc; i++)
+     for (int i = 0; i<argc; i++)
         std::cout << argv[i] << "\n";
         
     if (argc < 5)
@@ -195,36 +184,20 @@ int main(int argc, char** argv)
         
         std::cout << argc << "= invalid number of argument.. Program exiting..";
         exit(EXIT_FAILURE);
-        
-        
+    
     }
-
-    nx = atoi(argv[1]);
-    ny = atoi(argv[2]);
-    iter = atoi(argv[3]);
-    error = atoi(argv[4]);
-   // proc = atoi(argv[3]);
-
-    int nnx = nx-1;
-    int nny = ny-1; 
-
-    int totdim = nnx*nny;
     
-     //std::cout << "111 " << "\n";
-
+    int size(0); // The total number of processes
+    int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
+    int nx = 0;
+    int ny = 0;
+    int iter = 0;
+    int error=0;
     FdGrid* fgrid;
-    
-    std::cout << "nx," << nx << std::endl;
-	std::cout << "ny," << ny << std::endl;
-	std::cout << "c," << iter <<std::endl;
-	
-
-   	
-    ///******************************************************
-	///********************** CALCULATION *******************
-	///******************************************************
-	double time = 0;
+   	double time = 0;
 	double  dt0[1];
+ 
+   
 	//double  iresd;
 #ifdef USE_LIKWID
 	likwid_markerInit();
@@ -252,20 +225,24 @@ int main(int argc, char** argv)
     double alfa=0;
     double bita=0;
     double gama=0;
-    //int *rec_cnt = new int[size];
-    //int *rec_disp = new int[size];
     int gridpoint = 0;
     double hx = 0.0, hy=0.0;
     int len = 0;
     int dests=0, destn=0; 
  
     int * dim = new int [2];         
-    GridCaptain* gcap = NULL;
+    GridCaptain* gcap;
     double alpha = 0;
+    
+    std::cout << "\n3=== " << alpha;
  
    if (rank == 0)
    { 
-        std::cout << "3 " << "\n";
+    std::cout << "3 " << "\n";
+    nx = atoi(argv[1]);
+    ny = atoi(argv[2]);
+    iter = atoi(argv[3]);
+    error = atoi(argv[4]);
      fgrid = new FdGrid (nnx,nny); 
      gridpoint = fgrid->totalGridPoints();
 	 hx = fgrid->getHx();
@@ -275,8 +252,12 @@ int main(int argc, char** argv)
     alfa = -(2/gama+ 2/bita + k * k);
     gcap = new GridCaptain(size,*fgrid);
     dim[0]=fgrid->getDimM();
-    dim[1]=fgrid->getDimN();   
-    MPI_Bcast(dim,1,MPI_INT,0,MPI_COMM_WORLD);
+    dim[1]=fgrid->getDimN();
+    MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&iter,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&error,1,MPI_INT,0,MPI_COMM_WORLD);   
+    MPI_Bcast(dim,2,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&gridpoint,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&hx,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -285,9 +266,16 @@ int main(int argc, char** argv)
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
        
-     std::cout << "3 " << "\n";
+      std::cout << "nx," << nx << std::endl;
+	std::cout << "ny," << ny << std::endl;
+	std::cout << "c," << iter <<std::endl;
    }
    
+   
+     int nnx = nx-1;
+    int nny = ny-1; 
+    int totdim = nnx*nny;
+    
    MPI_Barrier(MPI_COMM_WORLD);
    if(gridpoint%4 != 0)
     len = gridpoint + (4-gridpoint%4);
