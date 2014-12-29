@@ -416,9 +416,9 @@ int main(int argc, char** argv)
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
-        resd = compute2normVec(Rvec);
+        iresd = compute2normVec(Rvec);
 
-        if(resd < error)
+        if(iresd < error)
             break;
 
         double beta = dt1/dt0;
