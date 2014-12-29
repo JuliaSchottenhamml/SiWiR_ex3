@@ -61,14 +61,7 @@ inline double compute2normVec(vector<double> vec)
 inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,const double alpha, const double beta, const double gama,
    int destn, int dests)
 {  
-   //int veclen = (int)vec.size();
-  // vector<double> fresult(veclen,0);
    
-   std::cout << "1 " << "\n";
-   
-     
-   //  int proc = size;      
-    
     int sy = 0;
     int sz=blenx*bleny;
     double * result = new double[sz];
@@ -78,14 +71,11 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
     double beta1 = 0;
     double beta2 = 0;
 
-    //MPI_Cart_shift(MPI_COMM_WORLD,0,1,&destn,&dests );
-   //MPI_Cart_shift(MPI_COMM_WORLD,0,0,&source,&dests);
   for(int i=sx; i<blenx ; i++)
     {
        // int l = (i-sx)%bleny;
         for(int j=sy; j<bleny ; j++)
         {
-            
             gama1 = 0;
             gama2 = 0;
             beta1 = 0;
@@ -321,7 +311,7 @@ int main(int argc, char** argv)
     tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
      
     fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests);
-    std::cout << "3222 " << "\n";     
+    std::cout << "3222 " << sizeof(mresult) << " " << sizeof(fresult) << " "<< sizeof(tresult) << "\n";     
     for(int i = 0; i< (int)sizeof(tresult); i++)
     {
         mresult[i] = fresult[i]-tresult[i];
