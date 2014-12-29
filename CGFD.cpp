@@ -357,7 +357,7 @@ int main(int argc, char** argv)
       
       std::cout << "1### " << "\n";
     *iresd = compute2norm(mresult);
-    std::cout << "2### " << "\n";
+    std::cout << "2### " << *iresd ;
     MPI_Reduce(iresd, dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
     std::cout << "3### " << "\n";
     MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
