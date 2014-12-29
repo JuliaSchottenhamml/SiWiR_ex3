@@ -414,15 +414,19 @@ int main(int argc, char** argv)
        {
         
         MPI_Bcast((void*)&Dvec,1,MPI_INT,0,MPI_COMM_WORLD);
+         std::cout << "4### " << "\n";
         
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
+         std::cout << "4*** " << "\n";
         
        // MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank+10, MPI_COMM_WORLD,&request);
+         std::cout << "4+++" << "\n";
         MPI_Barrier(MPI_COMM_WORLD);
+         std::cout << "4&&&" << "\n";
         if(rank == 0)
         {
-              std::cout << "4### " << "\n";
+             
             int jk = 0;
             for( int km=0; km < size; km++)
             {
