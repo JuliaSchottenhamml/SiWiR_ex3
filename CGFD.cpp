@@ -127,7 +127,7 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
     
 }
 
-inline double * cal_fVec(int blenx,int bleny int sx,const double gama,  double hx, double hy, int dests)
+inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double hx, double hy, int dests)
 { 
   // vector<double> fresult(tgrdpoint,0);
 
