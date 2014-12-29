@@ -371,7 +371,7 @@ int main(int argc, char** argv)
             int jk = 0;
             for( int km=0; km < size; km++)
             {
-              MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE, km+10, MPI_COMM_WORLD,&status);
+              MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE,km, km+10, MPI_COMM_WORLD,&status);
              // std::cout << "5### " << "\n";
               for(int l=0; l< (int)sizeof(nresult);l++)
                   Rvec[++jk]= nresult[l];
