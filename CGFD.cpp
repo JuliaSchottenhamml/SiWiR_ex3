@@ -297,7 +297,7 @@ int main(int argc, char** argv)
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
        
-      std::cout << "nx," << nx << std::endl;
+    std::cout << "nx," << nx << std::endl;
 	std::cout << "ny," << ny << std::endl;
 	std::cout << "c," << iter <<std::endl;
    }
@@ -394,10 +394,11 @@ int main(int argc, char** argv)
     MPI_Reduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
     
     MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
-     int jn=0;
+    
     MPI_Barrier(MPI_COMM_WORLD);
     if(rank==0)
     {
+     int jn=0;
      for( int i=0; i< size; i++)
     {
       MPI_Recv(nresult,(int)sizeof(mresult), MPI_DOUBLE, i, i, MPI_COMM_WORLD,&status);
@@ -425,8 +426,7 @@ int main(int argc, char** argv)
         MPI_Barrier(MPI_COMM_WORLD);
          std::cout << "4&&&" << "\n";
         if(rank == 0)
-        {
-             
+        {             
             int jk = 0;
             for( int km=0; km < size; km++)
             {
@@ -435,7 +435,8 @@ int main(int argc, char** argv)
               for(int l=0; l< (int)sizeof(nresult);l++)
                   Rvec[++jk]= nresult[l];
              }  
-        double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
+            //double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
+            double dt =1;
 
         alpha = *dt0 / dt;
              std::cout << "5### " << "\n";   
