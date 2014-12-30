@@ -416,6 +416,7 @@ int main(int argc, char** argv)
         for(int i = 0 ; i<iter; i++)
        {
         std::cout << "4%%% " << "\n";
+        if(rank==0)
         MPI_Bcast((void*)&Dvec,(int)Dvec.size(),MPI_INT,0,MPI_COMM_WORLD);
          std::cout << "4### " << "\n";
          //MPI_Barrier(MPI_COMM_WORLD);
