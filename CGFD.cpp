@@ -407,11 +407,12 @@ int main(int argc, char** argv)
           Rvec[++jn]= nresult[l];
     }         
     }     
-      std::cout << "4>>>> " << "\n";
+      
     if(*dt0 > error)
      {    
             std::cout << "4??? " << "\n";   
-        std::vector<double> Dvec (Rvec);     
+        std::vector<double> Dvec (Rvec); 
+        std::cout << "4>>>> " << "\n";    
         for(int i = 0 ; i<iter; i++)
        {
         std::cout << "4%%% " << "\n";
