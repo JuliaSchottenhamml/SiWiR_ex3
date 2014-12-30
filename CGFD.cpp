@@ -414,7 +414,7 @@ int main(int argc, char** argv)
         for(int i = 0 ; i<iter; i++)
        {
         std::cout << "4%%% " << "\n";
-        MPI_Bcast((void*)&Dvec,1,MPI_INT,0,MPI_COMM_WORLD);
+        MPI_Bcast((void*)&Dvec,(int)Dvec.size(),MPI_INT,0,MPI_COMM_WORLD);
          std::cout << "4### " << "\n";
         
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
