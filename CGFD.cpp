@@ -407,23 +407,24 @@ int main(int argc, char** argv)
           Rvec[++jn]= nresult[l];
     }         
     }     
-    
+      std::cout << "4>>>> " << "\n";
     if(*dt0 > error)
-     {       
+     {    
+            std::cout << "4??? " << "\n";   
         std::vector<double> Dvec (Rvec);     
         for(int i = 0 ; i<iter; i++)
        {
         std::cout << "4%%% " << "\n";
         MPI_Bcast((void*)&Dvec,(int)Dvec.size(),MPI_INT,0,MPI_COMM_WORLD);
          std::cout << "4### " << "\n";
-        
+         //MPI_Barrier(MPI_COMM_WORLD);
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
          std::cout << "4*** " << "\n";
         
        // MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank+10, MPI_COMM_WORLD,&request);
          std::cout << "4+++" << "\n";
-        MPI_Barrier(MPI_COMM_WORLD);
+       
          std::cout << "4&&&" << "\n";
         if(rank == 0)
         {             
