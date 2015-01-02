@@ -299,7 +299,7 @@ int main(int argc, char** argv)
     double * mresult = new double[len];
     double * nresult = new double[len];
     
-      std::cout << "55" <<std::endl;
+      
     
     double resd =0.0;
    
@@ -354,10 +354,11 @@ int main(int argc, char** argv)
           Rvec[++jn]= nresult[l];
     
     }
+    std::cout << "11" <<std::endl;
     MPI_Bcast(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,0,MPI_COMM_WORLD);         
 
     }     
-    
+    std::cout << "55" <<std::endl;
     MPI_Barrier(MPI_COMM_WORLD);                
     if(*dt0 > error)
      {    
