@@ -247,15 +247,15 @@ int main(int argc, char** argv)
     dim[1]=fgrid->getDimN();
    
        
-   // std::cout << "nx," << nx << std::endl;
-	//std::cout << "ny," << ny << std::endl;
-	//std::cout << "c," << iter <<std::endl;
+   std::cout << "nx," << nx << std::endl;
+    std::cout << "ny," << ny << std::endl;
+	std::cout << "c," << iter <<std::endl;
    }
-   
+   std::cout << "11" <<std::endl;
     
-    MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
+       MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
        MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
-        MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
+       MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&iter,1,MPI_INT,0,MPI_COMM_WORLD);
        MPI_Bcast(&error,1,MPI_INT,0,MPI_COMM_WORLD);   
@@ -269,17 +269,19 @@ int main(int argc, char** argv)
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
-    
+     std::cout << "22" <<std::endl;
     int totdim = nnx*nny;
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
    // std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
-  
+   std::cout << "33" <<std::endl;
    
    if(gridpoint%4 != 0)
     len = gridpoint + (4-gridpoint%4);
    else 
    len = gridpoint;
+   
+    std::cout << "44" <<std::endl;
          
     std::vector<double> Xvec (len,0);
     std::vector<double> Rvec (len,0);
