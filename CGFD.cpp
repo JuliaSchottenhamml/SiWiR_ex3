@@ -445,7 +445,7 @@ int main(int argc, char** argv)
         
         std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Dvec.begin(),   std::plus<double>());
         *dt0 = dt1;
-        for(int j=0; j< size;j+=4)
+        for(int j=0; j< size;j++)
         {
           MPI_Isend(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,j,j*11,MPI_COMM_WORLD,&request);  
         }   
