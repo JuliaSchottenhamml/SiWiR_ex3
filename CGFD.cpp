@@ -352,17 +352,20 @@ int main(int argc, char** argv)
     
       for(int l=0; l< (int)sizeof(nresult);l++)
           Rvec[++jn]= nresult[l];
+          
+          MPI_Isend(Rvec,(int)Rvec.size(),MPI_DOUBLE,i,i*10,MPI_COMM_WORLD);
     
     }
     std::cout << rank << " " << "11" <<std::endl;
-    MPI_Bcast(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,0,MPI_COMM_WORLD);         
-    std::cout << rank << " " << "11" <<std::endl;
-    }     
+             
+    } 
+    
+     MPI_recv(Rvec,(int)Rvec.size(),MPI_DOUBLE,0,rank*10,MPI_COMM_WORLD);
+        
     std::cout << rank << " " << "55" <<std::endl;
     MPI_Barrier(MPI_COMM_WORLD);                
     if(*dt0 > error)
      {    
-            
         std::vector<double> Dvec (Rvec); 
       
         for(int i = 0 ; i<iter; i++)
