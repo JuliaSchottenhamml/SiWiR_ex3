@@ -366,7 +366,7 @@ int main(int argc, char** argv)
             std::cout << rank << " " << "11" <<std::endl;
         if(rank==0)
         MPI_Bcast((void*)&Dvec,(int)Dvec.size(),MPI_INT,0,MPI_COMM_WORLD);
-                 //MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD);
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
           std::cout << rank << " " << "22" <<std::endl;      
        // MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
