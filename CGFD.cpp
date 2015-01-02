@@ -278,8 +278,7 @@ int main(int argc, char** argv)
    else 
    len = gridpoint;
    
-    std::cout << "44" <<std::endl;
-         
+            
     std::vector<double> Xvec (len,0);
     std::vector<double> Rvec (len,0);
     std::vector<double> Fvec (len,0);
@@ -314,8 +313,7 @@ int main(int argc, char** argv)
     else 
     destn = rank +1;    
     
-      std::cout << "66" <<std::endl;
-
+     
         tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
      
     fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests);
@@ -327,7 +325,7 @@ int main(int argc, char** argv)
     } 
      
      double resdlocal=0.0; 
-      std::cout << "77" <<std::endl;
+     
   
     //  std::cout << "2### " <<  ;
     
@@ -357,21 +355,20 @@ int main(int argc, char** argv)
     }         
     }     
     
-          std::cout << "99" <<std::endl;
-      
+                
     if(*dt0 > error)
      {    
             
         std::vector<double> Dvec (Rvec); 
-       std::cout << "00" <<std::endl;
+      
         for(int i = 0 ; i<iter; i++)
        {
-            std::cout << "11" <<std::endl;
+            std::cout << rank << " " << "11" <<std::endl;
         if(rank==0)
         MPI_Bcast((void*)&Dvec,(int)Dvec.size(),MPI_INT,0,MPI_COMM_WORLD);
                  //MPI_Barrier(MPI_COMM_WORLD);
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
-          std::cout << "22" <<std::endl;      
+          std::cout << rank << " " << "22" <<std::endl;      
        // MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank+10, MPI_COMM_WORLD,&request);
     
@@ -380,6 +377,7 @@ int main(int argc, char** argv)
             int jk = 0;
             for( int km=0; km < size; km++)
             {
+                std::cout << rank << " " << "33" <<std::endl; 
               MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE,km, km+10, MPI_COMM_WORLD,&status);
              // std::cout << "5### " << "\n";
               for(int l=0; l< (int)sizeof(nresult);l++)
