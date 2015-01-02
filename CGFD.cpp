@@ -1,18 +1,3 @@
-Skip to content
- This repository
-Explore
-Gist
-Blog
-Help
-karnajitsen karnajitsen
- 
-3  Unwatch 
-  Star 0
- Fork 0JuliaSchottenhamml/SiWiR_ex3
- tree: df3d6c8e83  SiWiR_ex3/CGFD.cpp
-karnajitsenkarnajitsen an hour ago upd
-1 contributor
-459 lines (358 sloc)  12.112 kb RawBlameHistory  
 #include <iostream>
 #include <numeric>
 #include <fstream>
@@ -471,5 +456,3 @@ int main(int argc, char** argv)
     return 0;
 
 }
-Status API Training Shop Blog About
-© 2015 GitHub, Inc. Terms Privacy Security Contact
