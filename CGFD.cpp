@@ -359,7 +359,7 @@ int main(int argc, char** argv)
         
   
   
-    if(*dt0 > error)
+    if(abs(*dt0) > error)
      {    
         std::vector<double> Dvec (Rvec); 
       
@@ -423,7 +423,7 @@ int main(int argc, char** argv)
         }*/
 
                   std::cout << rank << "@@@@@@@@@@@@@ " <<  dt1 << "\n";
-        if(dt1 < error)
+        if(abs(dt1) < error)
             break;
 
         double beta = dt1/(*dt0);
