@@ -267,7 +267,7 @@ int main(int argc, char** argv)
     std::cout << rank << " 7 " << "\n"; 
     MPI_Bcast(dim,2,MPI_INT,0,MPI_COMM_WORLD);
     std::cout << rank << " 8 " << "\n"; 
-    MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
+   // MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
     std::cout << rank << " 9 " << "\n"; 
     MPI_Bcast(&gridpoint,1,MPI_INT,0,MPI_COMM_WORLD);
     std::cout << rank << " 10 " << "\n"; 
