@@ -24,43 +24,6 @@ inline double border(const double x, const double y){
         return sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
     }
 
-/*inline double compute2norm(double * vec)
-{
-
-    __m256d a, r;
-
-    r = _mm256_setzero_pd();
-     std::cout << "+++++++++ " << (int)sizeof(vec) << "\n";
-    for(int i = 0 ; i< (int)sizeof(vec); i+=4)
-    {
-        
-        a = _mm256_load_pd( &vec[i]);
-        
-        r = _mm256_add_pd(_mm256_mul_pd(a,a),r);
-    }
-    std::cout << "------ " << (int)sizeof(vec) << "\n";
-
-    return (double) r[0]+r[1]+r[2]+r[3];
-
-}
-
-inline double compute2normVec(vector<double> vec)
-{
-
-    __m256d a, r;
-
-    r = _mm256_setzero_pd();
-
-    for(int i = 0 ; i< (int)vec.size(); i+=4)
-    {
-        a = _mm256_load_pd( &vec[i]);
-        r = _mm256_add_pd(_mm256_mul_pd(a,a),r);
-    }
-
-    return (double) r[0]+r[1]+r[2]+r[3];
-
-}*/
-
 inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,const double alpha, const double beta, const double gama,
    int destn, int dests)
 {  
@@ -333,28 +296,6 @@ int main(int argc, char** argv)
     double * mresult = new double[len];
     double * nresult = new double[len];
     
-   /* for(int h=0;h<len;h+=4)
-    {
-      tresult[h]=0;  
-      tresult[h+1]=0;
-      tresult[h+2]=0;
-      tresult[h+3]=0;
-      
-      fresult[h]=0;  
-      fresult[h+1]=0;
-      fresult[h+2]=0;
-      fresult[h+3]=0;
-      
-      mresult[h]=0;  
-      mresult[h+1]=0;
-      mresult[h+2]=0;
-      mresult[h+3]=0;
-      
-      nresult[h]=0;  
-      nresult[h+1]=0;
-      nresult[h+2]=0;
-      nresult[h+3]=0;
-    }*/
     
     double resd =0.0;
    
@@ -410,24 +351,24 @@ int main(int argc, char** argv)
       
     if(*dt0 > error)
      {    
-            std::cout << "4??? " << "\n";   
+            std::cout << rank << " 4??? " << "\n";   
         std::vector<double> Dvec (Rvec); 
-        std::cout << "4>>>> " << "\n";    
+        std::cout << rank << " 4>>>> " << "\n";    
         for(int i = 0 ; i<iter; i++)
        {
-        std::cout << "4%%% " << "\n";
+        std::cout << rank << " 4%%% " << "\n";
         if(rank==0)
         MPI_Bcast((void*)&Dvec,(int)Dvec.size(),MPI_INT,0,MPI_COMM_WORLD);
-         std::cout << "4### " << "\n";
+         std::cout << rank << " 4### " << "\n";
          //MPI_Barrier(MPI_COMM_WORLD);
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
-         std::cout << "4*** " << "\n";
+         std::cout << rank << " 4*** " << "\n";
         
        // MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank+10, MPI_COMM_WORLD,&request);
-         std::cout << "4+++" << "\n";
+         std::cout << rank << " 4+++" << "\n";
        
-         std::cout << "4&&&" << "\n";
+         std::cout << rank << " 4&&&" << "\n";
         if(rank == 0)
         {             
             int jk = 0;
@@ -442,7 +383,7 @@ int main(int argc, char** argv)
             double dt =1;
 
         alpha = *dt0 / dt;
-             std::cout << "5### " << "\n";   
+             std::cout << rank << " 5### " << "\n";   
         for(int j=0; j< (int)Dvec.size();j+=4)
         {
             Tmpvec[j] = alpha * Dvec[j];
