@@ -206,6 +206,10 @@ int main(int argc, char** argv)
     int dests=0, destn=0, blenx=0, sx =0; 
     int * dim = new int [2]; 
     
+        for (int i = 0; i<(int) sizeof(argv); i++)
+        std::cout << rank << " " << argv[i] << "\n";
+    
+    
     double alpha = 0;
     int nnx =0, nny=0;
     nx = atoi(argv[1]);
@@ -239,7 +243,6 @@ int main(int argc, char** argv)
 	std::cout << "ny," << ny << std::endl;
 	std::cout << "c," << iter <<std::endl;
    
-   
     
   /*      MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
        MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -264,7 +267,7 @@ int main(int argc, char** argv)
          std::cout << rank << " 2222 = " << len;
     std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
   
- /*  if(gridpoint%4 != 0)
+ if(gridpoint%4 != 0)
    {
     //std::cout << rank << " 23 = " << len; 
     len = gridpoint + (4-gridpoint%4);
@@ -273,7 +276,7 @@ int main(int argc, char** argv)
    { 
    len = gridpoint;
       //     std::cout << rank << " 24 = " << len;
-        }*/ 
+        } 
         std::cout << rank << " 2222 = " << len; 
     std::vector<double> Xvec (len,0);
     std::vector<double> Rvec (len,0);
@@ -284,8 +287,7 @@ int main(int argc, char** argv)
     int bleny =  dim[1];  
             
     int sz=blenx*bleny;
-    
-    
+       
     if(sz%4 != 0)
     len = sz + (4-sz%4);
     else
