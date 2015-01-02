@@ -363,7 +363,7 @@ int main(int argc, char** argv)
      MPI_Recv(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,0,rank*10,MPI_COMM_WORLD,&status);
         
     std::cout << rank << " " << "55" <<std::endl;
-    MPI_Barrier(MPI_COMM_WORLD);                
+    //MPI_Barrier(MPI_COMM_WORLD);                
     if(*dt0 > error)
      {    
         std::vector<double> Dvec (Rvec); 
@@ -371,12 +371,14 @@ int main(int argc, char** argv)
         for(int i = 0 ; i<iter; i++)
        {
             std::cout << rank << " " << "11" <<std::endl;
-        //if(rank==0)
-        MPI_Bcast((void*)&Dvec,(int)Dvec.size(),MPI_DOUBLE,0,MPI_COMM_WORLD);
-        MPI_Barrier(MPI_COMM_WORLD);
+
+        if(i>0)
+           MPI_Recv(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,0,rank*11,MPI_COMM_WORLD,&status);
+
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
+
         std::cout << rank << " " << "22" <<std::endl;      
-       // MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
+
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank+10, MPI_COMM_WORLD,&request);
     
         if(rank == 0)
@@ -441,9 +443,13 @@ int main(int argc, char** argv)
                Tmpvec[j+3] = beta * Dvec[j+3]; 
         }      
         
-        std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Tvec.begin(),   std::plus<double>());
-
+        std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Dvec.begin(),   std::plus<double>());
         *dt0 = dt1;
+        for(int j=0; j< size;j+=4)
+        {
+          MPI_Isend(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,j,j*11,MPI_COMM_WORLD,&request);  
+        }   
+        
         }
     }
 
