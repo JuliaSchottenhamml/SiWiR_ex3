@@ -176,18 +176,24 @@ int main(int argc, char** argv)
     FdGrid* fgrid;
    	double time = 0;
 	double  dt0[1];
+	double alfa=0;
+    double bita=0;
+    double gama=0;
+    long int gridpoint = 0;
+    double hx = 0.0, hy=0.0;
+    int len = 0;
+    int dests=0, destn=0, blenx=0, sx =0; 
+    int * dim = new int [2]; 
+    GridCaptain* gcap = NULL ;
+    double alpha = 0;
+    int nnx =0, nny=0;
  
-   
-	//double  iresd;
 #ifdef USE_LIKWID
 	likwid_markerInit();
 	likwid_markerStartRegion("dummy");
 #endif
-
 	siwir::Timer	timer;
-
-    //std::vector<double> xsol = callCG(*fGrid,iter,error);
-       // Initialization of MPI
+      // Initialization of MPI
    // ----------------------------------------------------------------
    MPI_Init(&argc, &argv);
    // ----------------------------------------------------------------
@@ -201,22 +207,6 @@ int main(int argc, char** argv)
          MPI_Request request;
          MPI_Status status;  
     
-
-    double alfa=0;
-    double bita=0;
-    double gama=0;
-    int gridpoint = 0;
-    double hx = 0.0, hy=0.0;
-    int len = 0;
-    int dests=0, destn=0, blenx=0, sx =0; 
- 
-    int * dim = new int [2]; 
-        
-    GridCaptain* gcap = NULL ;
-    
-    double alpha = 0;
-      int nnx =0, nny=0;
- 
    if (rank == 0)
    { 
     //std::cout << "3 " << "\n";
@@ -227,9 +217,9 @@ int main(int argc, char** argv)
     nny = ny-1;
     iter = atoi(argv[3]);
     error = atoi(argv[4]);
-     fgrid = new FdGrid (nnx,nny); 
-     gridpoint = fgrid->totalGridPoints();
-	 hx = fgrid->getHx();
+    fgrid = new FdGrid (nnx,nny); 
+    gridpoint = fgrid->totalGridPoints();
+    hx = fgrid->getHx();
      hy = fgrid->getHy();
     bita = 1/hx/hx;
     gama = 1/hy/hy;
@@ -253,7 +243,7 @@ int main(int argc, char** argv)
    }
    
     
-    MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
+        MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
        MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
