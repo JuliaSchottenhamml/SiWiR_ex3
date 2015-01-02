@@ -252,29 +252,29 @@ int main(int argc, char** argv)
 	std::cout << "c," << iter <<std::endl;
    }
    
-     std::cout << " 1 " << "\n"; 
+     std::cout << rank << " 1 " << "\n"; 
     MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << " 2 " << "\n"; 
+    std::cout << rank << "  2 " << "\n"; 
     MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << " 3 " << "\n"; 
+    std::cout << rank << " 3 " << "\n"; 
     MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << " 4 " << "\n"; 
+    std::cout << rank << " 4 " << "\n"; 
     MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << " 5 " << "\n"; 
+    std::cout << rank << " 5 " << "\n"; 
     MPI_Bcast(&iter,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << " 6 " << "\n"; 
+    std::cout << rank << " 6 " << "\n"; 
     MPI_Bcast(&error,1,MPI_INT,0,MPI_COMM_WORLD);   
-    std::cout << " 7 " << "\n"; 
+    std::cout << rank << " 7 " << "\n"; 
     MPI_Bcast(dim,2,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << " 8 " << "\n"; 
+    std::cout << rank << " 8 " << "\n"; 
     MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << " 9 " << "\n"; 
+    std::cout << rank << " 9 " << "\n"; 
     MPI_Bcast(&gridpoint,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << " 10 " << "\n"; 
+    std::cout << rank << " 10 " << "\n"; 
     MPI_Bcast(&hx,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-    std::cout << " 11 " << "\n"; 
+    std::cout << rank << " 11 " << "\n"; 
     MPI_Bcast(&hy,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-    std::cout << " 12 " << "\n"; 
+    std::cout << rank << " 12 " << "\n"; 
     
     
     MPI_Bcast(&alfa,1,MPI_INT,0,MPI_COMM_WORLD);
