@@ -24,7 +24,7 @@ inline double border(const double x, const double y){
         return sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
     }
 
-inline double compute2norm(double * vec)
+/*inline double compute2norm(double * vec)
 {
 
     __m256d a, r;
@@ -59,7 +59,7 @@ inline double compute2normVec(vector<double> vec)
 
     return (double) r[0]+r[1]+r[2]+r[3];
 
-}
+}*/
 
 inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,const double alpha, const double beta, const double gama,
    int destn, int dests)
