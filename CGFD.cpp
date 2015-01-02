@@ -384,13 +384,13 @@ int main(int argc, char** argv)
               for(int l=0; l< (int)sizeof(nresult);l++)
                   Tvec[++jk]= nresult[l];
             }  
-            
+            std::cout << "5### " << "\n";
             double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
            
             //double dt =1;
 
             alpha = *dt0 / dt;
-             //std::cout << rank << " 5### " << "\n";   
+             std::cout << rank << " 6### " << "\n";   
         for(int j=0; j< (int)Dvec.size();j+=4)
         {
             Tmpvec[j] = alpha * Dvec[j];
@@ -398,9 +398,9 @@ int main(int argc, char** argv)
               Tmpvec[j+2] = alpha * Dvec[j+2];
                Tmpvec[j+3] = alpha * Dvec[j+3]; 
         }     
-        //std::cout << rank <<  "6### " << "\n";
+        std::cout << rank <<  "7### " << "\n";
         std::transform (Xvec.begin(), Xvec.end(), Tmpvec.begin(), Xvec.begin(),   std::plus<double>());
-        //  std::cout << rank << "7### " << "\n";
+          std::cout << rank << "8### " << "\n";
         for(int j=0; j< (int)Tvec.size();j+=4)
         {
            Tmpvec[j] = alpha * Tvec[j];
@@ -422,6 +422,7 @@ int main(int argc, char** argv)
            resd += Rvec[il+3] * Rvec[il+3];
         }*/
 
+                  std::cout << rank << "@@@@@@@@@@@@@ " <<  dt1 << "\n";
         if(dt1 < error)
             break;
 
