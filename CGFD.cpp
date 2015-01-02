@@ -1,3 +1,18 @@
+Skip to content
+ This repository
+Explore
+Gist
+Blog
+Help
+karnajitsen karnajitsen
+ 
+3  Unwatch 
+  Star 0
+ Fork 0JuliaSchottenhamml/SiWiR_ex3
+ tree: df3d6c8e83  SiWiR_ex3/CGFD.cpp
+karnajitsenkarnajitsen an hour ago upd
+1 contributor
+459 lines (358 sloc)  12.112 kb RawBlameHistory  
 #include <iostream>
 #include <numeric>
 #include <fstream>
@@ -167,15 +182,27 @@ int main(int argc, char** argv)
     
     }
     
-      int size(0); // The total number of processes
+    int size(0); // The total number of processes
     int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
-    
-    #ifdef USE_LIKWID
+    int nx = 0;
+    int ny = 0;
+    int iter = 0;
+    int error=0;
+    FdGrid* fgrid;
+   	double time = 0;
+	double  dt0[1];
+ 
+   
+	//double  iresd;
+#ifdef USE_LIKWID
 	likwid_markerInit();
 	likwid_markerStartRegion("dummy");
 #endif
+
 	siwir::Timer	timer;
-      // Initialization of MPI
+
+    //std::vector<double> xsol = callCG(*fGrid,iter,error);
+       // Initialization of MPI
    // ----------------------------------------------------------------
    MPI_Init(&argc, &argv);
    // ----------------------------------------------------------------
@@ -187,54 +214,50 @@ int main(int argc, char** argv)
    // ----------------------------------------------------------------   
 
          MPI_Request request;
-         MPI_Status status; 
+         MPI_Status status;  
     
-  
-    int nx = 0;
-    int ny = 0;
-    int iter = 0;
-    int error=0;
-    FdGrid* fgrid;
-   	double time = 0;
-	double  dt0[1];
-	double alfa=0;
+
+    double alfa=0;
     double bita=0;
     double gama=0;
-    long int gridpoint = 0;
+    int gridpoint = 0;
     double hx = 0.0, hy=0.0;
     int len = 0;
     int dests=0, destn=0, blenx=0, sx =0; 
+ 
     int * dim = new int [2]; 
-    
-        for (int i = 0; i<(int) sizeof(argv); i++)
-        std::cout << rank << " " << argv[i] << "\n";
-    
+        
+    GridCaptain* gcap = NULL ;
     
     double alpha = 0;
-    int nnx =0, nny=0;
+      int nnx =0, nny=0;
+ 
+   if (rank == 0)
+   { 
+    //std::cout << "3 " << "\n";
+    
     nx = atoi(argv[1]);
     ny = atoi(argv[2]);
     nnx = nx-1;
     nny = ny-1;
     iter = atoi(argv[3]);
     error = atoi(argv[4]);
-    fgrid = new FdGrid (nnx,nny); 
-    gridpoint = fgrid->totalGridPoints();
-    hx = fgrid->getHx();
+     fgrid = new FdGrid (nnx,nny); 
+     gridpoint = fgrid->totalGridPoints();
+	 hx = fgrid->getHx();
      hy = fgrid->getHy();
     bita = 1/hx/hx;
     gama = 1/hy/hy;
     alfa = -(2/gama+ 2/bita + k * k);
-    //if(rank == 0)
-    GridCaptain* gcap = new GridCaptain(size,*fgrid);
+    gcap = new GridCaptain(size,*fgrid);
+    
     for(int t=0;t<size;t++)
     {
     blenx = gcap->worksheet[t*3+1];
     sx = gcap->worksheet[t*3+0];
-    //MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
-    //MPI_Isend(&sx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
+    MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
+    MPI_Isend(&sx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
     }
-   
     dim[0]=fgrid->getDimM();
     dim[1]=fgrid->getDimN();
    
@@ -242,9 +265,10 @@ int main(int argc, char** argv)
     std::cout << "nx," << nx << std::endl;
 	std::cout << "ny," << ny << std::endl;
 	std::cout << "c," << iter <<std::endl;
+   }
    
     
-  /*      MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
        MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -258,47 +282,41 @@ int main(int argc, char** argv)
     
     MPI_Bcast(&alfa,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
-    MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);*/
-    //MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
     
-    long int totdim = nnx*nny;
-    //MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
-    //MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
-         std::cout << rank << " 2222 = " << len;
-    std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
+    int totdim = nnx*nny;
+    MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
+    MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
+   // std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
   
- if(gridpoint%4 != 0)
-   {
-    //std::cout << rank << " 23 = " << len; 
+   
+   if(gridpoint%4 != 0)
     len = gridpoint + (4-gridpoint%4);
-    }
-   else
-   { 
+   else 
    len = gridpoint;
-      //     std::cout << rank << " 24 = " << len;
-        } 
-        std::cout << rank << " 2222 = " << len; 
+         
     std::vector<double> Xvec (len,0);
     std::vector<double> Rvec (len,0);
     std::vector<double> Fvec (len,0);
     std::vector<double> Tvec (len,0);
     std::vector<double> Tmpvec (len,0); 
-  
+ 
     int bleny =  dim[1];  
-            
+           
     int sz=blenx*bleny;
-       
+    
     if(sz%4 != 0)
     len = sz + (4-sz%4);
     else
     len = sz;
-     std::cout << rank << " 3333 = "; 
+    
     double * tresult = new double[len];
     double * fresult = new double[len];
     double * mresult = new double[len];
     double * nresult = new double[len];
     
-       
+    
     double resd =0.0;
    
     if(rank == 0)
@@ -453,3 +471,5 @@ int main(int argc, char** argv)
     return 0;
 
 }
+Status API Training Shop Blog About
+© 2015 GitHub, Inc. Terms Privacy Security Contact
