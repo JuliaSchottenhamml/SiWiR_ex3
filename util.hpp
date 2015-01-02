@@ -91,6 +91,8 @@ public:
 	int	by	                   = 0;
 	int offsetX                = 0;
 	int offsetY                = 0;
+	
+	int numGhostLayers			= 1;
 		
 	Params(int argc, char **argv){
 		if (argc < 5) {
@@ -103,17 +105,6 @@ public:
 		c           = StringTo<int>(argv[3]);
 		eps         = StringTo<double>(argv[4]);
 		eps2 		= copysign(eps * eps, eps);
-
-		// output configuration parameters
-		/*
-		if (rank==0){
-			std::cout << "nx," << nx << std::endl;
-			std::cout << "ny," << ny << std::endl;
-			std::cout << "c," << c << std::endl;
-			std::cout << "eps," << eps << std::endl;
-			std::cout << "eps2," << eps2 << std::endl;
-		}
-		*/
 		
 		// calculate global parameters
 		hx     = 2.0 / nx;
@@ -136,6 +127,23 @@ public:
 				
 			if (cmd.compare("-vv") == 0)
 				debugOutput = true;
+				
+			if (cmd.compare("-ghost") == 0){
+				++i;
+				numGhostLayers = StringTo<int> (argv[i]);
+			}
+		}
+	}
+	
+	void	printConfiguration(){
+		// output configuration parameters
+		if (rank==0){
+			std::cout << "nx," << nx << std::endl;
+			std::cout << "ny," << ny << std::endl;
+			std::cout << "c," << c << std::endl;
+			std::cout << "eps," << eps << std::endl;
+			std::cout << "eps2," << eps2 << std::endl;
+			std::cout << "numGhostLayers," << numGhostLayers << std::endl;
 		}
 	}
 	

@@ -12,8 +12,6 @@
 #include	"grid.hpp"
 #include	"util.hpp"
 
-const	int	BORDER = 1;
-
 int main(int argc, char **argv) {
 	///******************************************************
 	///********************** INPUT *************************
@@ -32,6 +30,8 @@ int main(int argc, char **argv) {
 	MPI_Comm_rank( MPI_COMM_WORLD, &params.rank );
 	// ----------------------------------------------------------------
 	
+	params.printConfiguration();
+	
 	params.subdivideGrid();
 
 	// Creating the Cartesian topology:
@@ -44,9 +44,9 @@ int main(int argc, char **argv) {
 	MPI_Cart_coords( params.cartcomm, params.cartrank, 2, params.coords );
 	MPI_Cart_shift( params.cartcomm, 0, 1, &params.nbrs[Params::LEFT], &params.nbrs[Params::RIGHT] );
 	MPI_Cart_shift( params.cartcomm, 1, 1, &params.nbrs[Params::DOWN], &params.nbrs[Params::UP] );
-	params.nbrs[Params::UPLEFT] = params.getNeighbour(Params::UPLEFT);
-	params.nbrs[Params::UPRIGHT] = params.getNeighbour(Params::UPRIGHT);
-	params.nbrs[Params::DOWNLEFT] = params.getNeighbour(Params::DOWNLEFT);
+	params.nbrs[Params::UPLEFT]    = params.getNeighbour(Params::UPLEFT);
+	params.nbrs[Params::UPRIGHT]   = params.getNeighbour(Params::UPRIGHT);
+	params.nbrs[Params::DOWNLEFT]  = params.getNeighbour(Params::DOWNLEFT);
 	params.nbrs[Params::DOWNRIGHT] = params.getNeighbour(Params::DOWNRIGHT);
 	//if (params.rank==1)
 		//std::cout << MPI_PROC_NULL << "\t" << params.nbrs[Params::UPLEFT] << "\t" << params.nbrs[Params::UPRIGHT] << "\t" << params.nbrs[Params::DOWNLEFT] << "\t" << params.nbrs[Params::DOWNRIGHT];
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
 	
 	params.createBlock();
 	
-	Grid	lookupF(params.bx, params.by, BORDER);
+	Grid	lookupF(params.bx, params.by, params.numGhostLayers);
 	
 	for (int y = 0; y < params.by; ++y){
 		for (int x = 0; x < params.bx; ++x){
@@ -62,25 +62,35 @@ int main(int argc, char **argv) {
 		}
 	}
 	
-	Grid	u(params.bx, params.by, BORDER);
+	Grid	u(params.bx, params.by, params.numGhostLayers);
 	if (params.dims[1]-1 == params.coords[1]){
 		//std::cout << "border," << params.rank << std::endl;
-		for (int x = 0; x < params.bx; ++x){
+		for (int x = 1 - params.numGhostLayers; x < params.bx + params.numGhostLayers - 1; ++x){
 			u(x, params.by) = border(params.getXCoord(x, params.by), params.getYCoord(x,params.by));
 		}
 	}
 	
-	Grid	r(params.bx, params.by, BORDER);
-	Grid	d(params.bx, params.by, BORDER);
-	Grid	z(params.bx, params.by, BORDER);
+	Grid	r(params.bx, params.by, params.numGhostLayers);
+	Grid	d(params.bx, params.by, params.numGhostLayers);
+	Grid	z(params.bx, params.by, params.numGhostLayers);
 	
 	// Creating a new derived data type
 	MPI_Datatype	verticalBorderType;   
 	MPI_Type_vector( params.by, 1, u.ld, MPI_DOUBLE, &verticalBorderType );
 	MPI_Type_commit( &verticalBorderType );
 	
-	MPI_Request reqs[8];
-	MPI_Status stats[8];
+	// Creating a new derived data type
+	MPI_Datatype	horizontalBorderType;   
+	MPI_Type_vector( params.numGhostLayers, params.bx + 2*params.numGhostLayers - 2, u.ld, MPI_DOUBLE, &horizontalBorderType );
+	MPI_Type_commit( &horizontalBorderType );
+	
+	// Creating a new derived data type
+	MPI_Datatype	cornerBorderType;   
+	MPI_Type_vector( params.numGhostLayers, params.numGhostLayers, u.ld, MPI_DOUBLE, &cornerBorderType );
+	MPI_Type_commit( &cornerBorderType );
+	
+	MPI_Request reqs[16];
+	MPI_Status stats[16];
 	
 	double	localDelta0 = 0.0;
 	double	delta0      = 0.0;
@@ -109,62 +119,101 @@ int main(int argc, char **argv) {
 	
 	MPI_Isend( &d(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, params.cartcomm, &reqs[0]   );
 	MPI_Isend( &d(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, params.cartcomm, &reqs[1]   );
-	MPI_Isend( &d(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[2]   );
-	MPI_Isend( &d(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[3]   );
+	MPI_Isend( &d(0, 0), 1, horizontalBorderType, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[2]   );
+	MPI_Isend( &d(0, params.by-params.numGhostLayers), 1, horizontalBorderType, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[3]   );
+	
+	MPI_Isend( &d(0, params.by - params.numGhostLayers), 1, cornerBorderType, params.nbrs[Params::UPLEFT], 0, params.cartcomm, &reqs[8]   );
+	MPI_Isend( &d(params.bx - params.numGhostLayers, params.by - params.numGhostLayers), 1, cornerBorderType, params.nbrs[Params::UPRIGHT], 0, params.cartcomm, &reqs[9]   );
+	MPI_Isend( &d(0, 0), 1, cornerBorderType, params.nbrs[Params::DOWNLEFT], 0, params.cartcomm, &reqs[10]   );
+	MPI_Isend( &d(params.bx - params.numGhostLayers, 0), 1, cornerBorderType, params.nbrs[Params::DOWNRIGHT], 0, params.cartcomm, &reqs[11]   );
 	
 	MPI_Irecv( &d(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, params.cartcomm, &reqs[4] );
 	MPI_Irecv( &d(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, params.cartcomm, &reqs[5] );
-	MPI_Irecv( &d(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[6] );
-	MPI_Irecv( &d(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[7] );
+	MPI_Irecv( &d(0, -params.numGhostLayers), params.bx, horizontalBorderType, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[6] );
+	MPI_Irecv( &d(0, params.by), params.bx, horizontalBorderType, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[7] );
 	
-	MPI_Waitall( 8, reqs, stats );
+	MPI_Irecv( &d(-params.numGhostLayers, params.by), 1, cornerBorderType, params.nbrs[Params::UPLEFT], 0, params.cartcomm, &reqs[12] );
+	MPI_Irecv( &d(params.bx, params.by), 1, cornerBorderType, params.nbrs[Params::UPRIGHT], 0, params.cartcomm, &reqs[13] );
+	MPI_Irecv( &d(-params.numGhostLayers, -params.numGhostLayers), 1, cornerBorderType, params.nbrs[Params::DOWNLEFT], 0, params.cartcomm, &reqs[14] );
+	MPI_Irecv( &d(params.bx, -params.numGhostLayers), 1, cornerBorderType, params.nbrs[Params::DOWNRIGHT], 0, params.cartcomm, &reqs[15] );
 	
-	for (int c = 0; c < params.c; ++c){		
-		double	localAlpha = 0.0;
-		for (int y = 0; y < params.by; ++y){
-			for (int x = 0; x < params.bx; ++x){
-				z(x, y) = - params.invHx2 * ( d(x - 1, y) + d(x + 1, y) ) - params.invHy2 * ( d(x, y - 1) + d(x, y + 1) ) + params.preF * d(x, y);
-				//std::cout << x + params.offsetX << "\t" << y +params.offsetY << "\t" << temp << "\t" << d(x -1, y) <<  std::endl;
-				//z(x, y) = temp;
-				localAlpha += z(x, y) * d(x, y);
+	MPI_Waitall( 16, reqs, stats );
+	
+	int c = 0;
+	
+	while (c < params.c){
+		int	c2 = c + params.numGhostLayers;
+		if (c >= params.c) c = params.c;
+		double	cInnerLoop = 0;
+		while (c < c2){
+			//if (params.rank == 0) std::cout << c << "\t" << c2 << std::endl;
+			for (int y = 1 - params.numGhostLayers + cInnerLoop; y < params.by + params.numGhostLayers - 1 - cInnerLoop; ++y){
+				for (int x = 1 - params.numGhostLayers + cInnerLoop; x < params.bx + params.numGhostLayers - 1 - cInnerLoop; ++x){
+					z(x, y) = - params.invHx2 * ( d(x - 1, y) + d(x + 1, y) ) - params.invHy2 * ( d(x, y - 1) + d(x, y + 1) ) + params.preF * d(x, y);
+				}
 			}
-		}
-		//alpha = 0;
-		MPI_Allreduce(&localAlpha, &alpha, 1, MPI_DOUBLE, MPI_SUM, params.cartcomm);
-		//if (params.rank==0) std::cout << "alpha, " << alpha << std::endl;
-		alpha = delta0 / alpha;
-		double	localDelta1 = 0.0;
-		for (int y = 0; y < params.by; ++y){
-			for (int x = 0; x < params.bx; ++x){
-				u(x, y) += alpha * d(x, y);
-				r(x, y) -= alpha * z(x, y);
-				localDelta1 += r(x, y) * r(x, y);
+			
+			double	localAlpha = 0.0;
+			for (int y = 0; y < params.by; ++y){
+				for (int x = 0; x < params.bx; ++x){
+					localAlpha += z(x, y) * d(x, y);
+				}
 			}
-		}
-		//delta1 = 0;
-		MPI_Allreduce(&localDelta1, &delta1, 1, MPI_DOUBLE, MPI_SUM, params.cartcomm);
-		//if (params.rank==0) std::cout << "delta1, " << delta1 << std::endl;
-		if (delta1 < params.eps2) break;
-		double beta = delta1 / delta0;
-		for (int y = 0; y < params.by; ++y){
-			for (int x = 0; x < params.bx; ++x){
-				d(x, y) = r(x, y) + beta * d(x,y);
+			MPI_Allreduce(&localAlpha, &alpha, 1, MPI_DOUBLE, MPI_SUM, params.cartcomm);
+			
+			//if (params.rank==0) std::cout << "alpha, " << alpha << std::endl;
+			alpha = delta0 / alpha;
+			
+			for (int y = 1 - params.numGhostLayers + cInnerLoop; y < params.by + params.numGhostLayers - 1 - cInnerLoop; ++y){
+				for (int x = 1 - params.numGhostLayers + cInnerLoop; x < params.bx + params.numGhostLayers - 1 - cInnerLoop; ++x){
+					u(x, y) += alpha * d(x, y);
+					r(x, y) -= alpha * z(x, y);
+				}
 			}
+			
+			double	localDelta1 = 0.0;
+			for (int y = 0; y < params.by; ++y){
+				for (int x = 0; x < params.bx; ++x){
+					localDelta1 += r(x, y) * r(x, y);
+				}
+			}
+			MPI_Allreduce(&localDelta1, &delta1, 1, MPI_DOUBLE, MPI_SUM, params.cartcomm);
+			
+			//if (params.rank==0) std::cout << "delta1, " << delta1 << std::endl;
+			if (delta1 < params.eps2) break;
+			double beta = delta1 / delta0;
+			for (int y = 1 - params.numGhostLayers + cInnerLoop; y < params.by + params.numGhostLayers - 1 - cInnerLoop; ++y){
+				for (int x = 1 - params.numGhostLayers + cInnerLoop; x < params.bx + params.numGhostLayers - 1 - cInnerLoop; ++x){
+					d(x, y) = r(x, y) + beta * d(x,y);
+				}
+			}
+			delta0 = delta1;
+			++cInnerLoop;
+			++c;
 		}
 		
 		MPI_Isend( &d(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, params.cartcomm, &reqs[0]   );
 		MPI_Isend( &d(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, params.cartcomm, &reqs[1]   );
-		MPI_Isend( &d(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[2]   );
-		MPI_Isend( &d(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[3]   );
+		MPI_Isend( &d(0, 0), 1, horizontalBorderType, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[2]   );
+		MPI_Isend( &d(0, params.by-params.numGhostLayers), 1, horizontalBorderType, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[3]   );
+		
+		MPI_Isend( &d(0, params.by - params.numGhostLayers), 1, cornerBorderType, params.nbrs[Params::UPLEFT], 0, params.cartcomm, &reqs[8]   );
+		MPI_Isend( &d(params.bx - params.numGhostLayers, params.by - params.numGhostLayers), 1, cornerBorderType, params.nbrs[Params::UPRIGHT], 0, params.cartcomm, &reqs[9]   );
+		MPI_Isend( &d(0, 0), 1, cornerBorderType, params.nbrs[Params::DOWNLEFT], 0, params.cartcomm, &reqs[10]   );
+		MPI_Isend( &d(params.bx - params.numGhostLayers, 0), 1, cornerBorderType, params.nbrs[Params::DOWNRIGHT], 0, params.cartcomm, &reqs[11]   );
 		
 		MPI_Irecv( &d(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, params.cartcomm, &reqs[4] );
 		MPI_Irecv( &d(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, params.cartcomm, &reqs[5] );
-		MPI_Irecv( &d(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[6] );
-		MPI_Irecv( &d(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[7] );
+		MPI_Irecv( &d(0, -params.numGhostLayers), params.bx, horizontalBorderType, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[6] );
+		MPI_Irecv( &d(0, params.by), params.bx, horizontalBorderType, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[7] );
 		
-		MPI_Waitall( 8, reqs, stats );
+		MPI_Irecv( &d(-params.numGhostLayers, params.by), 1, cornerBorderType, params.nbrs[Params::UPLEFT], 0, params.cartcomm, &reqs[12] );
+		MPI_Irecv( &d(params.bx, params.by), 1, cornerBorderType, params.nbrs[Params::UPRIGHT], 0, params.cartcomm, &reqs[13] );
+		MPI_Irecv( &d(-params.numGhostLayers, -params.numGhostLayers), 1, cornerBorderType, params.nbrs[Params::DOWNLEFT], 0, params.cartcomm, &reqs[14] );
+		MPI_Irecv( &d(params.bx, -params.numGhostLayers), 1, cornerBorderType, params.nbrs[Params::DOWNRIGHT], 0, params.cartcomm, &reqs[15] );
 		
-		delta0 = delta1;
+		MPI_Waitall( 16, reqs, stats );
+
 		//std::cout << delta0 << std::endl;
 	}
 
@@ -250,7 +299,9 @@ int main(int argc, char **argv) {
 	}
 	
 	// Freeing derived data type
-	MPI_Type_free( &verticalBorderType );
+	MPI_Type_free( &verticalBorderType );	
+	MPI_Type_free( &horizontalBorderType );
+	MPI_Type_free( &cornerBorderType );
 	
 	// MPI finalizations
 	// ----------------------------------------------------------------
