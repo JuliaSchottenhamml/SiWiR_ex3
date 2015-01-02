@@ -301,7 +301,7 @@ int main(int argc, char** argv)
     
       
     
-    double resd =0.0;
+    //double resd =0.0;
    
     if(rank == 0)
     destn = -1;
