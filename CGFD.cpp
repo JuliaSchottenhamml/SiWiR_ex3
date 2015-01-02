@@ -245,6 +245,13 @@ int main(int argc, char** argv)
     }
     dim[0]=fgrid->getDimM();
     dim[1]=fgrid->getDimN();
+   
+       
+    std::cout << "nx," << nx << std::endl;
+	std::cout << "ny," << ny << std::endl;
+	std::cout << "c," << iter <<std::endl;
+   }
+   
     MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -254,16 +261,13 @@ int main(int argc, char** argv)
     MPI_Bcast(dim,2,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&gridpoint,1,MPI_INT,0,MPI_COMM_WORLD);
-    MPI_Bcast(&hx,1,MPI_INT,0,MPI_COMM_WORLD);
-    MPI_Bcast(&hy,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&hx,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+    MPI_Bcast(&hy,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+    
+    
     MPI_Bcast(&alfa,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
-       
-    std::cout << "nx," << nx << std::endl;
-	std::cout << "ny," << ny << std::endl;
-	std::cout << "c," << iter <<std::endl;
-   }
     MPI_Barrier(MPI_COMM_WORLD);
     
     int totdim = nnx*nny;
