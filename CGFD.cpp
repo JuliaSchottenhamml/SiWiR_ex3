@@ -251,8 +251,7 @@ int main(int argc, char** argv)
     std::cout << "ny," << ny << std::endl;
 	std::cout << "c," << iter <<std::endl;
    }
-   std::cout << "11" <<std::endl;
-    
+      
        MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
        MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
        MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -269,13 +268,11 @@ int main(int argc, char** argv)
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
-     std::cout << "22" <<std::endl;
-    int totdim = nnx*nny;
+      int totdim = nnx*nny;
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
    // std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
-   std::cout << "33" <<std::endl;
-   
+     
    if(gridpoint%4 != 0)
     len = gridpoint + (4-gridpoint%4);
    else 
@@ -303,6 +300,7 @@ int main(int argc, char** argv)
     double * mresult = new double[len];
     double * nresult = new double[len];
     
+      std::cout << "55" <<std::endl;
     
     double resd =0.0;
    
@@ -316,7 +314,9 @@ int main(int argc, char** argv)
     else 
     destn = rank +1;    
     
-    tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
+      std::cout << "66" <<std::endl;
+
+        tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
      
     fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests);
     //std::cout << "3222 " << sizeof(mresult) << " " << sizeof(fresult) << " "<< sizeof(tresult) << "\n";     
@@ -327,7 +327,8 @@ int main(int argc, char** argv)
     } 
      
      double resdlocal=0.0; 
-      
+      std::cout << "77" <<std::endl;
+  
     //  std::cout << "2### " <<  ;
     
      for(int i = 0 ; i< (int)sizeof(mresult); i+=4)
