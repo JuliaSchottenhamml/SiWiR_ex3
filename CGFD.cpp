@@ -354,11 +354,11 @@ int main(int argc, char** argv)
           Rvec[++jn]= nresult[l];
     
     }
-    std::cout << "11" <<std::endl;
+    std::cout << rank << " " << "11" <<std::endl;
     MPI_Bcast(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,0,MPI_COMM_WORLD);         
-
+    std::cout << rank << " " << "11" <<std::endl;
     }     
-    std::cout << "55" <<std::endl;
+    std::cout << rank << " " << "55" <<std::endl;
     MPI_Barrier(MPI_COMM_WORLD);                
     if(*dt0 > error)
      {    
