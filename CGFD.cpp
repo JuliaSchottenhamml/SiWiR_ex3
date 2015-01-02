@@ -207,10 +207,7 @@ int main(int argc, char** argv)
          MPI_Request request;
          MPI_Status status;  
     
-   if (rank == 0)
-   { 
     //std::cout << "3 " << "\n";
-    
     nx = atoi(argv[1]);
     ny = atoi(argv[2]);
     nnx = nx-1;
@@ -224,15 +221,16 @@ int main(int argc, char** argv)
     bita = 1/hx/hx;
     gama = 1/hy/hy;
     alfa = -(2/gama+ 2/bita + k * k);
+    //if(rank == 0)
     gcap = new GridCaptain(size,*fgrid);
-    
     for(int t=0;t<size;t++)
     {
     blenx = gcap->worksheet[t*3+1];
     sx = gcap->worksheet[t*3+0];
-    MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
-    MPI_Isend(&sx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
+    //MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
+    //MPI_Isend(&sx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
     }
+   
     dim[0]=fgrid->getDimM();
     dim[1]=fgrid->getDimN();
    
@@ -240,10 +238,10 @@ int main(int argc, char** argv)
     std::cout << "nx," << nx << std::endl;
 	std::cout << "ny," << ny << std::endl;
 	std::cout << "c," << iter <<std::endl;
-   }
+   
    
     
-        MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
+  /*      MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
        MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -257,12 +255,12 @@ int main(int argc, char** argv)
     
     MPI_Bcast(&alfa,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
-    MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);*/
     MPI_Barrier(MPI_COMM_WORLD);
     
     int totdim = nnx*nny;
-    MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
-    MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
+    //MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
+    //MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
    // std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
   
    
