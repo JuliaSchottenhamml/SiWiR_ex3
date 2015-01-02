@@ -184,7 +184,7 @@ int main(int argc, char** argv)
     int len = 0;
     int dests=0, destn=0, blenx=0, sx =0; 
     int * dim = new int [2]; 
-    GridCaptain* gcap = NULL ;
+    
     double alpha = 0;
     int nnx =0, nny=0;
  
@@ -222,7 +222,7 @@ int main(int argc, char** argv)
     gama = 1/hy/hy;
     alfa = -(2/gama+ 2/bita + k * k);
     //if(rank == 0)
-    gcap = new GridCaptain(size,*fgrid);
+    GridCaptain* gcap = new GridCaptain(size,*fgrid);
     for(int t=0;t<size;t++)
     {
     blenx = gcap->worksheet[t*3+1];
@@ -256,12 +256,12 @@ int main(int argc, char** argv)
     MPI_Bcast(&alfa,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);*/
-    MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);
     
-    int totdim = nnx*nny;
+    long int totdim = nnx*nny;
     //MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     //MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
-   // std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
+    std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
   
    
    if(gridpoint%4 != 0)
