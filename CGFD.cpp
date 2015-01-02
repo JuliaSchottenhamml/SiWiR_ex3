@@ -274,9 +274,9 @@ int main(int argc, char** argv)
     std::vector<double> Fvec (len,0);
     std::vector<double> Tvec (len,0);
     std::vector<double> Tmpvec (len,0); 
- 
+  std::cout << rank << " 1111 = "; 
     int bleny =  dim[1];  
-           
+     std::cout << rank << " 2222 = ";        
     int sz=blenx*bleny;
     
     
@@ -284,13 +284,13 @@ int main(int argc, char** argv)
     len = sz + (4-sz%4);
     else
     len = sz;
-    
+     std::cout << rank << " 3333 = "; 
     double * tresult = new double[len];
     double * fresult = new double[len];
     double * mresult = new double[len];
     double * nresult = new double[len];
     
-     std::cout << rank << " 1234 = ";    
+       
     double resd =0.0;
    
     if(rank == 0)
