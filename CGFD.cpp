@@ -342,7 +342,7 @@ int main(int argc, char** argv)
     
     MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
     
-    MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);
     if(rank==0)
     {
      int jn=0;
@@ -354,7 +354,7 @@ int main(int argc, char** argv)
           Rvec[++jn]= nresult[l];
     
     }
-    MPI_Bcast((void*)&Rvec,(int)Rvec.size(),MPI_DOUBLE,0,MPI_COMM_WORLD);         
+    MPI_Bcast(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,0,MPI_COMM_WORLD);         
 
     }     
     
