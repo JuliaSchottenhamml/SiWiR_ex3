@@ -167,6 +167,25 @@ int main(int argc, char** argv)
     
     }
     
+    #ifdef USE_LIKWID
+	likwid_markerInit();
+	likwid_markerStartRegion("dummy");
+#endif
+	siwir::Timer	timer;
+      // Initialization of MPI
+   // ----------------------------------------------------------------
+   MPI_Init(&argc, &argv);
+   // ----------------------------------------------------------------
+
+   // Determining the number of CPUs and the rank of this process
+   // ----------------------------------------------------------------
+   MPI_Comm_size( MPI_COMM_WORLD, &size );
+   MPI_Comm_rank( MPI_COMM_WORLD, &rank );
+   // ----------------------------------------------------------------   
+
+         MPI_Request request;
+         MPI_Status status; 
+    
     int size(0); // The total number of processes
     int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
     int nx = 0;
@@ -187,27 +206,6 @@ int main(int argc, char** argv)
     
     double alpha = 0;
     int nnx =0, nny=0;
- 
-#ifdef USE_LIKWID
-	likwid_markerInit();
-	likwid_markerStartRegion("dummy");
-#endif
-	siwir::Timer	timer;
-      // Initialization of MPI
-   // ----------------------------------------------------------------
-   MPI_Init(&argc, &argv);
-   // ----------------------------------------------------------------
-
-   // Determining the number of CPUs and the rank of this process
-   // ----------------------------------------------------------------
-   MPI_Comm_size( MPI_COMM_WORLD, &size );
-   MPI_Comm_rank( MPI_COMM_WORLD, &rank );
-   // ----------------------------------------------------------------   
-
-         MPI_Request request;
-         MPI_Status status;  
-    
-    //std::cout << "3 " << "\n";
     nx = atoi(argv[1]);
     ny = atoi(argv[2]);
     nnx = nx-1;
@@ -268,7 +266,7 @@ int main(int argc, char** argv)
     len = gridpoint + (4-gridpoint%4);
    else 
    len = gridpoint;
-         std::cout << rank << " 1111 = "; 
+        std::cout << rank << " 2222 = " << len;
     std::vector<double> Xvec (len,0);
     std::vector<double> Rvec (len,0);
     std::vector<double> Fvec (len,0);
@@ -276,7 +274,7 @@ int main(int argc, char** argv)
     std::vector<double> Tmpvec (len,0); 
   
     int bleny =  dim[1];  
-     std::cout << rank << " 2222 = ";        
+            
     int sz=blenx*bleny;
     
     
