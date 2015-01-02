@@ -268,13 +268,13 @@ int main(int argc, char** argv)
     len = gridpoint + (4-gridpoint%4);
    else 
    len = gridpoint;
-         
+         std::cout << rank << " 1111 = "; 
     std::vector<double> Xvec (len,0);
     std::vector<double> Rvec (len,0);
     std::vector<double> Fvec (len,0);
     std::vector<double> Tvec (len,0);
     std::vector<double> Tmpvec (len,0); 
-  std::cout << rank << " 1111 = "; 
+  
     int bleny =  dim[1];  
      std::cout << rank << " 2222 = ";        
     int sz=blenx*bleny;
