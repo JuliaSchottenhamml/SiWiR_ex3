@@ -252,30 +252,18 @@ int main(int argc, char** argv)
 	std::cout << "c," << iter <<std::endl;
    }
    
-     std::cout << rank << " 1 " << "\n"; 
-    MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << rank << "  2 " << "\n"; 
-    MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << rank << " 3 " << "\n"; 
-    MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << rank << " 4 " << "\n"; 
-    MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << rank << " 5 " << "\n"; 
-    MPI_Bcast(&iter,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << rank << " 6 " << "\n"; 
-    MPI_Bcast(&error,1,MPI_INT,0,MPI_COMM_WORLD);   
-    std::cout << rank << " 7 " << "\n"; 
-    MPI_Bcast(dim,2,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << rank << " 8 " << "\n"; 
-   // MPI_Bcast(gcap,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << rank << " 9 " << "\n"; 
-    MPI_Bcast(&gridpoint,1,MPI_INT,0,MPI_COMM_WORLD);
-    std::cout << rank << " 10 " << "\n"; 
-    MPI_Bcast(&hx,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-    std::cout << rank << " 11 " << "\n"; 
-    MPI_Bcast(&hy,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-    std::cout << rank << " 12 " << "\n"; 
     
+    MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
+       MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
+        MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
+        MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
+        MPI_Bcast(&iter,1,MPI_INT,0,MPI_COMM_WORLD);
+       MPI_Bcast(&error,1,MPI_INT,0,MPI_COMM_WORLD);   
+       MPI_Bcast(dim,2,MPI_INT,0,MPI_COMM_WORLD);
+       MPI_Bcast(&gridpoint,1,MPI_INT,0,MPI_COMM_WORLD);
+        MPI_Bcast(&hx,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+        MPI_Bcast(&hy,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+       
     
     MPI_Bcast(&alfa,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -285,7 +273,7 @@ int main(int argc, char** argv)
     int totdim = nnx*nny;
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
-    std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
+   // std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
   
    
    if(gridpoint%4 != 0)
@@ -368,24 +356,19 @@ int main(int argc, char** argv)
       
     if(*dt0 > error)
      {    
-            std::cout << rank << " 4??? " << "\n";   
+            
         std::vector<double> Dvec (Rvec); 
-        std::cout << rank << " 4>>>> " << "\n";    
+       
         for(int i = 0 ; i<iter; i++)
        {
-        std::cout << rank << " 4%%% " << "\n";
         if(rank==0)
         MPI_Bcast((void*)&Dvec,(int)Dvec.size(),MPI_INT,0,MPI_COMM_WORLD);
-         std::cout << rank << " 4### " << "\n";
-         //MPI_Barrier(MPI_COMM_WORLD);
+                 //MPI_Barrier(MPI_COMM_WORLD);
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
-         std::cout << rank << " 4*** " << "\n";
-        
+                
        // MPI_Allgatherv((void*)tresult,rec_cnt[rank], MPI_DOUBLE, (void*)&Tvec, rec_cnt,rec_disp, MPI_DOUBLE,MPI_COMM_WORLD );
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank+10, MPI_COMM_WORLD,&request);
-         std::cout << rank << " 4+++" << "\n";
-       
-         std::cout << rank << " 4&&&" << "\n";
+    
         if(rank == 0)
         {             
             int jk = 0;
@@ -395,11 +378,11 @@ int main(int argc, char** argv)
              // std::cout << "5### " << "\n";
               for(int l=0; l< (int)sizeof(nresult);l++)
                   Rvec[++jk]= nresult[l];
-             }  
+            }  
             //double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
             double dt =1;
 
-        alpha = *dt0 / dt;
+            alpha = *dt0 / dt;
              std::cout << rank << " 5### " << "\n";   
         for(int j=0; j< (int)Dvec.size();j+=4)
         {
@@ -407,11 +390,10 @@ int main(int argc, char** argv)
              Tmpvec[j+1] = alpha * Dvec[j+1];
               Tmpvec[j+2] = alpha * Dvec[j+2];
                Tmpvec[j+3] = alpha * Dvec[j+3]; 
-            
         }     
-  std::cout << "6### " << "\n";
+        std::cout << rank <<  "6### " << "\n";
         std::transform (Xvec.begin(), Xvec.end(), Tmpvec.begin(), Tvec.begin(),   std::plus<double>());
-          std::cout << "7### " << "\n";
+          std::cout << rank << "7### " << "\n";
         for(int j=0; j< (int)Tvec.size();j+=4)
         {
            Tmpvec[j] = alpha * Tvec[j];
@@ -425,7 +407,6 @@ int main(int argc, char** argv)
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
-        
          for(int il = 0 ; il< (int)Rvec.size(); il+=4)
         {   
         resd += Rvec[il] * Rvec[il];
@@ -455,19 +436,22 @@ int main(int argc, char** argv)
         }
     }
 
-}   
+}       
     
-    MPI_Finalize();
+    if(rank == 0)
+    {
     	time = timer.elapsed();
-	std::cout << "time," << time << std::endl;
-
+	std::cout << rank << " time," << time << std::endl;
+	for (int i= 0; i< totdim; i++ )
+        std::cout << Xvec[i] << ' ';
+    }
+    MPI_Finalize();
 #ifdef USE_LIKWID
 	likwid_markerStopRegion("dummy");
 	likwid_markerClose();
 #endif
 
-    for (int i= 0; i< totdim; i++ )
-        std::cout << Xvec[i] << ' ';
+    
 
     return 0;
 
