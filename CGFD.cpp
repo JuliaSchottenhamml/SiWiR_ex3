@@ -279,6 +279,7 @@ int main(int argc, char** argv)
            
     int sz=blenx*bleny;
     
+    
     if(sz%4 != 0)
     len = sz + (4-sz%4);
     else
@@ -289,7 +290,7 @@ int main(int argc, char** argv)
     double * mresult = new double[len];
     double * nresult = new double[len];
     
-    
+     std::cout << rank << " 1234 = ";    
     double resd =0.0;
    
     if(rank == 0)
