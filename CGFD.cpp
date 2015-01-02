@@ -264,12 +264,17 @@ int main(int argc, char** argv)
          std::cout << rank << " 2222 = " << len;
     std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
   
-   
    if(gridpoint%4 != 0)
+   {
+    std::cout << rank << " 23 = " << len; 
     len = gridpoint + (4-gridpoint%4);
-   else 
+    }
+   else
+   { 
    len = gridpoint;
-        std::cout << rank << " 2222 = " << len;
+           std::cout << rank << " 24 = " << len;
+        } 
+        std::cout << rank << " 2222 = " << len; 
     std::vector<double> Xvec (len,0);
     std::vector<double> Rvec (len,0);
     std::vector<double> Fvec (len,0);
