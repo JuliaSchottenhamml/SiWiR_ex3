@@ -167,6 +167,9 @@ int main(int argc, char** argv)
     
     }
     
+      int size(0); // The total number of processes
+    int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
+    
     #ifdef USE_LIKWID
 	likwid_markerInit();
 	likwid_markerStartRegion("dummy");
@@ -186,8 +189,7 @@ int main(int argc, char** argv)
          MPI_Request request;
          MPI_Status status; 
     
-    int size(0); // The total number of processes
-    int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
+  
     int nx = 0;
     int ny = 0;
     int iter = 0;
