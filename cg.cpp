@@ -34,19 +34,22 @@ int main(int argc, char **argv) {
 	
 	params.subdivideGrid();
 
-	// The new MPI communicator for the Cartesian topology
-	MPI_Comm cartcomm( MPI_COMM_NULL );
-
 	// Creating the Cartesian topology:
 	//  - Creating a 2D grid with 2 processes in x- and 2 processes in y-direction
 	//  - Determining the coordinates of the processes
 	//  - Determining the neighbors in UP, DOWN, LEFT and RIGHT direction
 	// ----------------------------------------------------------------
-	MPI_Cart_create( MPI_COMM_WORLD, 2, params.dims, params.periods, params.reorder, &cartcomm );
-	MPI_Comm_rank( cartcomm, &params.cartrank );
-	MPI_Cart_coords( cartcomm, params.cartrank, 2, params.coords );
-	MPI_Cart_shift( cartcomm, 0, 1, &params.nbrs[Params::LEFT], &params.nbrs[Params::RIGHT] );
-	MPI_Cart_shift( cartcomm, 1, 1, &params.nbrs[Params::DOWN], &params.nbrs[Params::UP] );
+	MPI_Cart_create( MPI_COMM_WORLD, 2, params.dims, params.periods, params.reorder, &params.cartcomm );
+	MPI_Comm_rank( params.cartcomm, &params.cartrank );
+	MPI_Cart_coords( params.cartcomm, params.cartrank, 2, params.coords );
+	MPI_Cart_shift( params.cartcomm, 0, 1, &params.nbrs[Params::LEFT], &params.nbrs[Params::RIGHT] );
+	MPI_Cart_shift( params.cartcomm, 1, 1, &params.nbrs[Params::DOWN], &params.nbrs[Params::UP] );
+	params.nbrs[Params::UPLEFT] = params.getNeighbour(Params::UPLEFT);
+	params.nbrs[Params::UPRIGHT] = params.getNeighbour(Params::UPRIGHT);
+	params.nbrs[Params::DOWNLEFT] = params.getNeighbour(Params::DOWNLEFT);
+	params.nbrs[Params::DOWNRIGHT] = params.getNeighbour(Params::DOWNRIGHT);
+	//if (params.rank==1)
+		//std::cout << MPI_PROC_NULL << "\t" << params.nbrs[Params::UPLEFT] << "\t" << params.nbrs[Params::UPRIGHT] << "\t" << params.nbrs[Params::DOWNLEFT] << "\t" << params.nbrs[Params::DOWNRIGHT];
 	// ----------------------------------------------------------------
 	
 	params.createBlock();
@@ -99,20 +102,20 @@ int main(int argc, char **argv) {
 		}
 	}
 	//delta0 = 0;
-	MPI_Allreduce(&localDelta0, &delta0, 1, MPI_DOUBLE, MPI_SUM, cartcomm);
+	MPI_Allreduce(&localDelta0, &delta0, 1, MPI_DOUBLE, MPI_SUM, params.cartcomm);
 	//if (params.rank==0) std::cout << "delta0, " << delta0 << std::endl;
 	
 	//if (delta0 < params.eps2) {...}
 	
-	MPI_Isend( &d(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[0]   );
-	MPI_Isend( &d(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[1]   );
-	MPI_Isend( &d(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[2]   );
-	MPI_Isend( &d(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[3]   );
+	MPI_Isend( &d(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, params.cartcomm, &reqs[0]   );
+	MPI_Isend( &d(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, params.cartcomm, &reqs[1]   );
+	MPI_Isend( &d(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[2]   );
+	MPI_Isend( &d(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[3]   );
 	
-	MPI_Irecv( &d(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[4] );
-	MPI_Irecv( &d(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[5] );
-	MPI_Irecv( &d(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[6] );
-	MPI_Irecv( &d(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[7] );
+	MPI_Irecv( &d(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, params.cartcomm, &reqs[4] );
+	MPI_Irecv( &d(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, params.cartcomm, &reqs[5] );
+	MPI_Irecv( &d(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[6] );
+	MPI_Irecv( &d(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[7] );
 	
 	MPI_Waitall( 8, reqs, stats );
 	
@@ -127,7 +130,7 @@ int main(int argc, char **argv) {
 			}
 		}
 		//alpha = 0;
-		MPI_Allreduce(&localAlpha, &alpha, 1, MPI_DOUBLE, MPI_SUM, cartcomm);
+		MPI_Allreduce(&localAlpha, &alpha, 1, MPI_DOUBLE, MPI_SUM, params.cartcomm);
 		//if (params.rank==0) std::cout << "alpha, " << alpha << std::endl;
 		alpha = delta0 / alpha;
 		double	localDelta1 = 0.0;
@@ -139,7 +142,7 @@ int main(int argc, char **argv) {
 			}
 		}
 		//delta1 = 0;
-		MPI_Allreduce(&localDelta1, &delta1, 1, MPI_DOUBLE, MPI_SUM, cartcomm);
+		MPI_Allreduce(&localDelta1, &delta1, 1, MPI_DOUBLE, MPI_SUM, params.cartcomm);
 		//if (params.rank==0) std::cout << "delta1, " << delta1 << std::endl;
 		if (delta1 < params.eps2) break;
 		double beta = delta1 / delta0;
@@ -149,15 +152,15 @@ int main(int argc, char **argv) {
 			}
 		}
 		
-		MPI_Isend( &d(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[0]   );
-		MPI_Isend( &d(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[1]   );
-		MPI_Isend( &d(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[2]   );
-		MPI_Isend( &d(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[3]   );
+		MPI_Isend( &d(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, params.cartcomm, &reqs[0]   );
+		MPI_Isend( &d(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, params.cartcomm, &reqs[1]   );
+		MPI_Isend( &d(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[2]   );
+		MPI_Isend( &d(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[3]   );
 		
-		MPI_Irecv( &d(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[4] );
-		MPI_Irecv( &d(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[5] );
-		MPI_Irecv( &d(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[6] );
-		MPI_Irecv( &d(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[7] );
+		MPI_Irecv( &d(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, params.cartcomm, &reqs[4] );
+		MPI_Irecv( &d(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, params.cartcomm, &reqs[5] );
+		MPI_Irecv( &d(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[6] );
+		MPI_Irecv( &d(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[7] );
 		
 		MPI_Waitall( 8, reqs, stats );
 		
@@ -176,15 +179,15 @@ int main(int argc, char **argv) {
 	///********************** OUTPUT ************************
 	///******************************************************
 	
-	MPI_Isend( &u(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[0]   );
-	MPI_Isend( &u(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[1]   );
-	MPI_Isend( &u(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[2]   );
-	MPI_Isend( &u(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[3]   );
+	MPI_Isend( &u(0, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, params.cartcomm, &reqs[0]   );
+	MPI_Isend( &u(params.bx-1, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, params.cartcomm, &reqs[1]   );
+	MPI_Isend( &u(0, 0), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[2]   );
+	MPI_Isend( &u(0, params.by-1), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[3]   );
 	
-	MPI_Irecv( &u(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, cartcomm, &reqs[4] );
-	MPI_Irecv( &u(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, cartcomm, &reqs[5] );
-	MPI_Irecv( &u(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, cartcomm, &reqs[6] );
-	MPI_Irecv( &u(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, cartcomm, &reqs[7] );
+	MPI_Irecv( &u(-1, 0), 1, verticalBorderType, params.nbrs[Params::LEFT], 0, params.cartcomm, &reqs[4] );
+	MPI_Irecv( &u(params.bx, 0), 1, verticalBorderType, params.nbrs[Params::RIGHT], 0, params.cartcomm, &reqs[5] );
+	MPI_Irecv( &u(0, -1), params.bx, MPI_DOUBLE, params.nbrs[Params::DOWN], 0, params.cartcomm, &reqs[6] );
+	MPI_Irecv( &u(0, params.by), params.bx, MPI_DOUBLE, params.nbrs[Params::UP], 0, params.cartcomm, &reqs[7] );
 	
 	MPI_Waitall( 8, reqs, stats );
 	
@@ -196,14 +199,14 @@ int main(int argc, char **argv) {
 		}
 	}
 	delta0 = 0;
-	MPI_Allreduce(&localDelta0, &delta0, 1, MPI_DOUBLE, MPI_SUM, cartcomm);
+	MPI_Allreduce(&localDelta0, &delta0, 1, MPI_DOUBLE, MPI_SUM, params.cartcomm);
 	if (params.rank == 0){
 		std::cout << "residuum2," << sqrt(delta0 / ( params.nx - 2 ) / ( params.ny - 2 )) << std::endl;
 	}
 	
 	if (params.output){
 		if (params.rank == 0) remove("data/solution.txt");
-		MPI_Barrier( cartcomm );
+		MPI_Barrier( params.cartcomm );
 		/// run through all rows
 		for (int y = 0; y < params.ny; ++y){
 			/// run through grid rows
@@ -222,11 +225,11 @@ int main(int argc, char **argv) {
 							if (params.coords[0] == params.dims[0]-1) fOut << std::endl;
 							fOut.close();						
 						}
-						MPI_Barrier( cartcomm );
+						MPI_Barrier( params.cartcomm );
 					}
 				} else {	
 					for (int dimX = 0; dimX < params.dims[0]; ++dimX){
-						MPI_Barrier( cartcomm );
+						MPI_Barrier( params.cartcomm );
 					}
 				}
 			}		

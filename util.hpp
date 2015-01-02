@@ -7,6 +7,7 @@
 #include	<fstream>
 #include	<cmath>
 #include	<limits>       // std::numeric_limits
+#include	<mpi.h>
 
 /**
   Converts a string to an arbitrary type. >> operator must be defined for the target type.
@@ -59,6 +60,9 @@ public:
 	double	invHy2             = 0.0;
 
 	double	preF               = 0.0;
+	
+	// The new MPI communicator for the Cartesian topology
+	MPI_Comm cartcomm = MPI_COMM_NULL;
 	
 	int	size                   = 0; // The total number of processes
 	int rank                   = 0; // The rank/number of this process (within MPI_COMM_WORLD)
@@ -177,6 +181,25 @@ public:
 				std::cout << "block," << rank << "\t" << coords[0] << "\t" << coords[1] << "\t" << offsetX << "\t" << offsetY << "\t" << bx << "\t" << by << std::endl;
 			MPI_Barrier( MPI_COMM_WORLD );
 		}
+	}
+	
+	inline
+	int getNeighbour(const int dir){
+		int crd[2] = {coords[0], coords[1]};
+		if (dir == UPLEFT) {
+			crd[0] -= 1; crd[1] += 1;
+		} else if (dir == UPRIGHT) {
+			crd[0] += 1; crd[1] += 1;
+		} else if (dir == DOWNLEFT) {
+			crd[0] -= 1; crd[1] -= 1;
+		} else if (dir == DOWNRIGHT) {
+			crd[0] += 1; crd[1] -= 1;
+		}
+		if ((crd[0] < 0) || (crd[0] >= dims[0])) return MPI_PROC_NULL;
+		if ((crd[1] < 0) || (crd[1] >= dims[1])) return MPI_PROC_NULL;
+		int rnk;
+		MPI_Cart_rank( cartcomm, crd, &rnk);
+		return rnk;
 	}
 	
 	inline	
