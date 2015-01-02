@@ -356,6 +356,8 @@ int main(int argc, char** argv)
           Rvec[++jn]= nresult[l];
     }         
     }     
+    
+          std::cout << "99" <<std::endl;
       
     if(*dt0 > error)
      {    
