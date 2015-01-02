@@ -356,13 +356,13 @@ int main(int argc, char** argv)
           MPI_Isend(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,i,i*10,MPI_COMM_WORLD,&request);
     
     }
-    std::cout << rank << " " << "11" <<std::endl;
+    //st:d::cout << rank << " " << "11" <<std::endl;
              
     } 
     
      MPI_Recv(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,0,rank*10,MPI_COMM_WORLD,&status);
         
-    std::cout << rank << " " << "55" <<std::endl;
+    //std::cout << rank << " " << "55" <<std::endl;
     //MPI_Barrier(MPI_COMM_WORLD);                
     if(*dt0 > error)
      {    
@@ -370,7 +370,7 @@ int main(int argc, char** argv)
       
         for(int i = 0 ; i<iter; i++)
        {
-            std::cout << rank << " " << "11" <<std::endl;
+      //      std::cout << rank << " " << "11" <<std::endl;
 
         if(i>0)
            MPI_Recv(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,0,rank*11,MPI_COMM_WORLD,&status);
@@ -379,15 +379,15 @@ int main(int argc, char** argv)
 
         std::cout << rank << " " << "22" <<std::endl;      
 
-        MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank+10, MPI_COMM_WORLD,&request);
-    
+        MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*i, MPI_COMM_WORLD,&request);
+        MPI_Barrier(MPI_COMM_WORLD);  
         if(rank == 0)
         {             
             int jk = 0;
             for( int km=0; km < size; km++)
             {
-                std::cout << rank << " " << "33" <<std::endl; 
-              MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE,km, km+10, MPI_COMM_WORLD,&status);
+      //          std::cout << rank << " " << "33" <<std::endl; 
+              MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE,km, km*i, MPI_COMM_WORLD,&status);
              // std::cout << "5### " << "\n";
               for(int l=0; l< (int)sizeof(nresult);l++)
                   Rvec[++jk]= nresult[l];
