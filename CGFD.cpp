@@ -257,7 +257,7 @@ int main(int argc, char** argv)
     std::cout << " 2 " << "\n"; 
     MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
     std::cout << " 3 " << "\n"; 
-    MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD)
+    MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
     std::cout << " 4 " << "\n"; 
     MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
     std::cout << " 5 " << "\n"; 
