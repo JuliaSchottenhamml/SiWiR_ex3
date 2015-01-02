@@ -268,7 +268,7 @@ int main(int argc, char** argv)
     int totdim = nnx*nny;
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
-    
+    std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
    MPI_Barrier(MPI_COMM_WORLD);
    
    if(gridpoint%4 != 0)
