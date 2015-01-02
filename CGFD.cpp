@@ -362,38 +362,33 @@ int main(int argc, char** argv)
     
      MPI_Recv(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,0,rank*10,MPI_COMM_WORLD,&status);
         
-    //std::cout << rank << " " << "55" <<std::endl;
-    //MPI_Barrier(MPI_COMM_WORLD);                
     if(*dt0 > error)
      {    
         std::vector<double> Dvec (Rvec); 
       
         for(int i = 0 ; i<iter; i++)
        {
-      //      std::cout << rank << " " << "11" <<std::endl;
 
         if(i>0)
            MPI_Recv(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,0,rank*11,MPI_COMM_WORLD,&status);
 
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
-
-        std::cout << rank << " " << "22" <<std::endl;      
-
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*19, MPI_COMM_WORLD,&request);
-        //MPI_Barrier(MPI_COMM_WORLD);  
         if(rank == 0)
         {             
             int jk = 0;
             for( int km=0; km < size; km++)
             {
-      //          std::cout << rank << " " << "33" <<std::endl; 
+            //   std::cout << rank << " " << "33" <<std::endl; 
               MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE,km, km*19, MPI_COMM_WORLD,&status);
              // std::cout << "5### " << "\n";
               for(int l=0; l< (int)sizeof(nresult);l++)
-                  Rvec[++jk]= nresult[l];
+                  Tvec[++jk]= nresult[l];
             }  
-            //double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
-            double dt =1;
+            
+            double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
+           
+            //double dt =1;
 
             alpha = *dt0 / dt;
              //std::cout << rank << " 5### " << "\n";   
@@ -405,7 +400,7 @@ int main(int argc, char** argv)
                Tmpvec[j+3] = alpha * Dvec[j+3]; 
         }     
         //std::cout << rank <<  "6### " << "\n";
-        std::transform (Xvec.begin(), Xvec.end(), Tmpvec.begin(), Tvec.begin(),   std::plus<double>());
+        std::transform (Xvec.begin(), Xvec.end(), Tmpvec.begin(), Xvec.begin(),   std::plus<double>());
         //  std::cout << rank << "7### " << "\n";
         for(int j=0; j< (int)Tvec.size();j+=4)
         {
@@ -420,15 +415,15 @@ int main(int argc, char** argv)
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
-         for(int il = 0 ; il< (int)Rvec.size(); il+=4)
+         /*for(int il = 0 ; il< (int)Rvec.size(); il+=4)
         {   
         resd += Rvec[il] * Rvec[il];
          resd += Rvec[il+1] * Rvec[il+1];
           resd += Rvec[il+2] * Rvec[il+2];
            resd += Rvec[il+3] * Rvec[il+3];
-        }
+        }*/
 
-        if(resd < error)
+        if(dt1 < error)
             break;
 
         double beta = dt1/(*dt0);
