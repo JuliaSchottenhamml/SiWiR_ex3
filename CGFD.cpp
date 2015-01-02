@@ -261,6 +261,7 @@ int main(int argc, char** argv)
     long int totdim = nnx*nny;
     //MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     //MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
+         std::cout << rank << " 2222 = " << len;
     std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
   
    
