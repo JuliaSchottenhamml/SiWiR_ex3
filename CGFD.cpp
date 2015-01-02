@@ -264,12 +264,13 @@ int main(int argc, char** argv)
 	std::cout << "ny," << ny << std::endl;
 	std::cout << "c," << iter <<std::endl;
    }
-   
+    MPI_Barrier(MPI_COMM_WORLD);
+    
     int totdim = nnx*nny;
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
-   MPI_Barrier(MPI_COMM_WORLD);
+  
    
    if(gridpoint%4 != 0)
     len = gridpoint + (4-gridpoint%4);
