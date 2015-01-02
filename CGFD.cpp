@@ -247,9 +247,9 @@ int main(int argc, char** argv)
     dim[1]=fgrid->getDimN();
    
        
-    std::cout << "nx," << nx << std::endl;
-	std::cout << "ny," << ny << std::endl;
-	std::cout << "c," << iter <<std::endl;
+   // std::cout << "nx," << nx << std::endl;
+	//std::cout << "ny," << ny << std::endl;
+	//std::cout << "c," << iter <<std::endl;
    }
    
     
@@ -383,7 +383,7 @@ int main(int argc, char** argv)
             double dt =1;
 
             alpha = *dt0 / dt;
-             std::cout << rank << " 5### " << "\n";   
+             //std::cout << rank << " 5### " << "\n";   
         for(int j=0; j< (int)Dvec.size();j+=4)
         {
             Tmpvec[j] = alpha * Dvec[j];
@@ -391,9 +391,9 @@ int main(int argc, char** argv)
               Tmpvec[j+2] = alpha * Dvec[j+2];
                Tmpvec[j+3] = alpha * Dvec[j+3]; 
         }     
-        std::cout << rank <<  "6### " << "\n";
+        //std::cout << rank <<  "6### " << "\n";
         std::transform (Xvec.begin(), Xvec.end(), Tmpvec.begin(), Tvec.begin(),   std::plus<double>());
-          std::cout << rank << "7### " << "\n";
+        //  std::cout << rank << "7### " << "\n";
         for(int j=0; j< (int)Tvec.size();j+=4)
         {
            Tmpvec[j] = alpha * Tvec[j];
