@@ -379,15 +379,15 @@ int main(int argc, char** argv)
 
         std::cout << rank << " " << "22" <<std::endl;      
 
-        MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*i, MPI_COMM_WORLD,&request);
-        MPI_Barrier(MPI_COMM_WORLD);  
+        MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*19, MPI_COMM_WORLD,&request);
+        //MPI_Barrier(MPI_COMM_WORLD);  
         if(rank == 0)
         {             
             int jk = 0;
             for( int km=0; km < size; km++)
             {
       //          std::cout << rank << " " << "33" <<std::endl; 
-              MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE,km, km*i, MPI_COMM_WORLD,&status);
+              MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE,km, km*19, MPI_COMM_WORLD,&status);
              // std::cout << "5### " << "\n";
               for(int l=0; l< (int)sizeof(nresult);l++)
                   Rvec[++jk]= nresult[l];
