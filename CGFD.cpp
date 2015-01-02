@@ -268,7 +268,7 @@ int main(int argc, char** argv)
     MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
-      int totdim = nnx*nny;
+    int totdim = nnx*nny;
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
    // std::cout << rank << " gridpoint =  " << gridpoint << "\n";    
@@ -317,8 +317,8 @@ int main(int argc, char** argv)
         tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
      
     fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests);
-    //std::cout << "3222 " << sizeof(mresult) << " " << sizeof(fresult) << " "<< sizeof(tresult) << "\n";     
-    for(int i = 0; i< (int)sizeof(tresult); i++)
+  
+      for(int i = 0; i< (int)sizeof(tresult); i++)
     {
         mresult[i] = fresult[i]-tresult[i];
         //std::cout << "\n" << rank << " " << mresult[i];
@@ -326,9 +326,6 @@ int main(int argc, char** argv)
      
      double resdlocal=0.0; 
      
-  
-    //  std::cout << "2### " <<  ;
-    
      for(int i = 0 ; i< (int)sizeof(mresult); i+=4)
     {   
         resdlocal += mresult[i] * mresult[i];
@@ -341,8 +338,7 @@ int main(int argc, char** argv)
     MPI_Reduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
     
     MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
-    
-    //MPI_Barrier(MPI_COMM_WORLD);
+  
     if(rank==0)
     {
      int jn=0;
@@ -356,12 +352,13 @@ int main(int argc, char** argv)
           MPI_Isend(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,i,i*10,MPI_COMM_WORLD,&request);
     
     }
-    //st:d::cout << rank << " " << "11" <<std::endl;
-             
-    } 
+  } 
+  
     
      MPI_Recv(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,0,rank*10,MPI_COMM_WORLD,&status);
         
+  
+  
     if(*dt0 > error)
      {    
         std::vector<double> Dvec (Rvec); 
@@ -374,6 +371,7 @@ int main(int argc, char** argv)
 
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*19, MPI_COMM_WORLD,&request);
+        
         if(rank == 0)
         {       
               std::cout << rank << " " << i << "\n";      
