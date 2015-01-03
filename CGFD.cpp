@@ -387,7 +387,7 @@ int main(int argc, char** argv)
         if(i>0)
         {
            MPI_Recv(&broke,1,MPI_INT,0,rank*11,MPI_COMM_WORLD,&status);
-           if(broke = 1)
+           if(broke == 1)
            break;
            MPI_Recv(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,0,rank*11,MPI_COMM_WORLD,&status);
         }
