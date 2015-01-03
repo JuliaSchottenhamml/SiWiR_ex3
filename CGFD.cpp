@@ -95,7 +95,7 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
     
 }
 
-inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double hx, double hy, int dests)
+inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double hx, double hy, int dests, int rank)
 { 
   // vector<double> fresult(tgrdpoint,0);
 
@@ -333,7 +333,7 @@ int main(int argc, char** argv)
     
     tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
      
-    fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests);
+    fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests,rank);
   
       for(int i = 0; i< (int)sizeof(tresult); i++)
     {
