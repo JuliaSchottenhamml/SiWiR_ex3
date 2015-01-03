@@ -326,7 +326,7 @@ int main(int argc, char** argv)
     else 
     destn = rank -1;
     
-    if(rank == size)
+    if(rank == size-1)
     dests = -1;
     else 
     dests = rank +1;    
