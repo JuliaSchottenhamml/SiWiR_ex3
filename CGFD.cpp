@@ -438,31 +438,18 @@ int main(int argc, char** argv)
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
-         /*for(int il = 0 ; il< (int)Rvec.size(); il+=4)
-        {   
-        resd += Rvec[il] * Rvec[il];
-         resd += Rvec[il+1] * Rvec[il+1];
-          resd += Rvec[il+2] * Rvec[il+2];
-           resd += Rvec[il+3] * Rvec[il+3];
-        }*/
-
-                  //std::cout << rank << "@@@@@@@@@@@@@ " <<  dt1 << "\n";
         if(abs(dt1) < error)
         {
             broke = 1;
-           // MPI_Isend(&broke,1,MPI_INT,j,j*13,MPI_COMM_WORLD,&request); 
-            
-         for(int jb=0; jb< size;jb++)
+
+         for(int jb=1; jb< size;jb++)
         {
           MPI_Isend(&broke,1,MPI_INT,jb,jb*13,MPI_COMM_WORLD,&request);   
-                  //  MPI_Isend(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,j,j*11,MPI_COMM_WORLD,&request);  
         } 
             break;
         }
 
         double beta = dt1/(*dt0);
-
-        //std::transform (Dvec.begin(), Dvec.end(), Tmpvec.begin(),  std::multiplies<double>(),beta);
         
          for(int j=0; j< (int)Dvec.size();j+=4)
         {
@@ -474,7 +461,7 @@ int main(int argc, char** argv)
         
         std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Dvec.begin(),   std::plus<double>());
         *dt0 = dt1;
-        for(int j=0; j< size;j++)
+        for(int j=1; j< size;j++)
         {
           MPI_Isend(&broke,1,MPI_INT,j,j*13,MPI_COMM_WORLD,&request);   
           MPI_Isend(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,j,j*11,MPI_COMM_WORLD,&request);  
