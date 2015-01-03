@@ -120,10 +120,10 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
 
      for(int h=0;h<len;h+=4)
     {
-      result[h]=0;  
-      result[h+1]=0;
-      result[h+2]=0;
-      result[h+3]=0;
+      result[h]=0.0;  
+      result[h+1]=0.0;
+      result[h+2]=0.0;
+      result[h+3]=0.0;
     }
 
     for(int i=sx; i<blenx ; i++)
@@ -136,8 +136,9 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
             //int k = (j-sy)%blenx;
             x = (((gridno-1)%bleny)+1)*hx;
             y = (((gridno-1)/bleny)+1)*hy;
+            //std::cout << "x, y" << x << " " <<y;
             double f = fxy(x,y);
-                                  
+                        std::cout << "x, y,  f" << x << " " <<y << " " << f << "\n";                      
             if(dests == -1)
             {
              gama2 = gama*border(x,y);
