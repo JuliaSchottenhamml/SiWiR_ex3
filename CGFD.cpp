@@ -240,7 +240,7 @@ int main(int argc, char** argv)
     bita = 1/hx/hx;
     gama = 1/hy/hy;
     alfa = (-1.0)*(2.0*gama+ 2.0*bita + k * k);
-    std::cout << "..Rank 0.." << atof(argv[4]) << "  " << error << "\n";
+    //std::cout << "..Rank 0.." << atof(argv[4]) << "  " << error << "\n";
     gcap = new GridCaptain(size,*fgrid);
     
     for(int t=0;t<size;t++)
@@ -342,10 +342,12 @@ int main(int argc, char** argv)
     {
        // std::cout << "\n" << rank << " " << fresult[i];
         mresult[i] = fresult[i]-tresult[i];
-        std::cout << "\n" << rank << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
+        std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
     } 
      
      double resdlocal=0.0; 
+     
+     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  "<< rank;
      
      for(int i = 0 ; i< (int)sizeof(mresult); i+=4)
     {   
