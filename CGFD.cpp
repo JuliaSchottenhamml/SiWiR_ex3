@@ -6,10 +6,19 @@
 #include <memory>
 #include <vector>
 #include <mpi.h>
-#include "GridCaptain.h"
 #include	"Timer.h"
 #include	<cmath>
 #include <functional>
+#include "immintrin.h"
+#include <memory>
+#define LD 64
+#define domxl 0
+#define domxh 2
+#define domyl 0
+#define domyh 1
+#define BLOCKSIZE 4
+
+#define LD1 3
 
 # define k 2.0*M_PI
 
@@ -23,70 +32,109 @@ inline double fxy(const double x, const double y){
 inline double border(const double x, const double y){
         return sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
     }
+    
+    
+  inline double * gcapt(double * worksheet, int const procn, int dimM, int dimN)
+   {
+        
+        int remM = dimM%ver;
+       int bn = dimM/ver;              
+       int m =0;
+        int n =0;
+        int p =0;
+        int s = 0;
+        int ver =0;
+       
+       //worksheet = new double[proc*LD1];
+
+       if(procn%4==0)
+           ver = 4;
+       else if (procn%5==0)
+           ver = 5;
+       else if (procn%6==0)
+           ver = 6;
+       else if (procn%7==0)
+           ver = 7;
+        
+       for (int i = 0; i < ver; i++)
+         {
+                    int q = i*LD1;
+                //worksheet[q+1]=dimN;
+                worksheet[q]=n;
+                //worksheet[q+3]=0;
+                if(i<remM)
+                {
+                  m=bn+1;  
+                  worksheet[q+1]=m; 
+                  n += m;
+                  p= m*dimN;
+                } 
+                else
+                {
+                worksheet[q+1]=bn;  
+                n += bn;
+                p = m*dimN;
+                }
+                worksheet[q+2]=s;
+                s += p;                 
+               //worksheet[q+5]=dimN;
+            }   
+       return worksheet;
+   }
 
 inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,const double alpha, const double beta, const double gama,
-   int destn, int dests)
+   int destn, int dests, int len)
 {  
     
     //std::cout << " in cal matmult ";
    
-    int sy = 0;
-    int len=0;
-    int sz=blenx*bleny;
-    if(sz%4 != 0)
-    len = sz + (4-sz%4);
-    else
-    len = sz;
-    double * result = new double[len];
+    //int sy = 0;
+    int le=sx+blenx;
+    //int sz=blenx*bleny;
+     double * result = new double[len];
     int gridno = 0;
     double gama1 = 0.0;
     double gama2 = 0.0;
     double beta1 = 0.0;
     double beta2 = 0.0;
-    for(int h=0;h<len;h+=4)
+    /*for(int h=0;h<len;h+=4)
     {
       result[h]=0.0;  
       result[h+1]=0.0;
       result[h+2]=0.0;
       result[h+3]=0.0;
-    }
+    }*/
     int l =0;
+    
+     if(destn != -1)
+       gama1 = gama;
+                        
+     if(dests != -1)
+      gama2 = gama;
 
-  for(int i=sx; i<sx+blenx ; i++)
+  for(int i=sx; i<le ; i++)
       {
        // int l = (i-sx)%bleny;
-        for(int j=sy; j<bleny ; j++)
+        for(int j=0; j<bleny ; j++)
         {
-            gama1 = 0.0;
-            gama2 = 0.0;
+            
             beta1 = 0.0;
             beta2 = 0.0;
             gridno= i*bleny + j;            
-            //int kl = (j-sy)%blenx;
-            if(destn != -1)
-             gama1 = gama;
-                        
-            if(dests != -1)
-             gama2 = gama;
-                                                           
-            if(j!=sy)
-                beta1=beta;
-            
-            if(j != bleny-1)
-                beta2=beta;
-            
+                                
+             
             int pm = 0;
             int ppm =0;
             int fm =0;
             int ffm =0;  
              
             int cm = alpha*vec[gridno];
-            if(gridno-1>=0)
-            pm = beta1*vec[gridno-1];
+            if(j!=0)
+            pm = beta*vec[gridno-1];
             if(gridno-3>=0)
             ppm = gama1*vec[gridno-3];
-            if(gridno+1<sz)
-            fm = beta2*vec[gridno+1];
+            if(j != bleny-1)
+            fm = beta*vec[gridno+1];
             if(gridno+3<sz)
             ffm = gama2*vec[gridno+3];
             result[l++]=cm+pm+ppm+fm+ffm;
@@ -98,20 +146,21 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
     
 }
 
-inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double hx, double hy, int dests)
+inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double hx, double hy, int dests, int len)
 { 
   // vector<double> fresult(tgrdpoint,0);
 
     //int bleny =  dim[1];    
     //std::cout << rank << " in cal fvec ";
        
-    int sy = 0;
+    //int sy = 0;
     int len=0;
     int sz=blenx*bleny;
-    if(sz%4 != 0)
+   // int abc = sz%4;
+    /*if(abc != 0)
     len = sz + (4-sz%4);
     else
-    len = sz;
+    len = sz;*/
     double * result = new double[len];
     
     int gridno = 0;
@@ -121,18 +170,18 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
     double x = 0.0;
     double y = 0.0;
 
-     for(int h=0;h<len;h+=4)
+    /* for(int h=0;h<len;h+=4)
     {
       result[h]=0.0;  
       result[h+1]=0.0;
       result[h+2]=0.0;
       result[h+3]=0.0;
-    }
+    }*/
 
     int l = 0;
     for(int i=sx; i< sx+blenx ; i++)
     {
-        for(int j=sy; j<bleny ; j++)
+        for(int j=0; j<bleny ; j++)
         {
             
             gama2 = 0.0;
@@ -201,67 +250,54 @@ int main(int argc, char** argv)
          MPI_Status status;  
     
 
+    int gridpoint = 0;
+    int len = 0;
+    int dests=0, destn=0, blenx=0, sx =0;
+    int nx = 0;
+    int ny = 0;
+    int iter = 0;
+    int broke=0;  
+    int nnx =0, nny=0;
+    double alpha = 0.0;
+    double resdlocal=0.0; 
+    double error=0.0;
+    double* worksheet = new double[size*LD1];;
+   	double time = 0;
+	double  dt0[1];   
     double alfa=0.0;
     double bita=0.0;
     double gama=0.0;
-    int gridpoint = 0;
-    double hx = 0.0, hy=0.0;
-    int len = 0;
-    int dests=0, destn=0, blenx=0, sx =0;
-     int nx = 0;
-    int ny = 0;
-    int iter = 0;
-    double error=0.0;
-    FdGrid* fgrid;
-   	double time = 0;
-	double  dt0[1]; 
- 
-    int * dim = new int [2]; 
-        
-    GridCaptain* gcap = NULL ;
-    
-    double alpha = 0.0;
-      int nnx =0, nny=0;
- 
-   if (rank == 0)
-   { 
-    //std::cout << "3 " << "\n";
-    
+    double hx = 0.0, hy=0.0;  
+       
     nx = atoi(argv[1]);
     ny = atoi(argv[2]);
     nnx = nx-1;
     nny = ny-1;
     iter = atoi(argv[3]);
     error = atof(argv[4]);
-     fgrid = new FdGrid (nnx,nny); 
-     gridpoint = fgrid->totalGridPoints();
-	 hx = fgrid->getHx();
-     hy = fgrid->getHy();
-    bita = 1/hx/hx;
-    gama = 1/hy/hy;
+    gridpoint = nnx*nny;
+    hx = (double)((domxh-domxl)/(nx));
+    hy = (double)((domyh-domyl)/(ny));
+    bita = 1/(hx*hx);
+    gama = 1/(hy*hy);
     alfa = (-1.0)*(2.0*gama+ 2.0*bita + k * k);
-    //std::cout << "..Rank 0.." << atof(argv[4]) << "  " << error << "\n";
-    gcap = new GridCaptain(size,*fgrid);
+    if (rank == 0)
+   {
+    worksheet = gcapt(worksheet, size, nny, nnx); 
     
     for(int t=0;t<size;t++)
     {
-    blenx = gcap->worksheet[t*3+1];
-    sx = gcap->worksheet[t*3+0];
+    blenx = worksheet[t*3+1];
+    sx = worksheet[t*3+0];
     MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
     MPI_Isend(&sx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
     }
-    dim[0]=fgrid->getDimM();
-    dim[1]=fgrid->getDimN();
-   
-       
-   std::cout << "nx," << nx << std::endl;
-    std::cout << "ny," << ny << std::endl;
-	std::cout << "c," << iter <<std::endl;
+           
    }
       
-       MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
-       MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
-       MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
+      // MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
+      // MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
+   /*    MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&iter,1,MPI_INT,0,MPI_COMM_WORLD);
        MPI_Bcast(&error,1,MPI_DOUBLE,0,MPI_COMM_WORLD);   
@@ -273,12 +309,12 @@ int main(int argc, char** argv)
     
     MPI_Bcast(&alfa,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
     MPI_Bcast(&bita,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-    MPI_Bcast(&gama,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+    MPI_Bcast(&gama,1,MPI_DOUBLE,0,MPI_COMM_WORLD);*/
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
    // std::cout << rank << " gridpoint =  " << gridpoint << "\n"; 
-    MPI_Barrier(MPI_COMM_WORLD);
-    int totdim = nnx*nny;
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //int totdim = nnx*nny;
      
   /*  std::cout << rank << " nnx = " << nnx << " "; 
     std::cout << rank << " nny = " << nny << " "; 
@@ -294,10 +330,11 @@ int main(int argc, char** argv)
          std::cout << rank << " gama = " << gama << " "; 
           std::cout << rank << " blenx = " << blenx << " "; 
          std::cout << rank << " sx = " << sx << " ";*/
+   
+   int abc = gridpoint%4;
      
-     
-   if(gridpoint%4 != 0)
-    len = gridpoint + (4-gridpoint%4);
+   if(abc != 0)
+    len = gridpoint + (4-abc);
    else 
    len = gridpoint;
    
@@ -308,20 +345,18 @@ int main(int argc, char** argv)
     std::vector<double> Tvec (len,0);
     std::vector<double> Tmpvec (len,0); 
  
-    int bleny =  dim[1];
-    int broke=0;  
-           
-    int sz=blenx*bleny;
+    //int bleny =  nnx;
+              
+    int sz=nnx*blenx;
+    abc = sz%4;
     
-    if(sz%4 != 0)
-    len = sz + (4-sz%4);
-    else
-    len = sz;
-    
-    double * tresult = new double[len];
-    double * fresult = new double[len];
-    double * mresult = new double[len];
-    double * nresult = new double[len];
+    if(abc != 0)
+    sz = sz + (4-abc);
+        
+    double * tresult = new double[sz];
+    double * fresult = new double[sz];
+    double * mresult = new double[sz];
+    double * nresult = new double[sz];
               
     //double resd =0.0;
    
@@ -335,19 +370,18 @@ int main(int argc, char** argv)
     else 
     dests = rank +1;    
     
-       tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
-       fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests);
+       tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama, destn,dests,len);        
+       fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,len);
    // std::cout << "\n" << rank << " " << blenx << " " << bleny << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
-      for(int i = 0; i< (int)sizeof(tresult); i++)
+      for(int i = 0; i< (int)sizeof(tresult); i+=4)
     {
        // std::cout << "\n" << rank << " " << fresult[i];
         mresult[i] = fresult[i]-tresult[i];
-        //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
+        mresult[i+1] = fresult[i+1]-tresult[i+1];
+        mresult[i+2] = fresult[i+2]-tresult[i+2];
+        mresult[i+3] = fresult[i+3]-tresult[i+3];
+                //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
     } 
-     
-     double resdlocal=0.0; 
-     
-     
      
      for(int i = 0 ; i< (int)sizeof(mresult); i+=4)
     {   
@@ -372,12 +406,15 @@ int main(int argc, char** argv)
     {
       MPI_Recv(nresult,(int)sizeof(mresult), MPI_DOUBLE, i, i, MPI_COMM_WORLD,&status);
     
-      for(int l=0; l< (int)sizeof(nresult);l++)
-          Rvec[++jn]= nresult[l];
-          
-          MPI_Isend(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,i,i*10,MPI_COMM_WORLD,&request);
-    
+      for(int l=0; l< (int)sizeof(nresult);l+=4)
+      {
+          Rvec[jn++]= nresult[l];
+          Rvec[jn++]= nresult[l+1];
+          Rvec[jn++]= nresult[l+2];
+          Rvec[jn++]= nresult[l+3];
+      }   
     }
+    MPI_Isend(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,i,i*10,MPI_COMM_WORLD,&request);
   } 
   
     
@@ -401,7 +438,7 @@ int main(int argc, char** argv)
            MPI_Recv(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,0,rank*11,MPI_COMM_WORLD,&status);
         }
 
-        tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
+        tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama, destn,dests,len);
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*19, MPI_COMM_WORLD,&request);
         
         if(rank == 0)
@@ -410,15 +447,17 @@ int main(int argc, char** argv)
             int jk = 0;
             for( int km=0; km < size; km++)
             {
-            //   std::cout << rank << " " << "33" <<std::endl; 
               MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE,km, km*19, MPI_COMM_WORLD,&status);
-             // std::cout << "5### " << "\n";
-              for(int l=0; l< (int)sizeof(nresult);l++)
-                  Tvec[++jk]= nresult[l];
+              for(int l=0; l< (int)sizeof(nresult);l+=4)
+              {
+                  Tvec[jk++]= nresult[l];
+                  Tvec[jk++]= nresult[l+1];
+                  Tvec[jk++]= nresult[l+2];
+                  Tvec[jk++]= nresult[l+3];
+              }
             }  
             //std::cout << "5### " << "\n";
             double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
-           
             //double dt =1;
 
             alpha = *dt0 / dt;
@@ -482,14 +521,16 @@ int main(int argc, char** argv)
     
     if(rank == 0)
     {
-        for (int i= 0; i< totdim; i++ )
+        
+    time = timer.elapsed();
+	std::cout << rank << " time," << time << std::endl;
+	
+	for (int i= 0; i< totdim; i++ )
         {
         if(i%nnx == 0 )
         std::cout << "\n";    
         std::cout << Xvec[i] << ' ';
         }
-    	time = timer.elapsed();
-	std::cout << rank << " time," << time << std::endl;
 	
     }
     MPI_Finalize();
