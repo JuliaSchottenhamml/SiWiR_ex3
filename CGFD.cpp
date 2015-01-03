@@ -484,7 +484,7 @@ int main(int argc, char** argv)
     {
         for (int i= 0; i< totdim; i++ )
         {
-        if(i%nnx = 0 )
+        if(i%nnx == 0 )
         std::cout << "\n";    
         std::cout << Xvec[i] << ' ';
         }
