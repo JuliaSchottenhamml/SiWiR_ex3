@@ -23,7 +23,7 @@ class FdGrid{
     double hx,hy;
     int totdim;
 
-    //__declspec(align(16,sizeof(double)))
+    //__declspec(align(16,sizeof(double)))/////
     double * matarray, *bx;
 
 public:
@@ -57,7 +57,7 @@ public:
         hx = (domxh-domxl)/(n+1);
         hy = (domyh-domyl)/(m+1);
         
-        std::cout << "..in FGrid Hx and Hy.." << hx << " " << hy << "\n";
+        std::cout << "..in FGrid Hx and Hy.." << hx << "  " << hy << "\n";
 
         int newdimN = dimN + LD;
         int newdimM = dimM + LD;
