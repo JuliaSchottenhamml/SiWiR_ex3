@@ -283,7 +283,7 @@ int main(int argc, char** argv)
         std::cout << rank << " gridpoint = " << gridpoint << "\n"; 
          std::cout << rank << " hx = " << hx << "\n"; 
          std::cout << rank << " hy = " << hy << "\n"; 
-         std::cout << rank << " alpha = " << alpha << "\n"; 
+         std::cout << rank << " alpha = " << alfa << "\n"; 
          std::cout << rank << " beta = " << bita << "\n"; 
          std::cout << rank << " gama = " << gama << "\n"; 
           std::cout << rank << " blenx = " << blenx << "\n"; 
