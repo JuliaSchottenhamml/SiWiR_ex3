@@ -318,7 +318,7 @@ int main(int argc, char** argv)
     //MPI_Barrier(MPI_COMM_WORLD);
     //int totdim = nnx*nny;
      
-  /*  std::cout << rank << " nnx = " << nnx << " "; 
+  std::cout << rank << " nnx = " << nnx << " "; 
     std::cout << rank << " nny = " << nny << " "; 
      std::cout << rank << " nx = " << nx << " "; 
       std::cout << rank << " ny = " << ny << " "; 
@@ -331,7 +331,7 @@ int main(int argc, char** argv)
          std::cout << rank << " beta = " << bita << " "; 
          std::cout << rank << " gama = " << gama << " "; 
           std::cout << rank << " blenx = " << blenx << " "; 
-         std::cout << rank << " sx = " << sx << " ";*/
+         std::cout << rank << " sx = " << sx << " ";
    
    int abc = gridpoint%4;
      
