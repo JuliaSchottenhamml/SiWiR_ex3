@@ -115,8 +115,8 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
      
     double gama2 = 0.0;
 
-    int x = 0;
-    int y = 0;
+    double x = 0.0;
+    double y = 0.0;
 
      for(int h=0;h<len;h+=4)
     {
