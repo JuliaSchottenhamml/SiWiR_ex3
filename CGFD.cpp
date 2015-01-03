@@ -15,7 +15,7 @@
 
 #define ERRLIMIT 0;
 
-inline double fxy(const int x, const int y){
+inline double fxy(const double x, const double y){
 
          return 4.0*M_PI*M_PI*sin(2.0*M_PI*x)*sinh(2.0*M_PI*y);
     }
