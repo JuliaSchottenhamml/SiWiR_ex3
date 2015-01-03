@@ -389,8 +389,8 @@ int main(int argc, char** argv)
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*19, MPI_COMM_WORLD,&request);
         
-        if(rank == 0)
-        {       
+        //if(rank == 0)
+        //{       
             //std::cout << rank << " &&&&@@@@@@@@@@@@########## " << i << "\n";      
             int jk = 0;
             for( int km=0; km < size; km++)
@@ -463,7 +463,7 @@ int main(int argc, char** argv)
         }   
         
         }
-    }
+    //}
 
 }       
     
