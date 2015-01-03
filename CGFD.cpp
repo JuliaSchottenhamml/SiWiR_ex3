@@ -278,8 +278,8 @@ int main(int argc, char** argv)
     iter = atoi(argv[3]);
     error = atof(argv[4]);
     gridpoint = nnx*nny;
-    hx = (double)((domxh-domxl)/(nx));
-    hy = (double)((domyh-domyl)/(ny));
+    hx = (double)((domxh-domxl)/(1.0)*(nx));
+    hy = (double)((domyh-domyl)/(1.0)*(ny));
     bita = 1/(hx*hx);
     gama = 1/(hy*hy);
     alfa = (-1.0)*(2.0*gama+ 2.0*bita + k * k);
