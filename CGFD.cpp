@@ -329,7 +329,7 @@ int main(int argc, char** argv)
     if(rank == size)
     dests = -1;
     else 
-    destn = rank +1;    
+    dests = rank +1;    
     
     std::cout << "\n*************** " << rank ;
     tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
