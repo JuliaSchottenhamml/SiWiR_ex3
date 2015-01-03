@@ -397,7 +397,7 @@ int main(int argc, char** argv)
     
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
-   // std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
+    std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
     
     MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
   
