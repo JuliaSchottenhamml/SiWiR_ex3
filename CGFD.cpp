@@ -474,10 +474,11 @@ int main(int argc, char** argv)
     
     if(rank == 0)
     {
+        for (int i= 0; i< totdim; i++ )
+        std::cout << Xvec[i] << ' ';
     	time = timer.elapsed();
 	std::cout << rank << " time," << time << std::endl;
-	for (int i= 0; i< totdim; i++ )
-        std::cout << Xvec[i] << ' ';
+	
     }
     MPI_Finalize();
 #ifdef USE_LIKWID
