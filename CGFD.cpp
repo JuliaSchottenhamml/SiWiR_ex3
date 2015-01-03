@@ -491,7 +491,7 @@ int main(int argc, char** argv)
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
-        if(dt1 < abs)
+        if(dt1 < error)
         {
             broke = 1;
 
