@@ -318,7 +318,7 @@ int main(int argc, char** argv)
     //MPI_Barrier(MPI_COMM_WORLD);
     //int totdim = nnx*nny;
      
-  std::cout << rank << " nnx = " << nnx << " "; 
+  /*std::cout << rank << " nnx = " << nnx << " "; 
     std::cout << rank << " nny = " << nny << " "; 
      std::cout << rank << " nx = " << nx << " "; 
       std::cout << rank << " ny = " << ny << " "; 
@@ -331,7 +331,7 @@ int main(int argc, char** argv)
          std::cout << rank << " beta = " << bita << " "; 
          std::cout << rank << " gama = " << gama << " "; 
           std::cout << rank << " blenx = " << blenx << " "; 
-         std::cout << rank << " sx = " << sx << " ";
+         std::cout << rank << " sx = " << sx << " ";*/
    
    int abc = gridpoint%4;
      
@@ -421,14 +421,14 @@ int main(int argc, char** argv)
        MPI_Isend(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,i,i*10,MPI_COMM_WORLD,&request);
     }
    
-  } 
+   } 
   
     
      MPI_Recv(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,0,rank*10,MPI_COMM_WORLD,&status);
         
   
   
-    if(abs(*dt0) > abs(error))
+    if(*dt0 > error)
      {    
         std::vector<double> Dvec (Rvec); 
       
@@ -444,8 +444,8 @@ int main(int argc, char** argv)
            MPI_Recv(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,0,rank*11,MPI_COMM_WORLD,&status);
         }
 
-        tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama, destn,dests,len);
-        MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*19, MPI_COMM_WORLD,&request);
+         tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama, destn,dests,len);
+         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*19, MPI_COMM_WORLD,&request);
         
         if(rank == 0)
         {       
@@ -491,7 +491,7 @@ int main(int argc, char** argv)
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
-        if(abs(dt1) < abs(error))
+        if(dt1 < abs)
         {
             broke = 1;
 
