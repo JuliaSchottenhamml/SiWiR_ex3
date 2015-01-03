@@ -142,7 +142,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
             y = (((gridno-1)/bleny)+1)*hy;
             //std::cout << "x, y" << x << " " <<y;
             double f = fxy(x,y);
-                        std::cout << rank << " x, y, f " << x << " " <<y << " " << f << "\n";                      
+                        //std::cout << rank << " x, y, f " << x << " " <<y << " " << f << "\n";                      
             if(dests == -1)
             {
              gama2 = gama*border(x,y);
@@ -337,7 +337,7 @@ int main(int argc, char** argv)
     
        tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
        fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests,rank);
-    std::cout << "\n" << rank << " " << blenx << " " << bleny << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
+   // std::cout << "\n" << rank << " " << blenx << " " << bleny << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
       for(int i = 0; i< (int)sizeof(tresult); i++)
     {
        // std::cout << "\n" << rank << " " << fresult[i];
