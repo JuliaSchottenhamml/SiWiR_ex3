@@ -27,6 +27,8 @@ inline double border(const double x, const double y){
 inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,const double alpha, const double beta, const double gama,
    int destn, int dests)
 {  
+    
+    std::cout << " in cal matmult ";
    
     int sy = 0;
     int len=0;
@@ -100,7 +102,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
   // vector<double> fresult(tgrdpoint,0);
 
     //int bleny =  dim[1];    
-    
+    std::cout << rank << " in cal fvec ";
        
     int sy = 0;
     int len=0;
