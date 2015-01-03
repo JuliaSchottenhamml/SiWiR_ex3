@@ -406,7 +406,7 @@ int main(int argc, char** argv)
         
         if(rank == 0)
         {       
-            //std::cout << rank << " &&&&@@@@@@@@@@@@########## " << i << "\n";      
+            std::cout << rank << " no of iteration " << i << "\n";      
             int jk = 0;
             for( int km=0; km < size; km++)
             {
