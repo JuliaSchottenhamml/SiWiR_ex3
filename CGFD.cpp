@@ -389,6 +389,7 @@ int main(int argc, char** argv)
            MPI_Recv(&broke,1,MPI_INT,0,rank*13,MPI_COMM_WORLD,&status);
            if(broke == 1)
            break;
+           std::cout << rank << " &&&&@@@@@@@@@@@@########## " << "\n"; 
            MPI_Recv(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,0,rank*11,MPI_COMM_WORLD,&status);
         }
 
