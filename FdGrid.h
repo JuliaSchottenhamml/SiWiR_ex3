@@ -40,8 +40,8 @@ public:
     {
         dimM = m;
         dimN = n;
-        hx = (domxh-domxl)/(n+1);
-        hy = (domyh-domyl)/(m+1);
+        hx = (double)((domxh-domxl)/(n+1));
+        hy = (double)((domyh-domyl)/(m+1));
         
         std::cout << "..in FGrid Hx and Hy.." <<m << n << (domxh-domxl) << (domyh-domyl) << hx << "  " << hy << "\n";
         totdim = (dimM+LD) * (dimN+LD);
