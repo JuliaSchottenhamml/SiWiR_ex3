@@ -302,7 +302,8 @@ int main(int argc, char** argv)
     std::vector<double> Tvec (len,0);
     std::vector<double> Tmpvec (len,0); 
  
-    int bleny =  dim[1];  
+    int bleny =  dim[1];
+    int broke=0;  
            
     int sz=blenx*bleny;
     
@@ -384,13 +385,18 @@ int main(int argc, char** argv)
        {
 
         if(i>0)
+        {
+           MPI_Recv(&broke,1,MPI_INT,0,rank*11,MPI_COMM_WORLD,&status);
+           if(broke = 1)
+           break;
            MPI_Recv(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,0,rank*11,MPI_COMM_WORLD,&status);
+        }
 
         tresult = matMult(Dvec, blenx,bleny,sx, alfa, bita, gama, destn,dests);
         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*19, MPI_COMM_WORLD,&request);
         
-        //if(rank == 0)
-        //{       
+        if(rank == 0)
+        {       
             //std::cout << rank << " &&&&@@@@@@@@@@@@########## " << i << "\n";      
             int jk = 0;
             for( int km=0; km < size; km++)
@@ -441,7 +447,17 @@ int main(int argc, char** argv)
 
                   //std::cout << rank << "@@@@@@@@@@@@@ " <<  dt1 << "\n";
         if(abs(dt1) < error)
+        {
+            broke = 1;
+           // MPI_Isend(&broke,1,MPI_INT,j,j*13,MPI_COMM_WORLD,&request); 
+            
+         for(int jb=0; jb< size;jb++)
+        {
+          MPI_Isend(&broke,1,MPI_INT,jb,jb*13,MPI_COMM_WORLD,&request);   
+                  //  MPI_Isend(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,j,j*11,MPI_COMM_WORLD,&request);  
+        } 
             break;
+        }
 
         double beta = dt1/(*dt0);
 
@@ -459,11 +475,12 @@ int main(int argc, char** argv)
         *dt0 = dt1;
         for(int j=0; j< size;j++)
         {
+          MPI_Isend(&broke,1,MPI_INT,j,j*13,MPI_COMM_WORLD,&request);   
           MPI_Isend(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,j,j*11,MPI_COMM_WORLD,&request);  
         }   
         
         }
-    //}
+    }
 
 }       
     
