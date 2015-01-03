@@ -142,7 +142,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
             y = (((gridno-1)/bleny)+1)*hy;
             //std::cout << "x, y" << x << " " <<y;
             double f = fxy(x,y);
-                        //std::cout << rank << " x, y, f " << x << " " <<y << " " << f << "\n";                      
+            std::cout << " x, y, f " << x << " " <<y << " " << f << "\n";                      
             if(dests == -1)
             {
              gama2 = gama*border(x,y);
@@ -357,11 +357,11 @@ int main(int argc, char** argv)
         resdlocal += mresult[i+3] * mresult[i+3];
     }
     
-    std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
+    //std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
     
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
-    std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
+   // std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
     
     MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
   
@@ -397,7 +397,7 @@ int main(int argc, char** argv)
            MPI_Recv(&broke,1,MPI_INT,0,rank*13,MPI_COMM_WORLD,&status);
            if(broke == 1)
            break;
-           std::cout << rank << " &&&&@@@@@@@@@@@@########## " << "\n"; 
+           //std::cout << rank << " &&&&@@@@@@@@@@@@########## " << "\n"; 
            MPI_Recv(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,0,rank*11,MPI_COMM_WORLD,&status);
         }
 
