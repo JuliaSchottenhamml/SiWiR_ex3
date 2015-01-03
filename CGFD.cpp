@@ -234,7 +234,7 @@ int main(int argc, char** argv)
     bita = 1/hx/hx;
     gama = 1/hy/hy;
     alfa = (-1.0)*(2.0*gama+ 2.0*bita + k * k);
-    std::cout << "..Rank 0.." << alfa << "  " << k*k << "\n";
+    std::cout << "..Rank 0.." << atof(argv[4]) << "  " << error << "\n";
     gcap = new GridCaptain(size,*fgrid);
     
     for(int t=0;t<size;t++)
@@ -258,7 +258,7 @@ int main(int argc, char** argv)
        MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&iter,1,MPI_INT,0,MPI_COMM_WORLD);
-       MPI_Bcast(&error,1,MPI_INT,0,MPI_COMM_WORLD);   
+       MPI_Bcast(&error,1,MPI_DOUBLE,0,MPI_COMM_WORLD);   
        MPI_Bcast(dim,2,MPI_INT,0,MPI_COMM_WORLD);
        MPI_Bcast(&gridpoint,1,MPI_INT,0,MPI_COMM_WORLD);
         MPI_Bcast(&hx,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
