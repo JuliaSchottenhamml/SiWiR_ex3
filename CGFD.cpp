@@ -347,7 +347,7 @@ int main(int argc, char** argv)
      
      double resdlocal=0.0; 
      
-     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  "<< rank;
+     
      
      for(int i = 0 ; i< (int)sizeof(mresult); i+=4)
     {   
@@ -357,7 +357,7 @@ int main(int argc, char** argv)
         resdlocal += mresult[i+3] * mresult[i+3];
     }
     
-   
+    std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  "<< rank;
     MPI_Reduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
     
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
