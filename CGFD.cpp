@@ -37,14 +37,13 @@ inline double border(const double x, const double y){
   inline double * gcapt(double * worksheet, int const procn, int dimM, int dimN)
    {
         
-        int remM = dimM%ver;
-       int bn = dimM/ver;              
+                      
        int m =0;
         int n =0;
         int p =0;
         int s = 0;
         int ver =0;
-       
+    
        //worksheet = new double[proc*LD1];
 
        if(procn%4==0)
@@ -55,6 +54,9 @@ inline double border(const double x, const double y){
            ver = 6;
        else if (procn%7==0)
            ver = 7;
+       int remM = dimM%ver;
+       int bn = dimM/ver;
+        
         
        for (int i = 0; i < ver; i++)
          {
@@ -135,7 +137,7 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
             ppm = gama1*vec[gridno-3];
             if(j != bleny-1)
             fm = beta*vec[gridno+1];
-            if(gridno+3<sz)
+            if(gridno+3< (int)vec.size())
             ffm = gama2*vec[gridno+3];
             result[l++]=cm+pm+ppm+fm+ffm;
 
@@ -154,8 +156,8 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
     //std::cout << rank << " in cal fvec ";
        
     //int sy = 0;
-    int len=0;
-    int sz=blenx*bleny;
+   // int len=0;
+    //int sz=blenx*bleny;
    // int abc = sz%4;
     /*if(abc != 0)
     len = sz + (4-sz%4);
@@ -414,7 +416,11 @@ int main(int argc, char** argv)
           Rvec[jn++]= nresult[l+3];
       }   
     }
-    MPI_Isend(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,i,i*10,MPI_COMM_WORLD,&request);
+    for( int i=0; i< size; i++)
+    {
+       MPI_Isend(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,i,i*10,MPI_COMM_WORLD,&request);
+    }
+   
   } 
   
     
@@ -525,7 +531,7 @@ int main(int argc, char** argv)
     time = timer.elapsed();
 	std::cout << rank << " time," << time << std::endl;
 	
-	for (int i= 0; i< totdim; i++ )
+	for (int i= 0; i< gridpoint; i++ )
         {
         if(i%nnx == 0 )
         std::cout << "\n";    
