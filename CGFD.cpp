@@ -226,7 +226,7 @@ int main(int argc, char** argv)
     nnx = nx-1;
     nny = ny-1;
     iter = atoi(argv[3]);
-    error = atoi(argv[4]);
+    error = atof(argv[4]);
      fgrid = new FdGrid (nnx,nny); 
      gridpoint = fgrid->totalGridPoints();
 	 hx = fgrid->getHx();
