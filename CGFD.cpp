@@ -276,7 +276,7 @@ int main(int argc, char** argv)
     MPI_Barrier(MPI_COMM_WORLD);
     int totdim = nnx*nny;
      
-    std::cout << rank << " nnx = " << nnx << " "; 
+  /*  std::cout << rank << " nnx = " << nnx << " "; 
     std::cout << rank << " nny = " << nny << " "; 
      std::cout << rank << " nx = " << nx << " "; 
       std::cout << rank << " ny = " << ny << " "; 
@@ -289,7 +289,7 @@ int main(int argc, char** argv)
          std::cout << rank << " beta = " << bita << " "; 
          std::cout << rank << " gama = " << gama << " "; 
           std::cout << rank << " blenx = " << blenx << " "; 
-         std::cout << rank << " sx = " << sx << " ";
+         std::cout << rank << " sx = " << sx << " ";*/
      
      
    if(gridpoint%4 != 0)
@@ -334,7 +334,7 @@ int main(int argc, char** argv)
     tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
      
     fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests,rank);
-  
+    std::cout << "\n" << rank << " " << blenx << " " << bleny << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
       for(int i = 0; i< (int)sizeof(tresult); i++)
     {
        // std::cout << "\n" << rank << " " << fresult[i];
