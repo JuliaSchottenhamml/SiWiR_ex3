@@ -233,7 +233,7 @@ int main(int argc, char** argv)
      hy = fgrid->getHy();
     bita = 1/hx/hx;
     gama = 1/hy/hy;
-    alfa = -(2*gama+ 2*bita + k * k);
+    alfa = -(2.0*gama+ 2.0*bita + k * k);
     gcap = new GridCaptain(size,*fgrid);
     
     for(int t=0;t<size;t++)
