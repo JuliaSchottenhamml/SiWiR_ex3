@@ -50,6 +50,7 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
       result[h+2]=0.0;
       result[h+3]=0.0;
     }
+    int l =0;
 
   for(int i=sx; i<sx+blenx ; i++)
       {
@@ -88,7 +89,7 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
             fm = beta2*vec[gridno+1];
             if(gridno+3<sz)
             ffm = gama2*vec[gridno+3];
-            result[gridno]=cm+pm+ppm+fm+ffm;
+            result[l++]=cm+pm+ppm+fm+ffm;
 
         }
     }
@@ -128,6 +129,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
       result[h+3]=0.0;
     }
 
+    int l = 0;
     for(int i=sx; i< sx+blenx ; i++)
     {
         for(int j=sy; j<bleny ; j++)
@@ -144,10 +146,10 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
             if(dests == -1)
             {
              gama2 = gama*border(x,y);
-             result[gridno] = f-gama2;
+             result[l++] = f-gama2;
             }
             else 
-                result[gridno] = f;
+                result[l++] = f;
         }
     }
 
@@ -333,10 +335,8 @@ int main(int argc, char** argv)
     else 
     dests = rank +1;    
     
-    std::cout << "\n*************** " << rank ;
-    tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
-     std::cout << "\n################ " << rank ;
-    fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests,rank);
+       tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
+       fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests,rank);
     std::cout << "\n" << rank << " " << blenx << " " << bleny << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
       for(int i = 0; i< (int)sizeof(tresult); i++)
     {
