@@ -169,13 +169,7 @@ int main(int argc, char** argv)
     
     int size(0); // The total number of processes
     int rank(0); // The rank/number of this process (within MPI_COMM_WORLD)
-    int nx = 0;
-    int ny = 0;
-    int iter = 0;
-    int error=0;
-    FdGrid* fgrid;
-   	double time = 0;
-	double  dt0[1];
+   
  
    
 	//double  iresd;
@@ -208,7 +202,14 @@ int main(int argc, char** argv)
     int gridpoint = 0;
     double hx = 0.0, hy=0.0;
     int len = 0;
-    int dests=0, destn=0, blenx=0, sx =0; 
+    int dests=0, destn=0, blenx=0, sx =0;
+     int nx = 0;
+    int ny = 0;
+    int iter = 0;
+    double error=0.0;
+    FdGrid* fgrid;
+   	double time = 0;
+	double  dt0[1]; 
  
     int * dim = new int [2]; 
         
