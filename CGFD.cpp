@@ -275,20 +275,20 @@ int main(int argc, char** argv)
     MPI_Barrier(MPI_COMM_WORLD);
     int totdim = nnx*nny;
      
-        std::cout << rank << " nnx = " << nnx << "\n"; 
-    std::cout << rank << " nny = " << nny << "\n"; 
-     std::cout << rank << " nx = " << nx << "\n"; 
-      std::cout << rank << " ny = " << ny << "\n"; 
-       std::cout << rank << " iter = " << iter << "\n";  
-       std::cout << rank << " error = " << error << "\n";              
-        std::cout << rank << " gridpoint = " << gridpoint << "\n"; 
-         std::cout << rank << " hx = " << hx << "\n"; 
-         std::cout << rank << " hy = " << hy << "\n"; 
-         std::cout << rank << " alpha = " << alfa << "\n"; 
-         std::cout << rank << " beta = " << bita << "\n"; 
-         std::cout << rank << " gama = " << gama << "\n"; 
-          std::cout << rank << " blenx = " << blenx << "\n"; 
-         std::cout << rank << " sx = " << sx << "\n"; 
+    std::cout << rank << " nnx = " << nnx << " "; 
+    std::cout << rank << " nny = " << nny << " "; 
+     std::cout << rank << " nx = " << nx << " "; 
+      std::cout << rank << " ny = " << ny << " "; 
+      std::cout << rank << " iter = " << iter << " ";  
+       std::cout << rank << " error = " << error << " ";              
+        std::cout << rank << " gridpoint = " << gridpoint << " "; 
+         std::cout << rank << " hx = " << hx << " "; 
+         std::cout << rank << " hy = " << hy << " "; 
+         std::cout << rank << " alpha = " << alfa << " "; 
+         std::cout << rank << " beta = " << bita << " "; 
+         std::cout << rank << " gama = " << gama << " "; 
+          std::cout << rank << " blenx = " << blenx << " "; 
+         std::cout << rank << " sx = " << sx << " ";
      
      
    if(gridpoint%4 != 0)
@@ -339,8 +339,9 @@ int main(int argc, char** argv)
   
       for(int i = 0; i< (int)sizeof(tresult); i++)
     {
+       // std::cout << "\n" << rank << " " << fresult[i];
         mresult[i] = fresult[i]-tresult[i];
-        //std::cout << "\n" << rank << " " << mresult[i];
+        std::cout << "\n" << rank << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
     } 
      
      double resdlocal=0.0; 
