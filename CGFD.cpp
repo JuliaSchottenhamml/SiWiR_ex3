@@ -202,9 +202,9 @@ int main(int argc, char** argv)
          MPI_Status status;  
     
 
-    double alfa=0;
-    double bita=0;
-    double gama=0;
+    double alfa=0.0;
+    double bita=0.0;
+    double gama=0.0;
     int gridpoint = 0;
     double hx = 0.0, hy=0.0;
     int len = 0;
@@ -214,7 +214,7 @@ int main(int argc, char** argv)
         
     GridCaptain* gcap = NULL ;
     
-    double alpha = 0;
+    double alpha = 0.0;
       int nnx =0, nny=0;
  
    if (rank == 0)
@@ -234,6 +234,7 @@ int main(int argc, char** argv)
     bita = 1/hx/hx;
     gama = 1/hy/hy;
     alfa = (-1.0)*(2.0*gama+ 2.0*bita + k * k);
+    std::cout << "..Rank 0.." << alfa << "  " << k*k << "\n";
     gcap = new GridCaptain(size,*fgrid);
     
     for(int t=0;t<size;t++)

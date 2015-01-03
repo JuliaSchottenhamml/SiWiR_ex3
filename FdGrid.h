@@ -43,7 +43,6 @@ public:
         hx = (double)((domxh-domxl)/(n+1.0));
         hy = (double)((domyh-domyl)/(m+1.0));
         
-        std::cout << "..in FGrid Hx and Hy.." <<m << n << (domxh-domxl) << (domyh-domyl) << hx << "  " << hy << "\n";
         totdim = (dimM+LD) * (dimN+LD);
         matarray = new double[totdim];
        for (int i=0; i < totdim ; i++)
