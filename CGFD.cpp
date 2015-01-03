@@ -377,7 +377,7 @@ int main(int argc, char** argv)
         
   
   
-    if(abs(*dt0) > error)
+    if(abs(*dt0) > abs(error))
      {    
         std::vector<double> Dvec (Rvec); 
       
@@ -438,7 +438,7 @@ int main(int argc, char** argv)
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
 
-        if(abs(dt1) < error)
+        if(abs(dt1) < abs(error))
         {
             broke = 1;
 
