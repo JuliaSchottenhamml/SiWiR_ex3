@@ -28,7 +28,7 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
    int destn, int dests)
 {  
     
-    std::cout << " in cal matmult ";
+    //std::cout << " in cal matmult ";
    
     int sy = 0;
     int len=0;
@@ -51,7 +51,7 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
       result[h+3]=0.0;
     }
 
-  for(int i=sx; i<blenx ; i++)
+  for(int i=sx; i<sx+blenx ; i++)
       {
        // int l = (i-sx)%bleny;
         for(int j=sy; j<bleny ; j++)
@@ -102,7 +102,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
   // vector<double> fresult(tgrdpoint,0);
 
     //int bleny =  dim[1];    
-    std::cout << rank << " in cal fvec ";
+    //std::cout << rank << " in cal fvec ";
        
     int sy = 0;
     int len=0;
@@ -128,7 +128,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
       result[h+3]=0.0;
     }
 
-    for(int i=sx; i<blenx ; i++)
+    for(int i=sx; i< sx+blenx ; i++)
     {
         for(int j=sy; j<bleny ; j++)
         {
