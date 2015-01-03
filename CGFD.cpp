@@ -113,7 +113,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
     
     int gridno = 0;
      
-     double gama2 = 0;
+    double gama2 = 0.0;
 
     int x = 0;
     int y = 0;
@@ -131,12 +131,12 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
         for(int j=sy; j<bleny ; j++)
         {
             
-            gama2 = 0;
+            gama2 = 0.0;
             gridno= i*bleny + j;            
             //int k = (j-sy)%blenx;
             x = (((gridno-1)%bleny)+1)*hx;
             y = (((gridno-1)/bleny)+1)*hy;
-            int f = fxy(x,y);
+            double f = fxy(x,y);
                                   
             if(dests == -1)
             {
@@ -317,9 +317,7 @@ int main(int argc, char** argv)
     double * fresult = new double[len];
     double * mresult = new double[len];
     double * nresult = new double[len];
-    
-      
-    
+              
     //double resd =0.0;
    
     if(rank == 0)
@@ -332,8 +330,7 @@ int main(int argc, char** argv)
     else 
     destn = rank +1;    
     
-     
-        tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
+    tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
      
     fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests);
   
