@@ -384,7 +384,7 @@ int main(int argc, char** argv)
         for(int i = 0 ; i<iter; i++)
        {
 
-        if(i>0)
+        if(i>0 and rank!=0)
         {
            MPI_Recv(&broke,1,MPI_INT,0,rank*13,MPI_COMM_WORLD,&status);
            if(broke == 1)
