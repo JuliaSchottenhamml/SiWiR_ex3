@@ -12,10 +12,10 @@
 #include "immintrin.h"
 #include <memory>
 #define LD 64
-#define domxl 0
-#define domxh 2
-#define domyl 0
-#define domyh 1
+#define domxl 0.0
+#define domxh 2.0
+#define domyl 0.0
+#define domyh 1.0
 #define BLOCKSIZE 4
 
 #define LD1 3
@@ -278,8 +278,8 @@ int main(int argc, char** argv)
     iter = atoi(argv[3]);
     error = atof(argv[4]);
     gridpoint = nnx*nny;
-    hx = (double)((domxh-domxl)/(1.0)*(nx));
-    hy = (double)((domyh-domyl)/(1.0)*(ny));
+    hx = (double)((domxh-domxl)/(double)(nx));
+    hy = (double)((domyh-domyl)/(double)(ny));
     bita = 1/(hx*hx);
     gama = 1/(hy*hy);
     alfa = (-1.0)*(2.0*gama+ 2.0*bita + k * k);
