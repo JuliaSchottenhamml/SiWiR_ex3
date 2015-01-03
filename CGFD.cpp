@@ -531,12 +531,12 @@ int main(int argc, char** argv)
     time = timer.elapsed();
 	std::cout << rank << " time," << time << std::endl;
 	
-	for (int i= 0; i< gridpoint; i++ )
+	/*for (int i= 0; i< gridpoint; i++ )
         {
         if(i%nnx == 0 )
         std::cout << "\n";    
         std::cout << Xvec[i] << ' ';
-        }
+        }*/
 	
     }
     MPI_Finalize();
