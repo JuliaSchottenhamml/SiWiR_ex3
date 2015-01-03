@@ -483,7 +483,11 @@ int main(int argc, char** argv)
     if(rank == 0)
     {
         for (int i= 0; i< totdim; i++ )
+        {
+        if(i%nnx = 0 )
+        std::cout << "\n";    
         std::cout << Xvec[i] << ' ';
+        }
     	time = timer.elapsed();
 	std::cout << rank << " time," << time << std::endl;
 	
