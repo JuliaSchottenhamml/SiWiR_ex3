@@ -1,0 +1,14 @@
+#!/bin/bash
+#PBS -N KSen
+#PBS -l nodes=4:ppn=32
+#PBS -l walltime=0:05:00
+#PBS -M karnajitsen@gmail.com -m abe
+#PBS -o $PBS_CG.out -e $PBS_CG.err
+
+. /etc/profile.d/modules.sh
+module load openmpi/1.6.5-ib
+module load gcc/4.8.2
+#cd <PathToBinaryDir>
+make clean
+make test
+ mpirun -np 4 ./cg 10 10 10 .001
