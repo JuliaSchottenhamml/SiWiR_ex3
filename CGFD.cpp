@@ -142,7 +142,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
             y = (((gridno-1)/bleny)+1)*hy;
             //std::cout << "x, y" << x << " " <<y;
             double f = fxy(x,y);
-            std::cout << " x, y, f " << x << " " <<y << " " << f << "\n";                      
+           // std::cout << " x, y, f " << x << " " <<y << " " << f << "\n";                      
             if(dests == -1)
             {
              gama2 = gama*border(x,y);
@@ -342,7 +342,7 @@ int main(int argc, char** argv)
     {
        // std::cout << "\n" << rank << " " << fresult[i];
         mresult[i] = fresult[i]-tresult[i];
-        std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
+        //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
     } 
      
      double resdlocal=0.0; 
