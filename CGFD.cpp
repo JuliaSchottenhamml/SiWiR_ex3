@@ -97,8 +97,8 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
     int gridno = 0;
     double gama1 = 0.0;
     double gama2 = 0.0;
-    double beta1 = 0.0;
-    double beta2 = 0.0;
+    //double beta1 = 0.0;
+    //double beta2 = 0.0;
     /*for(int h=0;h<len;h+=4)
     {
       result[h]=0.0;  
@@ -120,8 +120,8 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
         for(int j=0; j<bleny ; j++)
         {
             
-            beta1 = 0.0;
-            beta2 = 0.0;
+           // beta1 = 0.0;
+            //beta2 = 0.0;
             gridno= i*bleny + j;            
                                 
              
