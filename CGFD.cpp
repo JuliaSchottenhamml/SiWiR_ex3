@@ -331,8 +331,9 @@ int main(int argc, char** argv)
     else 
     destn = rank +1;    
     
+    std::cout << "\n*************** " << rank ;
     tresult = matMult(Xvec,blenx,bleny,sx, alfa, bita,gama, destn,dests);        
-     
+     std::cout << "\n################ " << rank ;
     fresult = cal_fVec(blenx,bleny,sx,gama, hx ,hy,dests,rank);
     std::cout << "\n" << rank << " " << blenx << " " << bleny << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
       for(int i = 0; i< (int)sizeof(tresult); i++)
