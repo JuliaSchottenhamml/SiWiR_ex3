@@ -445,6 +445,10 @@ int main(int argc, char** argv)
         }
 
          tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama, destn,dests,len);
+         
+         for(int l=0; l< (int)sizeof(tresult);l+=1)
+              std::cout <<  " " << tresult[i] << " ";    
+         
          MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*19, MPI_COMM_WORLD,&request);
         
         if(rank == 0)
