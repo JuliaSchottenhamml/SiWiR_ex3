@@ -264,9 +264,9 @@ int main(int argc, char** argv)
         MPI_Bcast(&hy,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
        
     
-    MPI_Bcast(&alfa,1,MPI_INT,0,MPI_COMM_WORLD);
-    MPI_Bcast(&bita,1,MPI_INT,0,MPI_COMM_WORLD);
-    MPI_Bcast(&gama,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&alfa,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+    MPI_Bcast(&bita,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+    MPI_Bcast(&gama,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
    // std::cout << rank << " gridpoint =  " << gridpoint << "\n"; 
