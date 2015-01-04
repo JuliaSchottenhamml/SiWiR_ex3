@@ -294,15 +294,15 @@ int main(int argc, char** argv)
     blenx = worksheet[t*3+1];
     startpnt = worksheet[t*3+2];
     MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
-    MPI_Isend(&sx,1,MPI_INT,t,t+101,MPI_COMM_WORLD,&request);
-     MPI_Isend(&startpnt,1,MPI_INT,t,t+102,MPI_COMM_WORLD,&request);
+    MPI_Isend(&sx,1,MPI_INT,t,t+110,MPI_COMM_WORLD,&request);
+    MPI_Isend(&startpnt,1,MPI_INT,t,t+120,MPI_COMM_WORLD,&request);
     }
            
    }
       
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
-    MPI_Recv(&sx,1, MPI_INT,0, rank+101, MPI_COMM_WORLD,&status);
-    MPI_Recv(&startpnt,1, MPI_INT,0, rank+102, MPI_COMM_WORLD,&status);
+    MPI_Recv(&sx,1, MPI_INT,0, rank+110, MPI_COMM_WORLD,&status);
+    MPI_Recv(&startpnt,1, MPI_INT,0, rank+120, MPI_COMM_WORLD,&status);
   
      
   /*std::cout << rank << " nnx = " << nnx << " "; 
