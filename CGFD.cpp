@@ -111,7 +111,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             int fm =0;
             int ffm =0;  
             time = timer.elapsed();
-            if(iterat >75 && iterat < 78)
+            if(iterat >75 && iterat < 78 && i==sx && j<0)
             std::cout <<  " time, 1:" << time;          
             int cm = alpha*vec[index];
             if(j!=0 && i!=sx)
@@ -134,7 +134,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             else
                 ffm = gama*sv;
             time = timer.elapsed();
-            if(iterat >75 && iterat < 78)
+            if(iterat >75 && iterat < 78 && i==sx && j<0)
             std::cout <<  " time, 2:" << time << "\n";          
             
                 
