@@ -394,16 +394,16 @@ int main(int argc, char** argv)
     
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
     
-    //MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
+    MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
     MPI_Barrier(MPI_COMM_WORLD);
    
-    if(fabs(*dt0) > error)
+    if(fabs(*dt0) > fabs(error))
      {   
       std::cout << "\n %% rank = " << rank << "before for "<< iter ; 
- 
-     for(int ik=0 ; ik < iter; ik++)
+      int ik=0;
+      while(ik < iter)
        {
         std::cout << "\n %% rank = " << rank << "iteration number= " << ik;
         ev=0.0;
@@ -413,6 +413,7 @@ int main(int argc, char** argv)
         
         if(rank!=0)
          MPI_Isend(Dvec,2,columntype, rank-1, rank+130, MPI_COMM_WORLD,&request);
+         
          if(rank !=size-1)
          {
          MPI_Isend(&Dvec[sz-3],2,columntype, rank+1, rank+140, MPI_COMM_WORLD,&request); 
@@ -420,6 +421,7 @@ int main(int argc, char** argv)
          ev = end[0];
          sv = end[1];
          }
+         
          if(rank!=0)
          {
           MPI_Recv(&start,2, MPI_DOUBLE,rank-1, rank+140, MPI_COMM_WORLD,&status);
@@ -487,6 +489,7 @@ int main(int argc, char** argv)
         }      
         
          *dt0 = dt1;
+         ik++;
         }                
     }       
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
