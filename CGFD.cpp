@@ -401,7 +401,7 @@ int main(int argc, char** argv)
    
     if(fabs(*dt0) > fabs(error))
      {   
-      std::cout << "\n %% rank = " << rank << "before for "<< iter ; 
+      std::cout << "\n %% rank = " << rank << "before for "<< size ; 
       int ik=0;
       while(ik < iter)
        {
@@ -412,7 +412,7 @@ int main(int argc, char** argv)
         nv=0.0;
         
         if(rank!=0)
-         MPI_Isend(Dvec,2,columntype, rank-1, rank+130, MPI_COMM_WORLD,&request);
+         MPI_Isend(&Dvec[0],2,columntype, rank-1, rank+130, MPI_COMM_WORLD,&request);
          
          if(rank !=size-1)
          {
@@ -492,7 +492,7 @@ int main(int argc, char** argv)
          ik++;
         }                
     }       
-    std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
+     std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
      MPI_Isend(&sz,1,MPI_INT, 0, rank+49, MPI_COMM_WORLD,&request); 
      MPI_Isend(Xvec,sz,MPI_DOUBLE, 0, rank+39, MPI_COMM_WORLD,&request); 
    
