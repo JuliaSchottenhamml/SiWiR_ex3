@@ -399,7 +399,7 @@ int main(int argc, char** argv)
    
     if(fabs(*dt0) > fabs(error))
      {   
-            std::cout << "\n %% rank = " << rank << "before for " ; 
+            std::cout << "\n %% rank = " << rank << "before for "<< iter ; 
         for(int ik=0 ; ik < iter; ik++)
        {
         std::cout << "\n %% rank = " << rank << "iteration number= " << ik;
