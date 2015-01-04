@@ -337,6 +337,8 @@ int main(int argc, char** argv)
     
     if(abc != 0)
     sz = sz + (4-abc);
+    else 
+    sz = sz + 4;
         
     double * tresult = new double[sz];
     double * fresult = new double[sz];
