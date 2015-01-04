@@ -247,7 +247,7 @@ int main(int argc, char** argv)
 
     int gridpoint = 0;
     //int len = 0;
-    int dests=0, destn=0, blenx=0, sx =0;
+    int dests=0, blenx=0, sx =0;
     int nx = 0;
     int ny = 0;
     int iter = 0;
@@ -442,10 +442,10 @@ int main(int argc, char** argv)
          // std::cout << rank << "8### " << "\n";
         for(int j=0; j< sz;j+=4)
         {
-           Rvec[j] -= alpha * Tvec[j];
-             Rvec[j+1] -= alpha * Tvec[j+1];
-              Rvec[j+2] -= alpha * Tvec[j+2];
-               Rvec[j+3] -= alpha * Tvec[j+3]; 
+           Rvec[j] -= alpha * tresult[j];
+             Rvec[j+1] -= alpha * tresult[j+1];
+              Rvec[j+2] -= alpha * tresult[j+2];
+               Rvec[j+3] -= alpha * tresult[j+3]; 
             
         }
         
