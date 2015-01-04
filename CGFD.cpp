@@ -63,6 +63,7 @@ inline double border(const double x, const double y){
                     int q = i*LD1;
                 //worksheet[q+1]=dimN;
                 worksheet[q]=n;
+                worksheet[q+2]=s;
                 //worksheet[q+3]=0;
                 if(i<remM)
                 {
@@ -75,17 +76,16 @@ inline double border(const double x, const double y){
                 {
                 worksheet[q+1]=bn;  
                 n += bn;
-                p = m*dimN;
-                }
-                worksheet[q+2]=s;
+                p = bn*dimN;
+                }                
                 s += p;                 
                //worksheet[q+5]=dimN;
             }   
        return worksheet;
    }
 
-inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,const double alpha, const double beta, const double gama,
-   int destn, int dests, int len)
+inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alpha, const double beta, const double gama,
+   /*int destn, int dests,*/ int len, int startpnt, double ev, double wv, double nv, double sv)
 {  
     
     //std::cout << " in cal matmult ";
@@ -97,15 +97,8 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
     int gridno = 0;
     double gama1 = 0.0;
     double gama2 = 0.0;
-    //double beta1 = 0.0;
-    //double beta2 = 0.0;
-    /*for(int h=0;h<len;h+=4)
-    {
-      result[h]=0.0;  
-      result[h+1]=0.0;
-      result[h+2]=0.0;
-      result[h+3]=0.0;
-    }*/
+    int index=0;
+    
     int l =0;
     
      if(destn != -1)
@@ -114,31 +107,38 @@ inline double * matMult( std::vector<double> vec,int blenx,int bleny,int sx,cons
      if(dests != -1)
       gama2 = gama;
 
-  for(int i=sx; i<le ; i++)
+    gridno= sx*bleny;
+    index = gridno-startpnt; 
+    for(int i=sx; i<le ; i++)
       {
-       // int l = (i-sx)%bleny;
-        for(int j=0; j<bleny ; j++)
+        for(int j=0; j<bleny ; j++,gridno++, index++)
         {
-            
-           // beta1 = 0.0;
-            //beta2 = 0.0;
-            gridno= i*bleny + j;            
-                                
-             
             int pm = 0;
             int ppm =0;
             int fm =0;
             int ffm =0;  
              
-            int cm = alpha*vec[gridno];
-            if(j!=0)
-            pm = beta*vec[gridno-1];
-            if(gridno-3>=0)
-            ppm = gama1*vec[gridno-3];
-            if(j != bleny-1)
-            fm = beta*vec[gridno+1];
-            if(gridno+3< (int)vec.size())
-            ffm = gama2*vec[gridno+3];
+            int cm = alpha*vec[index];
+            if(j!=0 && i!=sx)
+                pm = beta*vec[index-1];
+            if(j!=0 && i==sx)
+                pm = beta*wv;
+            
+            if(index-3>=0)
+                ppm = gama1*vec[index-3];
+            else
+                ppm = gama1*nv;
+            
+            if(j != bleny-1 && i!=le)
+                fm = beta*vec[index+1];
+            if(j != bleny-1 && i==le)
+                fm = beta*ev;
+            
+            if(index+3 < len)
+                ffm = gama2*vec[index+3];
+            else
+                ffm = gama2*sv;
+                
             result[l++]=cm+pm+ppm+fm+ffm;
 
         }
@@ -269,7 +269,9 @@ int main(int argc, char** argv)
     double alfa=0.0;
     double bita=0.0;
     double gama=0.0;
-    double hx = 0.0, hy=0.0;  
+    double hx = 0.0, hy=0.0; 
+    int startpnt =0;
+    double dt = 0.0; 
        
     nx = atoi(argv[1]);
     ny = atoi(argv[2]);
@@ -289,34 +291,20 @@ int main(int argc, char** argv)
     
     for(int t=0;t<size;t++)
     {
+    sx = worksheet[t*3];
     blenx = worksheet[t*3+1];
-    sx = worksheet[t*3+0];
+    startpnt = worksheet[t*3+2];
     MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
     MPI_Isend(&sx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
+     MPI_Isend(&startpnt,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
     }
            
    }
       
-      // MPI_Bcast(&nnx,1,MPI_INT,0,MPI_COMM_WORLD);
-      // MPI_Bcast(&nny,1,MPI_INT,0,MPI_COMM_WORLD);
-   /*    MPI_Bcast(&nx,1,MPI_INT,0,MPI_COMM_WORLD);
-        MPI_Bcast(&ny,1,MPI_INT,0,MPI_COMM_WORLD);
-        MPI_Bcast(&iter,1,MPI_INT,0,MPI_COMM_WORLD);
-       MPI_Bcast(&error,1,MPI_DOUBLE,0,MPI_COMM_WORLD);   
-       MPI_Bcast(dim,2,MPI_INT,0,MPI_COMM_WORLD);
-       MPI_Bcast(&gridpoint,1,MPI_INT,0,MPI_COMM_WORLD);
-        MPI_Bcast(&hx,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-        MPI_Bcast(&hy,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-       
-    
-    MPI_Bcast(&alfa,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-    MPI_Bcast(&bita,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-    MPI_Bcast(&gama,1,MPI_DOUBLE,0,MPI_COMM_WORLD);*/
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
-   // std::cout << rank << " gridpoint =  " << gridpoint << "\n"; 
-    //MPI_Barrier(MPI_COMM_WORLD);
-    //int totdim = nnx*nny;
+    MPI_Recv(&startpnt,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
+  
      
   /*std::cout << rank << " nnx = " << nnx << " "; 
     std::cout << rank << " nny = " << nny << " "; 
@@ -333,21 +321,9 @@ int main(int argc, char** argv)
           std::cout << rank << " blenx = " << blenx << " "; 
          std::cout << rank << " sx = " << sx << " ";*/
    
-   int abc = gridpoint%4;
+   int abc = 0;
      
-   if(abc != 0)
-    len = gridpoint + (4-abc);
-   else 
-   len = gridpoint;
-   
-
-    std::vector<double> Xvec (len,0);
-    std::vector<double> Rvec (len,0);
-    std::vector<double> Fvec (len,0);
-    std::vector<double> Tvec (len,0);
-    std::vector<double> Tmpvec (len,0); 
- 
-    //int bleny =  nnx;
+   //int bleny =  nnx;
               
     int sz=nnx*blenx;
     abc = sz%4;
@@ -358,39 +334,51 @@ int main(int argc, char** argv)
     double * tresult = new double[sz];
     double * fresult = new double[sz];
     double * mresult = new double[sz];
-    double * nresult = new double[sz];
+   // double * nresult = new double[sz];
+    double * Xvec = new double[sz];
+    double * Rvec = new double[sz];
+    double * Fvec = new double[gridpoint];
+    
+    for(int i=0;i<sz;i+=4)
+    {
+        Xvec[i]=0.0;
+        Xvec[i+1]=0.0;
+        Xvec[i+2]=0.0;
+        Xvec[i+3]=0.0;
+    }
+    //double * Tvec = new double[sz];
+    //double * Tmpvec = new double[sz];
               
     //double resd =0.0;
    
-    if(rank == 0)
+   /* if(rank == 0)
     destn = -1;
     else 
-    destn = rank -1;
+    destn = rank -1;*/  
     
     if(rank == size-1)
     dests = -1;
-    else 
-    dests = rank +1;    
+     
     
-       tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama, destn,dests,len);        
-       fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,len);
+       tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,startpnt,0.0,0.0,0.0,0.0);        
+       fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz,startpnt);
    // std::cout << "\n" << rank << " " << blenx << " " << bleny << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
       for(int i = 0; i< (int)sizeof(tresult); i+=4)
     {
        // std::cout << "\n" << rank << " " << fresult[i];
-        mresult[i] = fresult[i]-tresult[i];
-        mresult[i+1] = fresult[i+1]-tresult[i+1];
-        mresult[i+2] = fresult[i+2]-tresult[i+2];
-        mresult[i+3] = fresult[i+3]-tresult[i+3];
+        Rvec[i] = fresult[i]-tresult[i];
+        Rvec[i+1] = fresult[i+1]-tresult[i+1];
+        Rvec[i+2] = fresult[i+2]-tresult[i+2];
+        Rvec[i+3] = fresult[i+3]-tresult[i+3];
                 //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
     } 
      
      for(int i = 0 ; i< (int)sizeof(mresult); i+=4)
     {   
-        resdlocal += mresult[i] * mresult[i];
-        resdlocal += mresult[i+1] * mresult[i+1];
-        resdlocal += mresult[i+2] * mresult[i+2];
-        resdlocal += mresult[i+3] * mresult[i+3];
+        resdlocal += Rvec[i] * Rvec[i];
+        resdlocal += Rvec[i+1] * Rvec[i+1];
+        resdlocal += Rvec[i+2] * Rvec[i+2];
+        resdlocal += Rvec[i+3] * Rvec[i+3];
     }
     
     //std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
@@ -398,142 +386,117 @@ int main(int argc, char** argv)
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
-    
-    MPI_Isend(mresult,(int)sizeof(mresult), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD,&request);
-  
-    if(rank==0)
-    {
-     int jn=0;
-     for( int i=0; i< size; i++)
-    {
-      MPI_Recv(nresult,(int)sizeof(mresult), MPI_DOUBLE, i, i, MPI_COMM_WORLD,&status);
-    
-      for(int l=0; l< (int)sizeof(nresult);l+=4)
-      {
-          Rvec[jn++]= nresult[l];
-          Rvec[jn++]= nresult[l+1];
-          Rvec[jn++]= nresult[l+2];
-          Rvec[jn++]= nresult[l+3];
-      }   
-    }
-    for( int i=0; i< size; i++)
-    {
-       MPI_Isend(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,i,i*10,MPI_COMM_WORLD,&request);
-    }
-   
-   } 
-  
-    
-     MPI_Recv(&Rvec[0],(int)Rvec.size(),MPI_DOUBLE,0,rank*10,MPI_COMM_WORLD,&status);
         
-  
+   MPI_Datatype columntype;   
+   MPI_Type_vector( 2, 1, 2, MPI_DOUBLE, &columntype );
+   MPI_Type_commit( &columntype );
+   
+   double *start, * end;
+   double ev=0.0,wv=0.0,sv=0.0,nv=0.0;
   
     if(*dt0 > error)
      {    
-        std::vector<double> Dvec (Rvec); 
+        double * Dvec = new double[sz]; 
+        Dvec = Rvec;      
       
         for(int i = 0 ; i<iter; i++)
        {
 
-        if(i>0 && rank!=0)
-        {
-           MPI_Recv(&broke,1,MPI_INT,0,rank*13,MPI_COMM_WORLD,&status);
-           if(broke == 1)
-           break;
-           //std::cout << rank << " &&&&@@@@@@@@@@@@########## " << "\n"; 
-           MPI_Recv(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,0,rank*11,MPI_COMM_WORLD,&status);
-        }
-
-         tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama, destn,dests,len);
-         
-         //for(int l=0; l< (int)sizeof(tresult);l+=1)
-           //   std::cout <<  " " << tresult[l] << " ";    
-         
-         MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*19, MPI_COMM_WORLD,&request);
+        ev=0.0;
+        wv=0.0;
+        sv=0.0;
+        nv=0.0;
         
-        if(rank == 0)
-        {       
-            std::cout << rank << " no of iteration " << i << "\n";      
-            int jk = 0;
-            for( int km=0; km < size; km++)
+        if(rank!=0)
+          MPI_Isend(Dvec,2,&columntype, rank-1, rank+111, MPI_COMM_WORLD,&request);
+         if(rank !=size-1)
+         {
+         MPI_Isend(&Dvec[sz-3],2,&columntype, rank+1, rank+170, MPI_COMM_WORLD,&request); 
+         MPI_Recv(&end,2, MPI_DOUBLE,rank+1, rank+111, MPI_COMM_WORLD,&status);
+         ev = end[0];
+         sv = end[1];
+         }
+         if(rank!=0)
+         {
+          MPI_Recv(&start,2, MPI_DOUBLE,rank-1, rank+170, MPI_COMM_WORLD,&status);
+          wv = start[0];
+          nv = start[1];
+         }
+               
+         
+         tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama, destn,dests,sz,startpnt,ev,wv,nv,sv);
+        
+            for( int km=0; km < sz; km+=4)
             {
-              MPI_Recv(nresult,(int)sizeof(tresult), MPI_DOUBLE,km, km*19, MPI_COMM_WORLD,&status);
-              for(int l=0; l< (int)sizeof(nresult);l+=4)
-              {
-                  Tvec[jk++]= nresult[l];
-                  Tvec[jk++]= nresult[l+1];
-                  Tvec[jk++]= nresult[l+2];
-                  Tvec[jk++]= nresult[l+3];
-              }
-            }  
-            //std::cout << "5### " << "\n";
-            double dt = std::inner_product(Dvec.begin(), Dvec.end(), Tvec.begin(),0);
-            //double dt =1;
-
-            alpha = *dt0 / dt;
-             //std::cout << rank << " 6### " << "\n";   
-        for(int j=0; j< (int)Dvec.size();j+=4)
-        {
-            Tmpvec[j] = alpha * Dvec[j];
-             Tmpvec[j+1] = alpha * Dvec[j+1];
-              Tmpvec[j+2] = alpha * Dvec[j+2];
-               Tmpvec[j+3] = alpha * Dvec[j+3]; 
-        }     
-        //std::cout << rank <<  "7### " << "\n";
-        std::transform (Xvec.begin(), Xvec.end(), Tmpvec.begin(), Xvec.begin(),   std::plus<double>());
-         // std::cout << rank << "8### " << "\n";
-        for(int j=0; j< (int)Tvec.size();j+=4)
-        {
-           Tmpvec[j] = alpha * Tvec[j];
-             Tmpvec[j+1] = alpha * Tvec[j+1];
-              Tmpvec[j+2] = alpha * Tvec[j+2];
-               Tmpvec[j+3] = alpha * Tvec[j+3]; 
+                   dt+ = Dvec[km]*tresult[km];
+                    dt+ = Dvec[km+1]*tresult[km+1];
+                    dt+ = Dvec[km+2]*tresult[km+2];
+                    dt+ = Dvec[km+3]*tresult[km+3];
+            }
             
-        }      
+         double dt3 = 0.0;  
+         MPI_Allreduce(&dt, &dt3,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
         
-        std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Rvec.begin(),  std::minus<double>());
-
-        double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
+         alpha = *dt0 / dt3;
+         
+        for(int j=0; j< sz;j+=4)
+        {
+            Xvec[j] += alpha * Dvec[j];
+             Xvec[j+1] += alpha * Dvec[j+1];
+              Xvec[j+2] += alpha * Dvec[j+2];
+               Xvec[j+3] += alpha * Dvec[j+3]; 
+        }
+         // std::cout << rank << "8### " << "\n";
+        for(int j=0; j< sz;j+=4)
+        {
+           Rvec[j] -= alpha * Tvec[j];
+             Rvec[j+1] -= alpha * Tvec[j+1];
+              Rvec[j+2] -= alpha * Tvec[j+2];
+               Rvec[j+3] -= alpha * Tvec[j+3]; 
+            
+        }
         
-        //std::cout << rank << "\n residue " << dt1 << "\n";
+             //int tem =rank*sz;
+             double dt1 = 0.0;
+             dt = 0.0;
+                        
+            for( int km=0; km < sz; km++)
+            {
+                  dt+ = Rvec[km]*Rvec[km];
+                   dt+ = Rvec[km+1]*Rvec[km+1];
+                    dt+ = Rvec[km+2]*Rvec[km+2];
+                    dt+ = Rvec[km+3]*Rvec[km+3];
+            }
+            
+        MPI_Allreduce(&dt, &dt1,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
 
         if(fabs(dt1) < fabs(error))
         {
-            std::cout << rank << "\n residue I am here to broke " << fabs(dt1) << " " << fabs(error) << "\n";
-            broke = 1;
-
-         for(int jb=1; jb< size;jb++)
-        {
-          MPI_Isend(&broke,1,MPI_INT,jb,jb*13,MPI_COMM_WORLD,&request);   
-        } 
+            std::cout << rank << "\n residue I am here to break you loop " << fabs(dt1) << " " << fabs(error) << "\n";
             break;
         }
 
-        double beta = dt1/(*dt0);
+        double beta = dt1/(*dt0);        
         
-         for(int j=0; j< (int)Dvec.size();j+=4)
+         for(int j=0; j< sz;j+=4)
         {
-             Tmpvec[j] = beta * Dvec[j];
-             Tmpvec[j+1] = beta * Dvec[j+1];
-              Tmpvec[j+2] = beta * Dvec[j+2];
-               Tmpvec[j+3] = beta * Dvec[j+3]; 
+            Dvec[j] = Rvec[j]-beta * Dvec[j];
+             Dvec[j+1] = Rvec[j+1]-beta * Dvec[j+1];
+              Dvec[j+2] = Rvec[j+2]-beta * Dvec[j+2];
+               Dvec[j+3] = Rvec[j+3]-beta * Dvec[j+3]; 
         }      
         
-        std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Dvec.begin(),   std::plus<double>());
-        *dt0 = dt1;
-        for(int j=1; j< size;j++)
-        {
-          MPI_Isend(&broke,1,MPI_INT,j,j*13,MPI_COMM_WORLD,&request);   
-          MPI_Isend(&Dvec[0],(int)Dvec.size(),MPI_DOUBLE,j,j*11,MPI_COMM_WORLD,&request);  
-        }   
-        
-        }
-    }
-
+         *dt0 = dt1;
+        }                
 }       
     
+    MPI_Isend(Xvec,sz,MPI_DOUBLE, 0, rank+39, MPI_COMM_WORLD,&request); 
+    
     if(rank == 0)
-    {
+    {     
+      for(int j=0; j< size;j+=4)
+    {   
+     MPI_Recv(&Fvec[j*sz],2, MPI_DOUBLE,j, rank+39, MPI_COMM_WORLD,&status); 
         
     time = timer.elapsed();
 	std::cout << rank << " time," << time << std::endl;
