@@ -412,11 +412,11 @@ int main(int argc, char** argv)
         nv=0.0;
         
         if(rank!=0)
-         MPI_Isend(&Dvec[0],1,columntype, rank-1, rank+130, MPI_COMM_WORLD,&request);
+         MPI_Isend(&Dvec[0],1,columntype, rank-1, rank+129, MPI_COMM_WORLD,&request);
          
          if(rank !=size-1)
          {
-         MPI_Isend(&Dvec[sz-3],1,columntype, rank+1, rank+140, MPI_COMM_WORLD,&request); 
+         MPI_Isend(&Dvec[sz-3],1,columntype, rank+1, rank+139, MPI_COMM_WORLD,&request); 
          MPI_Recv(end,1, columntype,rank+1, rank+130, MPI_COMM_WORLD,&status);
          ev = end[0];
          sv = end[1];
@@ -443,33 +443,25 @@ int main(int argc, char** argv)
          MPI_Allreduce(&dt, &dt3,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
         
          alpha = *dt0 / dt3;
+         double dt1 = 0.0;
+         dt = 0.0;
          
         for(int j=0; j< sz;j+=4)
         {
             Xvec[j] += alpha * Dvec[j];
-             Xvec[j+1] += alpha * Dvec[j+1];
-              Xvec[j+2] += alpha * Dvec[j+2];
+            Xvec[j+1] += alpha * Dvec[j+1];
+             Xvec[j+2] += alpha * Dvec[j+2];
                Xvec[j+3] += alpha * Dvec[j+3]; 
-        }
-         // std::cout << rank << "8### " << "\n";
-        for(int j=0; j< sz;j+=4)
-        {
-           Rvec[j] -= alpha * tresult[j];
+               Rvec[j] -= alpha * tresult[j];
              Rvec[j+1] -= alpha * tresult[j+1];
               Rvec[j+2] -= alpha * tresult[j+2];
                Rvec[j+3] -= alpha * tresult[j+3]; 
+               dt += Rvec[j]*Rvec[j];
+              dt += Rvec[j+1]*Rvec[j+1];
+                 dt += Rvec[j+2]*Rvec[j+2];
+                dt += Rvec[j+3]*Rvec[j+3];
         }
-             double dt1 = 0.0;
-             dt = 0.0;
-                        
-          for( int km=0; km < sz; km++)
-            {
-                    dt += Rvec[km]*Rvec[km];
-                    dt += Rvec[km+1]*Rvec[km+1];
-                    dt += Rvec[km+2]*Rvec[km+2];
-                    dt += Rvec[km+3]*Rvec[km+3];
-            }
-            
+                    
         MPI_Allreduce(&dt, &dt1,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
 
         if(fabs(dt1) < fabs(error))
@@ -492,7 +484,7 @@ int main(int argc, char** argv)
          ik++;
         }                
     }       
-     std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
+     //std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
      MPI_Isend(&sz,1,MPI_INT, 0, rank+49, MPI_COMM_WORLD,&request); 
      MPI_Isend(&Xvec[0],sz,MPI_DOUBLE, 0, rank+39, MPI_COMM_WORLD,&request); 
    
@@ -506,8 +498,8 @@ int main(int argc, char** argv)
       for(int j=0; j<size;j++)
       {
         y+=nsz;
-        MPI_Recv(&nsz,1, MPI_INT,j, rank+49, MPI_COMM_WORLD,&status);     
-        MPI_Recv(&Fvec[y],nsz, MPI_DOUBLE,j, rank+39, MPI_COMM_WORLD,&status); 
+        MPI_Recv(&nsz,1, MPI_INT,j, j+49, MPI_COMM_WORLD,&status);     
+        MPI_Recv(&Fvec[y],nsz, MPI_DOUBLE,j, j+39, MPI_COMM_WORLD,&status); 
       }
     time = timer.elapsed();
 	std::cout << rank << " time," << time << std::endl;
