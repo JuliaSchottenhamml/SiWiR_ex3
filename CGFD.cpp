@@ -293,6 +293,11 @@ int main(int argc, char** argv)
     sx = worksheet[t*3];
     blenx = worksheet[t*3+1];
     startpnt = worksheet[t*3+2];
+    
+    std::cout << t << " sx = " << sx << " "; 
+    std::cout << t << " blenx = " << nnx << " "; 
+     std::cout << t << " startpoint = " << startpnt << " "; 
+    
     MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
     MPI_Isend(&sx,1,MPI_INT,t,t+110,MPI_COMM_WORLD,&request);
     MPI_Isend(&startpnt,1,MPI_INT,t,t+120,MPI_COMM_WORLD,&request);
@@ -403,17 +408,17 @@ int main(int argc, char** argv)
         nv=0.0;
         
         if(rank!=0)
-         MPI_Isend(Dvec,2,columntype, rank-1, rank+111, MPI_COMM_WORLD,&request);
+         MPI_Isend(Dvec,2,columntype, rank-1, rank+130, MPI_COMM_WORLD,&request);
          if(rank !=size-1)
          {
-         MPI_Isend(&Dvec[sz-3],2,columntype, rank+1, rank+170, MPI_COMM_WORLD,&request); 
-         MPI_Recv(&end,2, MPI_DOUBLE,rank+1, rank+111, MPI_COMM_WORLD,&status);
+         MPI_Isend(&Dvec[sz-3],2,columntype, rank+1, rank+140, MPI_COMM_WORLD,&request); 
+         MPI_Recv(&end,2, MPI_DOUBLE,rank+1, rank+130, MPI_COMM_WORLD,&status);
          ev = end[0];
          sv = end[1];
          }
          if(rank!=0)
          {
-          MPI_Recv(&start,2, MPI_DOUBLE,rank-1, rank+170, MPI_COMM_WORLD,&status);
+          MPI_Recv(&start,2, MPI_DOUBLE,rank-1, rank+140, MPI_COMM_WORLD,&status);
           wv = start[0];
           nv = start[1];
          }
