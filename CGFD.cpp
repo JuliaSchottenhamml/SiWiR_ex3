@@ -451,7 +451,7 @@ int main(int argc, char** argv)
             }
           time = timer.elapsed();
          //std::cout << " 3: " << time << "\n";
-//         double dt3 = 0.0;  
+         double dt3 = 0.0;  
          MPI_Allreduce(&dt, &dt3,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
           // time = timer.elapsed();
 	   //std::cout <<  " time, 4:" << time;
