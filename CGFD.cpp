@@ -492,6 +492,8 @@ int main(int argc, char** argv)
         
          *dt0 = dt1;
          ik++;
+          time = timer.elapsed();
+	std::cout << rank << " time," << time << std::endl;
         }                
     }       
      //std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
