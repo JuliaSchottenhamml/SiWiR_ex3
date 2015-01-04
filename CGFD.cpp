@@ -147,7 +147,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             f = _mm_mul_pd(b,d);
             g = _mm_mul_pd(c,e);  
               
-            time = timer.elapsed();
+      //      time = timer.elapsed();
             //if(iterat >75 && iterat < 78 && i==sx && j==0)
             //std::cout <<  " time, 2:" << time << "\n";          
             
