@@ -132,7 +132,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             else
                 ffm = gama*sv;
             time = timer.elapsed();
-            std::cout <<  " time, 2:" << time;          
+            std::cout <<  " time, 2:" << time << "\n";          
             
                 
             result[l++]=cm+pm+ppm+fm+ffm;
