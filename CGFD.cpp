@@ -102,51 +102,58 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
     int l =0;
     gridno= sx*bleny;
     index = gridno-startpnt;
-    __m128d a,b,c,d,e,f;
+    __m128d a,b,c,d,e,f,g;
    
     for(int i=sx; i<le ; i++)
       {
         for(int j=0; j<bleny ; j++,gridno++, index++)
         {
-            int pm = 0;
-            int ppm =0;
-            int fm =0;
-            int ffm =0;  
+            //int pm = 0;
+            //int ppm =0;
+            //int fm =0;
+            //int ffm =0;  
             //time = timer.elapsed();
             //if(iterat >75 && iterat < 78 && i==sx && j==0)
             //std::cout <<  " time, 1:" << time << " " << vec[index]; 
              a[0]=alpha;
-             a[1]= gama;
-             c[0]= beta;
-             c[1] =beta;
-             b[0] = vec[index];
+             a[1]= vec[index];;
+             b[0]= beta;
+             b[1] =beta;
+             c[0]=gama;
+             c[1]=gama;
+             //b[0] = vec[index];
               
             if(j!=0 && i!=sx)
-               d[1]=vec[index-1];
+               d[0]=vec[index-1];
                
             if(j!=0 && i==sx)
-               d[1]=wv;
+               d[0]=wv;
                
             if(j != bleny-1 && i!=le)
-                d[0] = vec[index+1];
+                d[1] = vec[index+1];
             if(j != bleny-1 && i==le)
-                d[0] = ev;
+                d[1] = ev;
             
             if(index-3>=0)
-              b[1] = vec[index-3];
+              e[0] = vec[index-3];
               else
-              b[1] = nv;
+              e[0] = nv;
+              
+              if(index+3>=0)
+              e[1] = vec[index+3];
+              else
+              e[1] = sv;
          
-            e = _mm_mul_pd(a,b);
-            f = _mm_mul_pd(c,d);  
+            f = _mm_mul_pd(b,d);
+            g = _mm_mul_pd(c,e);  
               
             time = timer.elapsed();
             //if(iterat >75 && iterat < 78 && i==sx && j==0)
             //std::cout <<  " time, 2:" << time << "\n";          
             
-            e = _mm_hadd_pd(e,f);
+            e = _mm_hadd_pd(f,g);
                 
-            result[l++]=e[0]+e[1];
+            result[l++]=e[0]+e[1]+a[0]*a[1];
 
         }
     }
