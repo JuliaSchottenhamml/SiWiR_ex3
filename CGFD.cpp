@@ -112,7 +112,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             int ffm =0;  
             time = timer.elapsed();
             if(iterat >75 && iterat < 78 && i==sx && j==0)
-            std::cout <<  " time, 1:" << time;          
+            std::cout <<  " time, 1:" << time << " " << vec[index];          
             int cm = alpha*vec[index];
             if(j!=0 && i!=sx)
                 pm = beta*vec[index-1];
