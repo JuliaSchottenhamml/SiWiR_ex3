@@ -497,7 +497,7 @@ int main(int argc, char** argv)
         
         std::cout << rank << "\n residue " << dt1 << "\n";
 
-        if(dt1 < error)
+        if(abs(dt1) < abs(error))
         {
             broke = 1;
 
