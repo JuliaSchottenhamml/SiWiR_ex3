@@ -90,10 +90,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
     
     
     int le=sx+blenx;
-    #ifdef USE_LIKWID
-	likwid_markerInit();
-	likwid_markerStartRegion("dummy");
-#endif
+  	double time = 0;
     siwir::Timer	timer;
      double * result = new double[len];
     int gridno = 0;
@@ -144,10 +141,6 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
     }
 
 
-#ifdef USE_LIKWID
-	likwid_markerStopRegion("dummy");
-	likwid_markerClose();
-#endif
     return result;
     
 }
