@@ -294,9 +294,6 @@ int main(int argc, char** argv)
     blenx = worksheet[t*3+1];
     startpnt = worksheet[t*3+2];
     
-    std::cout << t << " sx = " << sx << " "; 
-    std::cout << t << " blenx = " << nnx << " "; 
-     std::cout << t << " startpoint = " << startpnt << " "; 
     
     MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
     MPI_Isend(&sx,1,MPI_INT,t,t+110,MPI_COMM_WORLD,&request);
@@ -309,7 +306,10 @@ int main(int argc, char** argv)
     MPI_Recv(&sx,1, MPI_INT,0, rank+110, MPI_COMM_WORLD,&status);
     MPI_Recv(&startpnt,1, MPI_INT,0, rank+120, MPI_COMM_WORLD,&status);
   
-     
+    std::cout << rank << " sx = " << sx << " "; 
+    std::cout << rank << " blenx = " << nnx << " "; 
+     std::cout << rank << " startpoint = " << startpnt << " "; 
+  
   /*std::cout << rank << " nnx = " << nnx << " "; 
     std::cout << rank << " nny = " << nny << " "; 
      std::cout << rank << " nx = " << nx << " "; 
