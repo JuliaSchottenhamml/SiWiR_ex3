@@ -258,7 +258,7 @@ int main(int argc, char** argv)
     double error=0.0;
     double* worksheet = new double[size*LD1];;
    	double time = 0;
-	double  dt0[1];   
+	double  *dt0;   
     double alfa=0.0;
     double bita=0.0;
     double gama=0.0;
@@ -270,7 +270,8 @@ int main(int argc, char** argv)
     MPI_Datatype columntype;   
     MPI_Type_vector( 2, 1, 2, MPI_DOUBLE, &columntype );
     MPI_Type_commit( &columntype );  
-       
+      
+    *dt0=0.0;   
     nx = atoi(argv[1]);
     ny = atoi(argv[2]);
     nnx = nx-1;
