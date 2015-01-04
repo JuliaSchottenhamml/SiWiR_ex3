@@ -280,11 +280,13 @@ int main(int argc, char** argv)
     double alfa=0.0;
     double bita=0.0;
     double gama=0.0;
+     double dt1 = 0.0;
     double hx = 0.0, hy=0.0; 
     int startpnt =0;
     double dt = 0.0; 
     double *start = new double[2];
     double *end = new double[2];
+    
    double ev=0.0,wv=0.0,sv=0.0,nv=0.0;
     MPI_Datatype columntype;   
     MPI_Type_vector( 2, 1, 2, MPI_DOUBLE, &columntype );
@@ -482,7 +484,7 @@ int main(int argc, char** argv)
          alpha = *dt0 / dt3;
          // time = timer.elapsed();
 //	    std::cout << " 5: " << time << "\n";
-         double dt1 = 0.0;
+        
          dt = 0.0;
          
         for(int j=0; j< sz;j+=4)
