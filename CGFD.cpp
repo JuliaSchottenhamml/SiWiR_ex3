@@ -497,9 +497,9 @@ int main(int argc, char** argv)
         
         std::cout << rank << "\n residue " << dt1 << "\n";
 
-        if(abs(dt1) < abs(error))
+        if(fabs(dt1) < fabs(error))
         {
-             std::cout << rank << "\n residue I am here to broke " << abs(dt1) << " " << abs(error) << "\n";
+             std::cout << rank << "\n residue I am here to broke " << fabs(dt1) << " " << fabs(error) << "\n";
             broke = 1;
 
          for(int jb=1; jb< size;jb++)
