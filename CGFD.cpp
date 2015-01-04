@@ -384,16 +384,20 @@ int main(int argc, char** argv)
         Dvec[i+1]=Rvec[i+1];
         Dvec[i+2]=Rvec[i+2];
         Dvec[i+3]=Rvec[i+3];
+        resdlocal += Rvec[i] * Rvec[i];
+        resdlocal += Rvec[i+1] * Rvec[i+1];
+        resdlocal += Rvec[i+2] * Rvec[i+2];
+        resdlocal += Rvec[i+3] * Rvec[i+3];
        //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
     } 
      
-     for(int i = 0 ; i< sz; i+=4)
+   /*  for(int i = 0 ; i< sz; i+=4)
     {   
         resdlocal += Rvec[i] * Rvec[i];
         resdlocal += Rvec[i+1] * Rvec[i+1];
         resdlocal += Rvec[i+2] * Rvec[i+2];
         resdlocal += Rvec[i+3] * Rvec[i+3];
-    }
+    }*/
     
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
     
@@ -420,14 +424,14 @@ int main(int argc, char** argv)
          if(rank !=size-1)
          {
          MPI_Isend(&Dvec[sz-3],1,columntype, rank+1, rank+140, MPI_COMM_WORLD,&request); 
-         MPI_Recv(end,1, MPI_DOUBLE,rank+1, rank+130, MPI_COMM_WORLD,&status);
+         MPI_Recv(end,1, columntype,rank+1, rank+130, MPI_COMM_WORLD,&status);
          ev = end[0];
          sv = end[1];
          }
          
          if(rank!=0)
          {
-          MPI_Recv(start,1, MPI_DOUBLE,rank-1, rank+140, MPI_COMM_WORLD,&status);
+          MPI_Recv(start,1, columntype,rank-1, rank+140, MPI_COMM_WORLD,&status);
           wv = start[0];
           nv = start[1];
          }
