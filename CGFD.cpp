@@ -2,7 +2,7 @@
 #include <numeric>
 #include <fstream>
 #include <algorithm>
-#include "immintrin.h"
+#include "emmintrin.h"
 #include <memory>
 #include <vector>
 #include <mpi.h>
@@ -101,7 +101,9 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
    
     int l =0;
     gridno= sx*bleny;
-    index = gridno-startpnt; 
+    index = gridno-startpnt;
+    __m128d a,b,c,d,e,f;
+   
     for(int i=sx; i<le ; i++)
       {
         for(int j=0; j<bleny ; j++,gridno++, index++)
@@ -110,35 +112,41 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             int ppm =0;
             int fm =0;
             int ffm =0;  
-            time = timer.elapsed();
-            if(iterat >75 && iterat < 78 && i==sx && j==0)
-            std::cout <<  " time, 1:" << time << " " << vec[index];          
-            int cm = alpha*vec[index];
+            //time = timer.elapsed();
+            //if(iterat >75 && iterat < 78 && i==sx && j==0)
+            //std::cout <<  " time, 1:" << time << " " << vec[index]; 
+             a[0]=alpha;
+             a[1]= gama;
+             c[0]= beta;
+             c[1] =beta;
+             b[0] = vec[index];
+              
             if(j!=0 && i!=sx)
-                pm = beta*vec[index-1];
+               d[1]=vec[index-1];
+               
             if(j!=0 && i==sx)
-                pm = beta*wv;
+               d[1]=wv;
+               
+            if(j != bleny-1 && i!=le)
+                d[0] = vec[index+1];
+            if(j != bleny-1 && i==le)
+                d[0] = ev;
             
             if(index-3>=0)
-                ppm = gama*vec[index-3];
-            else
-                ppm = gama*nv;
-            
-            if(j != bleny-1 && i!=le)
-                fm = beta*vec[index+1];
-            if(j != bleny-1 && i==le)
-                fm = beta*ev;
-            
-            if(index+3 < len)
-                ffm = gama*vec[index+3];
-            else
-                ffm = gama*sv;
+              b[1] = vec[index-3];
+              else
+              b[1] = nv;
+         
+            e = _mm_mul_pd(a,b);
+            f = _mm_mul_pd(c,d);  
+              
             time = timer.elapsed();
-            if(iterat >75 && iterat < 78 && i==sx && j==0)
-            std::cout <<  " time, 2:" << time << "\n";          
+            //if(iterat >75 && iterat < 78 && i==sx && j==0)
+            //std::cout <<  " time, 2:" << time << "\n";          
             
+            e = _mm_hadd_pd(e,f);
                 
-            result[l++]=cm+pm+ppm+fm+ffm;
+            result[l++]=e[0]+e[1];
 
         }
     }
