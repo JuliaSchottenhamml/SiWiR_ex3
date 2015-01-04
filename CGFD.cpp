@@ -265,8 +265,8 @@ int main(int argc, char** argv)
     double hx = 0.0, hy=0.0; 
     int startpnt =0;
     double dt = 0.0; 
-//   double *start = new double[2];
-  //  double *end = new double[2];
+    double *start = new double[2];
+    double *end = new double[2];
    double ev=0.0,wv=0.0,sv=0.0,nv=0.0;
     MPI_Datatype columntype;   
     MPI_Type_vector( 2, 1, 2, MPI_DOUBLE, &columntype );
@@ -411,25 +411,34 @@ int main(int argc, char** argv)
         sv=0.0;
         nv=0.0;
         
-        /*if(rank!=0)
-         MPI_Isend(&Dvec[0],1,columntype, rank-1, rank+129, MPI_COMM_WORLD,&request);
-         
-         if(rank !=size-1)
-         {
-         MPI_Recv(end,1, columntype,rank+1, rank+130, MPI_COMM_WORLD,&status);
-          ev = end[0];
-         sv = end[1];
-         MPI_Isend(&Dvec[sz-3],1,columntype, rank+1, rank+139, MPI_COMM_WORLD,&request);
+        int gn=0;
+        int hn =0;
+        if(rank!=0)
+        gn=rank-1;
+        else 
+        gn = size-1;
+        if(rank!=size-1)
+        hn=rank+1;
+        else 
+        hn = 0;
         
-         }
+         MPI_Isend(&Dvec[0],1,columntype, gn, rank+129, MPI_COMM_WORLD,&request);
          
-         if(rank!=0)
+         MPI_Recv(end,1, columntype,hn, rank+130, MPI_COMM_WORLD,&status);
+         if(rank != size-1)
          {
-          MPI_Recv(start,1, columntype,rank-1, rank+140, MPI_COMM_WORLD,&status);
+         ev = end[0];
+         sv = end[1];
+        }
+        
+         MPI_Isend(&Dvec[sz-3],1,columntype, hn, rank+139, MPI_COMM_WORLD,&request);
+         MPI_Recv(start,1, columntype,gn, rank+140, MPI_COMM_WORLD,&status);
+        if(rank!=0)
+        {
           wv = start[0];
           nv = start[1];
-         }*/
-         //MPI_Barrier(MPI_COMM_WORLD);
+        }
+          //MPI_Barrier(MPI_COMM_WORLD);
          tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,startpnt,ev,wv,nv,sv);
         
           for( int km=0; km < sz; km+=4)
