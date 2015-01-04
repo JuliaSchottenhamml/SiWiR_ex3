@@ -383,7 +383,7 @@ int main(int argc, char** argv)
     
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
-    std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
+   std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
         
    MPI_Datatype columntype;   
    MPI_Type_vector( 2, 1, 2, MPI_DOUBLE, &columntype );
@@ -391,11 +391,9 @@ int main(int argc, char** argv)
    
    double *start, * end;
    double ev=0.0,wv=0.0,sv=0.0,nv=0.0;
-  
-    if(*dt0 > error)
+   
+    if(fabs(*dt0) > fabs(error))
      {    
-        //Dvec = Rvec;      
-      
         for(int i = 0 ; i<iter; i++)
        {
          std::cout << "\n %% rank = " << rank << "iteration number= " << i;
@@ -405,7 +403,7 @@ int main(int argc, char** argv)
         nv=0.0;
         
         if(rank!=0)
-          MPI_Isend(Dvec,2,columntype, rank-1, rank+111, MPI_COMM_WORLD,&request);
+         MPI_Isend(Dvec,2,columntype, rank-1, rank+111, MPI_COMM_WORLD,&request);
          if(rank !=size-1)
          {
          MPI_Isend(&Dvec[sz-3],2,columntype, rank+1, rank+170, MPI_COMM_WORLD,&request); 
@@ -419,7 +417,6 @@ int main(int argc, char** argv)
           wv = start[0];
           nv = start[1];
          }
-               
          
          tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,startpnt,ev,wv,nv,sv);
         
@@ -452,8 +449,6 @@ int main(int argc, char** argv)
                Rvec[j+3] -= alpha * tresult[j+3]; 
             
         }
-        
-             //int tem =rank*sz;
              double dt1 = 0.0;
              dt = 0.0;
                         
@@ -485,13 +480,13 @@ int main(int argc, char** argv)
         
          *dt0 = dt1;
         }                
-}       
-    
+    }       
+        //std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
     MPI_Isend(Xvec,sz,MPI_DOUBLE, 0, rank+39, MPI_COMM_WORLD,&request); 
-    
+    std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
     if(rank == 0)
     {     
-      for(int j=0; j< size;j++)
+      for(int j=0; j<size;j++)
         MPI_Recv(&Fvec[j*sz],2, MPI_DOUBLE,j, rank+39, MPI_COMM_WORLD,&status); 
       
     time = timer.elapsed();
@@ -503,7 +498,6 @@ int main(int argc, char** argv)
         std::cout << "\n";    
         std::cout << Xvec[i] << ' ';
         }*/
-	
     }
     MPI_Finalize();
 #ifdef USE_LIKWID
