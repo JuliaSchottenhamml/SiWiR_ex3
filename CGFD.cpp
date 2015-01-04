@@ -326,7 +326,7 @@ int main(int argc, char** argv)
         
     double * tresult = new double[sz];
     double * fresult = new double[sz];
-    double * mresult = new double[sz];
+    //double * mresult = new double[sz];
    // double * nresult = new double[sz];
     double * Xvec = new double[sz];
     double * Rvec = new double[sz];
@@ -355,7 +355,7 @@ int main(int argc, char** argv)
     
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,startpnt,0.0,0.0,0.0,0.0);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz);
-    std::cout << "\n" << rank << " " << blenx << " " << bleny << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
+    std::cout << "\n" << rank << " " << blenx << " " << nnx << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
       for(int i = 0; i< sz; i+=4)
     {
        // std::cout << "\n" << rank << " " << fresult[i];
