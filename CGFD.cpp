@@ -330,6 +330,7 @@ int main(int argc, char** argv)
    // double * nresult = new double[sz];
     double * Xvec = new double[sz];
     double * Rvec = new double[sz];
+    double * Dvec = new double[sz]; 
     double * Fvec = new double[gridpoint];
     
     for(int i=0;i<sz;i+=4)
@@ -363,6 +364,10 @@ int main(int argc, char** argv)
         Rvec[i+1] = fresult[i+1]-tresult[i+1];
         Rvec[i+2] = fresult[i+2]-tresult[i+2];
         Rvec[i+3] = fresult[i+3]-tresult[i+3];
+        Dvec[i]=Rvec[i];
+        Dvec[i+1]=Rvec[i+1];
+        Dvec[i+2]=Rvec[i+2];
+        Dvec[i+3]=Rvec[i+3];
                 //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
     } 
      
@@ -389,8 +394,8 @@ int main(int argc, char** argv)
   
     if(*dt0 > error)
      {    
-        double * Dvec = new double[sz]; 
-        Dvec = Rvec;      
+        
+        //Dvec = Rvec;      
       
         for(int i = 0 ; i<iter; i++)
        {
