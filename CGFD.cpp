@@ -411,7 +411,7 @@ int main(int argc, char** argv)
         sv=0.0;
         nv=0.0;
         
-        if(rank!=0)
+        /*if(rank!=0)
          MPI_Isend(&Dvec[0],1,columntype, rank-1, rank+129, MPI_COMM_WORLD,&request);
          
          if(rank !=size-1)
@@ -428,8 +428,8 @@ int main(int argc, char** argv)
           MPI_Recv(start,1, columntype,rank-1, rank+140, MPI_COMM_WORLD,&status);
           wv = start[0];
           nv = start[1];
-         }
-         MPI_Barrier(MPI_COMM_WORLD);
+         }*/
+         //MPI_Barrier(MPI_COMM_WORLD);
          tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,startpnt,ev,wv,nv,sv);
         
           for( int km=0; km < sz; km+=4)
