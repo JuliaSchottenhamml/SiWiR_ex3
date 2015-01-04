@@ -85,7 +85,7 @@ inline double border(const double x, const double y){
    }
 
 inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alpha, const double beta, const double gama,
-   /*int destn, int dests,*/ int len, int startpnt, double ev, double wv, double nv, double sv)
+   /*int destn, int dests, */int len, int startpnt, double ev, double wv, double nv, double sv)
 {  
     
     //std::cout << " in cal matmult ";
@@ -95,17 +95,17 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
     //int sz=blenx*bleny;
      double * result = new double[len];
     int gridno = 0;
-    double gama1 = 0.0;
-    double gama2 = 0.0;
+    //double gama1 = 0.0;
+    //double gama2 = 0.0;
     int index=0;
     
     int l =0;
     
-     if(destn != -1)
-       gama1 = gama;
+    // if(destn != -1)
+      // gama1 = gama;
                         
-     if(dests != -1)
-      gama2 = gama;
+     //if(dests != -1)
+     // gama2 = gama;
 
     gridno= sx*bleny;
     index = gridno-startpnt; 
@@ -125,9 +125,9 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
                 pm = beta*wv;
             
             if(index-3>=0)
-                ppm = gama1*vec[index-3];
+                ppm = gama*vec[index-3];
             else
-                ppm = gama1*nv;
+                ppm = gama*nv;
             
             if(j != bleny-1 && i!=le)
                 fm = beta*vec[index+1];
@@ -135,9 +135,9 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
                 fm = beta*ev;
             
             if(index+3 < len)
-                ffm = gama2*vec[index+3];
+                ffm = gama*vec[index+3];
             else
-                ffm = gama2*sv;
+                ffm = gama*sv;
                 
             result[l++]=cm+pm+ppm+fm+ffm;
 
@@ -172,13 +172,6 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
     double x = 0.0;
     double y = 0.0;
 
-    /* for(int h=0;h<len;h+=4)
-    {
-      result[h]=0.0;  
-      result[h+1]=0.0;
-      result[h+2]=0.0;
-      result[h+3]=0.0;
-    }*/
 
     int l = 0;
     for(int i=sx; i< sx+blenx ; i++)
@@ -253,12 +246,12 @@ int main(int argc, char** argv)
     
 
     int gridpoint = 0;
-    int len = 0;
+    //int len = 0;
     int dests=0, destn=0, blenx=0, sx =0;
     int nx = 0;
     int ny = 0;
     int iter = 0;
-    int broke=0;  
+    //int broke=0;  
     int nnx =0, nny=0;
     double alpha = 0.0;
     double resdlocal=0.0; 
@@ -361,7 +354,7 @@ int main(int argc, char** argv)
      
     
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,startpnt,0.0,0.0,0.0,0.0);        
-       fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz,startpnt);
+       fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz);
    // std::cout << "\n" << rank << " " << blenx << " " << bleny << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
       for(int i = 0; i< (int)sizeof(tresult); i+=4)
     {
@@ -408,10 +401,10 @@ int main(int argc, char** argv)
         nv=0.0;
         
         if(rank!=0)
-          MPI_Isend(Dvec,2,&columntype, rank-1, rank+111, MPI_COMM_WORLD,&request);
+          MPI_Isend(Dvec,2,columntype, rank-1, rank+111, MPI_COMM_WORLD,&request);
          if(rank !=size-1)
          {
-         MPI_Isend(&Dvec[sz-3],2,&columntype, rank+1, rank+170, MPI_COMM_WORLD,&request); 
+         MPI_Isend(&Dvec[sz-3],2,columntype, rank+1, rank+170, MPI_COMM_WORLD,&request); 
          MPI_Recv(&end,2, MPI_DOUBLE,rank+1, rank+111, MPI_COMM_WORLD,&status);
          ev = end[0];
          sv = end[1];
@@ -424,14 +417,14 @@ int main(int argc, char** argv)
          }
                
          
-         tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama, destn,dests,sz,startpnt,ev,wv,nv,sv);
+         tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,startpnt,ev,wv,nv,sv);
         
             for( int km=0; km < sz; km+=4)
             {
-                   dt+ = Dvec[km]*tresult[km];
-                    dt+ = Dvec[km+1]*tresult[km+1];
-                    dt+ = Dvec[km+2]*tresult[km+2];
-                    dt+ = Dvec[km+3]*tresult[km+3];
+                   dt += Dvec[km]*tresult[km];
+                    dt += Dvec[km+1]*tresult[km+1];
+                    dt += Dvec[km+2]*tresult[km+2];
+                    dt += Dvec[km+3]*tresult[km+3];
             }
             
          double dt3 = 0.0;  
@@ -462,10 +455,10 @@ int main(int argc, char** argv)
                         
             for( int km=0; km < sz; km++)
             {
-                  dt+ = Rvec[km]*Rvec[km];
-                   dt+ = Rvec[km+1]*Rvec[km+1];
-                    dt+ = Rvec[km+2]*Rvec[km+2];
-                    dt+ = Rvec[km+3]*Rvec[km+3];
+                  dt += Rvec[km]*Rvec[km];
+                   dt += Rvec[km+1]*Rvec[km+1];
+                    dt += Rvec[km+2]*Rvec[km+2];
+                    dt += Rvec[km+3]*Rvec[km+3];
             }
             
         MPI_Allreduce(&dt, &dt1,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
