@@ -393,7 +393,7 @@ int main(int argc, char** argv)
     if(fabs(*dt0) > fabs(error))
      {   
             std::cout << "\n %% rank = " << rank << "iteration number= " ; 
-        for(int i = 0 ; i<iter; i++)
+        for(int i=0 ; i < iter; i++)
        {
         std::cout << "\n %% rank = " << rank << "iteration number= " << i;
         ev=0.0;
@@ -479,7 +479,7 @@ int main(int argc, char** argv)
          *dt0 = dt1;
         }                
     }       
-        //std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
+    std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
     MPI_Isend(Xvec,sz,MPI_DOUBLE, 0, rank+39, MPI_COMM_WORLD,&request); 
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
     if(rank == 0)
