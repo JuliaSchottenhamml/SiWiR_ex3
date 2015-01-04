@@ -488,9 +488,8 @@ int main(int argc, char** argv)
     if(rank == 0)
     {     
       for(int j=0; j< size;j+=4)
-    {   
-     MPI_Recv(&Fvec[j*sz],2, MPI_DOUBLE,j, rank+39, MPI_COMM_WORLD,&status); 
-        
+        MPI_Recv(&Fvec[j*sz],2, MPI_DOUBLE,j, rank+39, MPI_COMM_WORLD,&status); 
+      
     time = timer.elapsed();
 	std::cout << rank << " time," << time << std::endl;
 	
