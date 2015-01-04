@@ -284,6 +284,8 @@ int main(int argc, char** argv)
     bita = 1/(hx*hx);
     gama = 1/(hy*hy);
     alfa = (-1.0)*(2.0*gama+ 2.0*bita + k * k);
+
+
     if (rank == 0)
    {
     worksheet = gcapt(worksheet, size, nny, nnx); 
@@ -300,7 +302,7 @@ int main(int argc, char** argv)
     MPI_Isend(&startpnt,1,MPI_INT,t,t+120,MPI_COMM_WORLD,&request);
     }
            
-   }
+    }
       
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+110, MPI_COMM_WORLD,&status);
@@ -392,15 +394,16 @@ int main(int argc, char** argv)
     
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
     
-    MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
+    //MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
     MPI_Barrier(MPI_COMM_WORLD);
    
-    if(fabs(*dt0) > fabs(error))
+    if(fabs(*dt0) > error)
      {   
-            std::cout << "\n %% rank = " << rank << "before for "<< iter ; 
-        for(int ik=0 ; ik < iter; ik++)
+      std::cout << "\n %% rank = " << rank << "before for "<< iter ; 
+ 
+     for(int ik=0 ; ik < iter; ik++)
        {
         std::cout << "\n %% rank = " << rank << "iteration number= " << ik;
         ev=0.0;
