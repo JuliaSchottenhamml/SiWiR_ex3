@@ -546,17 +546,22 @@ int main(int argc, char** argv)
     time = timer.elapsed();
 	std::cout << rank << " time," << time << std::endl;
 	double residual =0.0;
+	residual = sqrt(dt1);
+    std::cout << "finale residuam:  " << residual << "\n Writing data to data/solution.txt" ;
+	
+	std::ofstream	fOut("data/solution.txt");
+
 	for (int i= 0; i< gridpoint; i++ )
         {
         //if(i%nnx == 0 )
         //std::cout << "\n"; 
         //residual +=  Fvec[i]*Fvec[i];
          
-        std::cout << Fvec[i] << "\n";
+        fOut << Fvec[i] << "\n";
         
         }
-        residual = sqrt(dt1);
-        std::cout << "finale residuam:  " << residual;
+        fOut << std::endl;
+        
     }
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Type_free( &columntype );
