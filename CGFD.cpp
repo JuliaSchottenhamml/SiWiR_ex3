@@ -419,7 +419,7 @@ int main(int argc, char** argv)
     //std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
     //MPI_Barrier(MPI_COMM_WORLD);
    
-    if(fabs(*dt0) > fabs(error))
+    if(fabs(sqrt(*dt0)) > fabs(error))
      {   
       //std::cout << "\n %% rank = " << rank << "before for "<< size ; 
       int ik=0;
@@ -503,7 +503,7 @@ int main(int argc, char** argv)
                     
         MPI_Allreduce(&dt, &dt1,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
 
-        if(fabs(dt1) < fabs(error))
+        if(fabs(sqrt(dt1)) < fabs(error))
         {
             std::cout << rank << "\n residue I am here to break you loop " << fabs(dt1) << " " << fabs(error) << "\n";
             break;
@@ -548,12 +548,12 @@ int main(int argc, char** argv)
         {
         //if(i%nnx == 0 )
         //std::cout << "\n"; 
-        residual +=  Fvec[i]*Fvec[i];
+        //residual +=  Fvec[i]*Fvec[i];
          
         std::cout << Fvec[i] << "\n";
         
         }
-        residual = sqrt(residual);
+        residual = sqrt(dt1);
         std::cout << "finale residuam:  " << residual;
     }
     MPI_Barrier(MPI_COMM_WORLD);
