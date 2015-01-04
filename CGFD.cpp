@@ -88,25 +88,16 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
    /*int destn, int dests, */int len, int startpnt, double ev, double wv, double nv, double sv)
 {  
     
-    //std::cout << " in cal matmult ";
-   
-    //int sy = 0;
+    
     int le=sx+blenx;
-    //int sz=blenx*bleny;
+    siwir::Timer	timer;
      double * result = new double[len];
     int gridno = 0;
     //double gama1 = 0.0;
     //double gama2 = 0.0;
     int index=0;
-    
+   
     int l =0;
-    
-    // if(destn != -1)
-      // gama1 = gama;
-                        
-     //if(dests != -1)
-     // gama2 = gama;
-
     gridno= sx*bleny;
     index = gridno-startpnt; 
     for(int i=sx; i<le ; i++)
@@ -117,7 +108,8 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             int ppm =0;
             int fm =0;
             int ffm =0;  
-             
+            time = timer.elapsed();
+            std::cout <<  " time, 1:" << time;          
             int cm = alpha*vec[index];
             if(j!=0 && i!=sx)
                 pm = beta*vec[index-1];
@@ -138,6 +130,9 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
                 ffm = gama*vec[index+3];
             else
                 ffm = gama*sv;
+            time = timer.elapsed();
+            std::cout <<  " time, 2:" << time;          
+            
                 
             result[l++]=cm+pm+ppm+fm+ffm;
 
@@ -372,7 +367,7 @@ int main(int argc, char** argv)
     
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,startpnt,0.0,0.0,0.0,0.0);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz);
-    std::cout << "\n" << rank << " " << iter << " " << blenx << " " << nnx << " " << sx << " " << gama << " " << hx << " " << hy << " " << startpnt;
+   // std::cout << "\n" << rank << " " << iter << " " << blenx << " " << nnx << " " << sx << " " << gama << " " << hx << " " << hy << " " << startpnt;
       for(int i = 0; i< sz; i+=4)
     {
        // std::cout << "\n" << rank << " " << fresult[i];
@@ -392,7 +387,7 @@ int main(int argc, char** argv)
     } 
      
    
-    std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
+   // std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
     
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
@@ -405,7 +400,7 @@ int main(int argc, char** argv)
       int ik=0;
       while(ik < iter)
        {
-        std::cout << "\n %% rank = " << rank << "iteration number= " << ik << " ";
+        std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
         ev=0.0;
         wv=0.0;
         sv=0.0;
@@ -439,11 +434,11 @@ int main(int argc, char** argv)
           nv = start[1];
         }
           //MPI_Barrier(MPI_COMM_WORLD);
-          time = timer.elapsed();
-           std::cout <<  " time, 1:" << time;
+//          time = timer.elapsed();
+//           std::cout <<  " time, 1:" << time;
          tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,startpnt,ev,wv,nv,sv);
-         time = timer.elapsed();
-         std::cout << " 2: " << time ;
+        // time = timer.elapsed();
+//         std::cout << " 2: " << time ;
          
           for( int km=0; km < sz; km+=4)
             {
@@ -453,14 +448,14 @@ int main(int argc, char** argv)
                        dt += Dvec[km+3]*tresult[km+3];
             }
           time = timer.elapsed();
-         std::cout << " 3: " << time << "\n";
-         double dt3 = 0.0;  
+         //std::cout << " 3: " << time << "\n";
+//         double dt3 = 0.0;  
          MPI_Allreduce(&dt, &dt3,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
-           time = timer.elapsed();
-	   std::cout <<  " time, 4:" << time;
+          // time = timer.elapsed();
+	   //std::cout <<  " time, 4:" << time;
          alpha = *dt0 / dt3;
-          time = timer.elapsed();
-	    std::cout << " 5: " << time << "\n";
+         // time = timer.elapsed();
+//	    std::cout << " 5: " << time << "\n";
          double dt1 = 0.0;
          dt = 0.0;
          
