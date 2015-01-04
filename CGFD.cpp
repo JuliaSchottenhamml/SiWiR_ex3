@@ -543,13 +543,18 @@ int main(int argc, char** argv)
       }
     time = timer.elapsed();
 	std::cout << rank << " time," << time << std::endl;
-	
+	double residual =0.0;
 	for (int i= 0; i< gridpoint; i++ )
         {
         //if(i%nnx == 0 )
-        //std::cout << "\n";    
+        //std::cout << "\n"; 
+        residual + =  Fvec[i]*Fvec[i];
+         
         std::cout << Fvec[i] << "\n";
+        
         }
+        residual = sqrt(residual);
+        std::cout << "finale residuam:  " << residual;
     }
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Type_free( &columntype );
