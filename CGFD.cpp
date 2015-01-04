@@ -265,7 +265,8 @@ int main(int argc, char** argv)
     double hx = 0.0, hy=0.0; 
     int startpnt =0;
     double dt = 0.0; 
-   double *start, *end;
+   double *start = new double[2];
+    double *end = new double[2];
    double ev=0.0,wv=0.0,sv=0.0,nv=0.0;
     MPI_Datatype columntype;   
     MPI_Type_vector( 2, 1, 2, MPI_DOUBLE, &columntype );
