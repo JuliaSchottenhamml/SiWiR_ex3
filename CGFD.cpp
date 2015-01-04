@@ -23,6 +23,7 @@
 # define k 2.0*M_PI
 
 #define ERRLIMIT 0;
+int iterat = 0;
 
 inline double fxy(const double x, const double y){
 
@@ -110,6 +111,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             int fm =0;
             int ffm =0;  
             time = timer.elapsed();
+            if(iterat >75 && iterat < 78)
             std::cout <<  " time, 1:" << time;          
             int cm = alpha*vec[index];
             if(j!=0 && i!=sx)
@@ -132,6 +134,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             else
                 ffm = gama*sv;
             time = timer.elapsed();
+            if(iterat >75 && iterat < 78)
             std::cout <<  " time, 2:" << time << "\n";          
             
                 
@@ -369,6 +372,8 @@ int main(int argc, char** argv)
     
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,startpnt,0.0,0.0,0.0,0.0);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz);
+       
+       
    // std::cout << "\n" << rank << " " << iter << " " << blenx << " " << nnx << " " << sx << " " << gama << " " << hx << " " << hy << " " << startpnt;
       for(int i = 0; i< sz; i+=4)
     {
@@ -402,6 +407,7 @@ int main(int argc, char** argv)
       int ik=0;
       while(ik < iter)
        {
+            itarate = ik;
         std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
         ev=0.0;
         wv=0.0;
