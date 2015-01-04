@@ -355,8 +355,8 @@ int main(int argc, char** argv)
     
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,startpnt,0.0,0.0,0.0,0.0);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz);
-   // std::cout << "\n" << rank << " " << blenx << " " << bleny << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
-      for(int i = 0; i< (int)sizeof(tresult); i+=4)
+    std::cout << "\n" << rank << " " << blenx << " " << bleny << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
+      for(int i = 0; i< sz; i+=4)
     {
        // std::cout << "\n" << rank << " " << fresult[i];
         Rvec[i] = fresult[i]-tresult[i];
@@ -366,7 +366,7 @@ int main(int argc, char** argv)
                 //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
     } 
      
-     for(int i = 0 ; i< (int)sizeof(mresult); i+=4)
+     for(int i = 0 ; i< sz; i+=4)
     {   
         resdlocal += Rvec[i] * Rvec[i];
         resdlocal += Rvec[i+1] * Rvec[i+1];
@@ -374,7 +374,7 @@ int main(int argc, char** argv)
         resdlocal += Rvec[i+3] * Rvec[i+3];
     }
     
-    //std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
+    std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
     
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
@@ -394,7 +394,7 @@ int main(int argc, char** argv)
       
         for(int i = 0 ; i<iter; i++)
        {
-
+         std::cout << "\n %% rank = " << rank << "iteration number= " << i;
         ev=0.0;
         wv=0.0;
         sv=0.0;
@@ -487,7 +487,7 @@ int main(int argc, char** argv)
     
     if(rank == 0)
     {     
-      for(int j=0; j< size;j+=4)
+      for(int j=0; j< size;j++)
         MPI_Recv(&Fvec[j*sz],2, MPI_DOUBLE,j, rank+39, MPI_COMM_WORLD,&status); 
       
     time = timer.elapsed();
