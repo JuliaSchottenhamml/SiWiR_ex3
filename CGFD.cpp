@@ -128,11 +128,15 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
                
             if(j!=0 && i==sx)
                d[0]=wv;
+            if(j==0)
+               d[0] = 0.0;
                
             if(j != bleny-1 && i!=le)
                 d[1] = vec[index+1];
             if(j != bleny-1 && i==le)
                 d[1] = ev;
+            if(j == bleny-1)
+               d[1] =0.0; 
             
             if(index-3>=0)
               e[0] = vec[index-3];
@@ -544,7 +548,7 @@ int main(int argc, char** argv)
         {
         //if(i%nnx == 0 )
         //std::cout << "\n";    
-        std::cout << Xvec[i] << "\n";
+        std::cout << Fvec[i] << "\n";
         }
     }
     MPI_Barrier(MPI_COMM_WORLD);
