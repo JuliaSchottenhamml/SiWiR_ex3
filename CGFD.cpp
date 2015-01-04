@@ -407,7 +407,7 @@ int main(int argc, char** argv)
       int ik=0;
       while(ik < iter)
        {
-            itarate = ik;
+            iterat = ik;
         std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
         ev=0.0;
         wv=0.0;
