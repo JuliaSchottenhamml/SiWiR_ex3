@@ -391,14 +391,7 @@ int main(int argc, char** argv)
        //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
     } 
      
-   /*  for(int i = 0 ; i< sz; i+=4)
-    {   
-        resdlocal += Rvec[i] * Rvec[i];
-        resdlocal += Rvec[i+1] * Rvec[i+1];
-        resdlocal += Rvec[i+2] * Rvec[i+2];
-        resdlocal += Rvec[i+3] * Rvec[i+3];
-    }*/
-    
+   
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
     
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
@@ -501,7 +494,7 @@ int main(int argc, char** argv)
     }       
      std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
      MPI_Isend(&sz,1,MPI_INT, 0, rank+49, MPI_COMM_WORLD,&request); 
-     MPI_Isend(Xvec,sz,MPI_DOUBLE, 0, rank+39, MPI_COMM_WORLD,&request); 
+     MPI_Isend(&Xvec[0],sz,MPI_DOUBLE, 0, rank+39, MPI_COMM_WORLD,&request); 
    
     
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
