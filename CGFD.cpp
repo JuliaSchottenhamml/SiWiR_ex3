@@ -293,15 +293,15 @@ int main(int argc, char** argv)
     blenx = worksheet[t*3+1];
     startpnt = worksheet[t*3+2];
     MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
-    MPI_Isend(&sx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
-     MPI_Isend(&startpnt,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
+    MPI_Isend(&sx,1,MPI_INT,t,t+101,MPI_COMM_WORLD,&request);
+     MPI_Isend(&startpnt,1,MPI_INT,t,t+102,MPI_COMM_WORLD,&request);
     }
            
    }
       
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
-    MPI_Recv(&sx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
-    MPI_Recv(&startpnt,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
+    MPI_Recv(&sx,1, MPI_INT,0, rank+101, MPI_COMM_WORLD,&status);
+    MPI_Recv(&startpnt,1, MPI_INT,0, rank+102, MPI_COMM_WORLD,&status);
   
      
   /*std::cout << rank << " nnx = " << nnx << " "; 
@@ -373,7 +373,7 @@ int main(int argc, char** argv)
         Dvec[i+1]=Rvec[i+1];
         Dvec[i+2]=Rvec[i+2];
         Dvec[i+3]=Rvec[i+3];
-                //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
+       //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
     } 
      
      for(int i = 0 ; i< sz; i+=4)
@@ -388,14 +388,13 @@ int main(int argc, char** argv)
     
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
-   std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
-        
+    std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
    
     if(fabs(*dt0) > fabs(error))
      {    
         for(int i = 0 ; i<iter; i++)
        {
-         std::cout << "\n %% rank = " << rank << "iteration number= " << i;
+        std::cout << "\n %% rank = " << rank << "iteration number= " << i;
         ev=0.0;
         wv=0.0;
         sv=0.0;
@@ -419,12 +418,12 @@ int main(int argc, char** argv)
          
          tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,startpnt,ev,wv,nv,sv);
         
-            for( int km=0; km < sz; km+=4)
+          for( int km=0; km < sz; km+=4)
             {
-                   dt += Dvec[km]*tresult[km];
-                    dt += Dvec[km+1]*tresult[km+1];
-                    dt += Dvec[km+2]*tresult[km+2];
-                    dt += Dvec[km+3]*tresult[km+3];
+                    dt += Dvec[km]*tresult[km];
+                     dt += Dvec[km+1]*tresult[km+1];
+                      dt += Dvec[km+2]*tresult[km+2];
+                       dt += Dvec[km+3]*tresult[km+3];
             }
             
          double dt3 = 0.0;  
@@ -446,15 +445,14 @@ int main(int argc, char** argv)
              Rvec[j+1] -= alpha * tresult[j+1];
               Rvec[j+2] -= alpha * tresult[j+2];
                Rvec[j+3] -= alpha * tresult[j+3]; 
-            
         }
              double dt1 = 0.0;
              dt = 0.0;
                         
-            for( int km=0; km < sz; km++)
+          for( int km=0; km < sz; km++)
             {
-                  dt += Rvec[km]*Rvec[km];
-                   dt += Rvec[km+1]*Rvec[km+1];
+                    dt += Rvec[km]*Rvec[km];
+                    dt += Rvec[km+1]*Rvec[km+1];
                     dt += Rvec[km+2]*Rvec[km+2];
                     dt += Rvec[km+3]*Rvec[km+3];
             }
@@ -471,10 +469,10 @@ int main(int argc, char** argv)
         
          for(int j=0; j< sz;j+=4)
         {
-            Dvec[j] = Rvec[j]-beta * Dvec[j];
-             Dvec[j+1] = Rvec[j+1]-beta * Dvec[j+1];
-              Dvec[j+2] = Rvec[j+2]-beta * Dvec[j+2];
-               Dvec[j+3] = Rvec[j+3]-beta * Dvec[j+3]; 
+            Dvec[j]   = Rvec[j]-beta * Dvec[j];
+            Dvec[j+1] = Rvec[j+1]-beta * Dvec[j+1];
+            Dvec[j+2] = Rvec[j+2]-beta * Dvec[j+2];
+            Dvec[j+3] = Rvec[j+3]-beta * Dvec[j+3]; 
         }      
         
          *dt0 = dt1;
