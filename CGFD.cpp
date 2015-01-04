@@ -158,7 +158,6 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
         }
     }
 
-
     return result;
     
 }
@@ -423,7 +422,7 @@ int main(int argc, char** argv)
       while(ik < iter)
        {
             iterat = ik;
-        std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
+        //std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
         ev=0.0;
         wv=0.0;
         sv=0.0;
@@ -526,7 +525,7 @@ int main(int argc, char** argv)
      MPI_Isend(&Xvec[0],sz,MPI_DOUBLE, 0, rank+39, MPI_COMM_WORLD,&request); 
    
     
-    std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
+   // std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
     
     if(rank == 0)
     {     
@@ -541,12 +540,12 @@ int main(int argc, char** argv)
     time = timer.elapsed();
 	std::cout << rank << " time," << time << std::endl;
 	
-	/*for (int i= 0; i< gridpoint; i++ )
+	for (int i= 0; i< gridpoint; i++ )
         {
-        if(i%nnx == 0 )
-        std::cout << "\n";    
-        std::cout << Xvec[i] << ' ';
-        }*/
+        //if(i%nnx == 0 )
+        //std::cout << "\n";    
+        std::cout << Xvec[i] << "\n";
+        }
     }
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Type_free( &columntype );
