@@ -361,7 +361,7 @@ int main(int argc, char** argv)
     
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,startpnt,0.0,0.0,0.0,0.0);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz);
-    std::cout << "\n" << rank << " " << iter << " " << blenx << " " << nnx << " " << sx << " " << gama << " " << hx << " " << hy << " " << dests;
+    std::cout << "\n" << rank << " " << iter << " " << blenx << " " << nnx << " " << sx << " " << gama << " " << hx << " " << hy << " " << startpnt;
       for(int i = 0; i< sz; i+=4)
     {
        // std::cout << "\n" << rank << " " << fresult[i];
@@ -391,7 +391,8 @@ int main(int argc, char** argv)
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
    
     if(fabs(*dt0) > fabs(error))
-     {    
+     {   
+            std::cout << "\n %% rank = " << rank << "iteration number= " ; 
         for(int i = 0 ; i<iter; i++)
        {
         std::cout << "\n %% rank = " << rank << "iteration number= " << i;
