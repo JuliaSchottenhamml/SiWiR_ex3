@@ -494,6 +494,8 @@ int main(int argc, char** argv)
         std::transform (Rvec.begin(), Rvec.end(), Tmpvec.begin(), Rvec.begin(),  std::minus<double>());
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
+        
+        std::cout << rank << "\n residue " << dt1 << "\n";
 
         if(dt1 < error)
         {
