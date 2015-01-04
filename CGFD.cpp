@@ -548,7 +548,7 @@ int main(int argc, char** argv)
         {
         //if(i%nnx == 0 )
         //std::cout << "\n"; 
-        residual + =  Fvec[i]*Fvec[i];
+        residual +=  Fvec[i]*Fvec[i];
          
         std::cout << Fvec[i] << "\n";
         
