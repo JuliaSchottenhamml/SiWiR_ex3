@@ -446,8 +446,8 @@ int main(int argc, char** argv)
 
          tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama, destn,dests,len);
          
-         for(int l=0; l< (int)sizeof(tresult);l+=1)
-              std::cout <<  " " << tresult[l] << " ";    
+         //for(int l=0; l< (int)sizeof(tresult);l+=1)
+           //   std::cout <<  " " << tresult[l] << " ";    
          
          MPI_Isend(tresult,(int)sizeof(tresult), MPI_DOUBLE, 0, rank*19, MPI_COMM_WORLD,&request);
         
@@ -495,11 +495,11 @@ int main(int argc, char** argv)
 
         double dt1 = std::inner_product(Rvec.begin(), Rvec.end(), Rvec.begin(),0);
         
-        std::cout << rank << "\n residue " << dt1 << "\n";
+        //std::cout << rank << "\n residue " << dt1 << "\n";
 
         if(fabs(dt1) < fabs(error))
         {
-             std::cout << rank << "\n residue I am here to broke " << fabs(dt1) << " " << fabs(error) << "\n";
+            std::cout << rank << "\n residue I am here to broke " << fabs(dt1) << " " << fabs(error) << "\n";
             broke = 1;
 
          for(int jb=1; jb< size;jb++)
