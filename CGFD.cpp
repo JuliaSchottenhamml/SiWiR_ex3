@@ -396,16 +396,16 @@ int main(int argc, char** argv)
     
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
-    std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
+    //std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
     //MPI_Barrier(MPI_COMM_WORLD);
    
     if(fabs(*dt0) > fabs(error))
      {   
-      std::cout << "\n %% rank = " << rank << "before for "<< size ; 
+      //std::cout << "\n %% rank = " << rank << "before for "<< size ; 
       int ik=0;
       while(ik < iter)
        {
-        std::cout << "\n %% rank = " << rank << "iteration number= " << ik;
+        std::cout << "\n %% rank = " << rank << "iteration number= " << ik << " ";
         ev=0.0;
         wv=0.0;
         sv=0.0;
@@ -439,8 +439,12 @@ int main(int argc, char** argv)
           nv = start[1];
         }
           //MPI_Barrier(MPI_COMM_WORLD);
+          time = timer.elapsed();
+           std::cout <<  " time, 1:" << time;
          tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,startpnt,ev,wv,nv,sv);
-        
+         time = timer.elapsed();
+         std::cout << " 2: " << time ;
+         
           for( int km=0; km < sz; km+=4)
             {
                     dt += Dvec[km]*tresult[km];
@@ -448,11 +452,15 @@ int main(int argc, char** argv)
                       dt += Dvec[km+2]*tresult[km+2];
                        dt += Dvec[km+3]*tresult[km+3];
             }
-            
+          time = timer.elapsed();
+         std::cout << " 3: " << time << "\n";
          double dt3 = 0.0;  
          MPI_Allreduce(&dt, &dt3,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
-        
+           time = timer.elapsed();
+	   std::cout <<  " time, 4:" << time;
          alpha = *dt0 / dt3;
+          time = timer.elapsed();
+	    std::cout << " 5: " << time << "\n";
          double dt1 = 0.0;
          dt = 0.0;
          
@@ -492,8 +500,7 @@ int main(int argc, char** argv)
         
          *dt0 = dt1;
          ik++;
-          time = timer.elapsed();
-	std::cout << rank << " time," << time << std::endl;
+   
         }                
     }       
      //std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
