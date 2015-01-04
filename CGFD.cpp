@@ -397,7 +397,7 @@ int main(int argc, char** argv)
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
-    MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);
    
     if(fabs(*dt0) > fabs(error))
      {   
@@ -494,12 +494,20 @@ int main(int argc, char** argv)
     }       
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
     MPI_Isend(Xvec,sz,MPI_DOUBLE, 0, rank+39, MPI_COMM_WORLD,&request); 
+    MPI_Isend(&sz,1,MPI_INIT, 0, rank+49, MPI_COMM_WORLD,&request); 
+    
     std::cout << "\n %%%%%%%%%%%%%%%%%%%  at end " ;
+    
     if(rank == 0)
     {     
+       int nsz =0; 
+       int y=0;
       for(int j=0; j<size;j++)
-        MPI_Recv(&Fvec[j*sz],sz, MPI_DOUBLE,j, rank+39, MPI_COMM_WORLD,&status); 
-      
+      {
+        y+=nsz;
+        MPI_Recv(&nsz,1, MPI_INIT,j, rank+49, MPI_COMM_WORLD,&status);     
+        MPI_Recv(&Fvec[y],nsz, MPI_DOUBLE,j, rank+39, MPI_COMM_WORLD,&status); 
+      }
     time = timer.elapsed();
 	std::cout << rank << " time," << time << std::endl;
 	
