@@ -429,7 +429,7 @@ int main(int argc, char** argv)
           wv = start[0];
           nv = start[1];
          }
-         
+         MPI_Barrier(MPI_COMM_WORLD);
          tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,startpnt,ev,wv,nv,sv);
         
           for( int km=0; km < sz; km+=4)
