@@ -510,6 +510,7 @@ int main(int argc, char** argv)
         std::cout << Xvec[i] << ' ';
         }*/
     }
+    MPI_Type_free( &columntype );
     MPI_Finalize();
 #ifdef USE_LIKWID
 	likwid_markerStopRegion("dummy");
