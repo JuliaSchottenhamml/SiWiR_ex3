@@ -400,9 +400,9 @@ int main(int argc, char** argv)
     if(fabs(*dt0) > fabs(error))
      {   
             std::cout << "\n %% rank = " << rank << "before for " ; 
-        for(int i=0 ; i < iter; i++)
+        for(int ik=0 ; ik < iter; ik++)
        {
-        std::cout << "\n %% rank = " << rank << "iteration number= " << i;
+        std::cout << "\n %% rank = " << rank << "iteration number= " << ik;
         ev=0.0;
         wv=0.0;
         sv=0.0;
