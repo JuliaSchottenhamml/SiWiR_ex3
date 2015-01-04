@@ -91,7 +91,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
     
     
     int le=sx+blenx;
-  	double time = 0;
+  	//double time = 0;
     siwir::Timer	timer;
      double * result = new double[len];
     int gridno = 0;
