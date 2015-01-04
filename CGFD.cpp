@@ -308,9 +308,9 @@ int main(int argc, char** argv)
     MPI_Recv(&sx,1, MPI_INT,0, rank+110, MPI_COMM_WORLD,&status);
     MPI_Recv(&startpnt,1, MPI_INT,0, rank+120, MPI_COMM_WORLD,&status);
   
-    std::cout << rank << " sx = " << sx << " "; 
-    std::cout << rank << " blenx = " << nnx << " "; 
-     std::cout << rank << " startpoint = " << startpnt << " "; 
+    std::cout << rank << " sx = " << sx << " " << status; 
+    std::cout << rank << " blenx = " << nnx << " " << status; 
+     std::cout << rank << " startpoint = " << startpnt << " " << status; 
   
   /*std::cout << rank << " nnx = " << nnx << " "; 
     std::cout << rank << " nny = " << nny << " "; 
