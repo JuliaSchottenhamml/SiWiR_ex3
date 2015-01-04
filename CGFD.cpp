@@ -422,7 +422,7 @@ int main(int argc, char** argv)
         else 
         hn = 0;
         
-         MPI_Isend(&Dvec[0],1,columntype, gn, rank+129, MPI_COMM_WORLD,&request);
+         MPI_Isend(&Dvec[0],1,columntype, gn, gn+130, MPI_COMM_WORLD,&request);
          
          MPI_Recv(end,1, columntype,hn, rank+130, MPI_COMM_WORLD,&status);
          if(rank != size-1)
@@ -431,7 +431,7 @@ int main(int argc, char** argv)
          sv = end[1];
         }
         
-         MPI_Isend(&Dvec[sz-3],1,columntype, hn, rank+139, MPI_COMM_WORLD,&request);
+         MPI_Isend(&Dvec[sz-3],1,columntype, hn, hn+140, MPI_COMM_WORLD,&request);
          MPI_Recv(start,1, columntype,gn, rank+140, MPI_COMM_WORLD,&status);
         if(rank!=0)
         {
