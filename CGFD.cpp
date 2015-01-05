@@ -396,7 +396,7 @@ int main(int argc, char** argv)
     __m128d a,b,c,d,e,f,g,hh,ii,jj;   
        
    // std::cout << "\n" << rank << " " << iter << " " << blenx << " " << nnx << " " << sx << " " << gama << " " << hx << " " << hy << " " << startpnt;
-      for(int i = 0; i< sz; i+=4)
+      for(int i = 0; i< sz; i+=2)
     {
         //std::cout << "\n" << rank << " " << fresult[i];
         a = _mm_load_pd(&fresult[i]);
@@ -406,13 +406,13 @@ int main(int argc, char** argv)
         _mm_store_sd (&Dvec[i], c);
         d = _mm_mul_pd(c,c);
         resdlocal += d[0] + d[1];
-        a = _mm_load_pd(&fresult[i+2]);
+        /*a = _mm_load_pd(&fresult[i+2]);
         b = _mm_load_pd(&tresult[i+2]);
         c = _mm_sub_pd(a,b);
       _mm_store_sd (&Rvec[i+2], c);
         _mm_store_sd (&Dvec[i+2], c);
          d = _mm_mul_pd(c,c);
-        resdlocal += d[0] + d[1];
+        resdlocal += d[0] + d[1];*/
        //std::cout << "\n" << rank << "I am here 1 " ;
     } 
      
@@ -472,17 +472,17 @@ int main(int argc, char** argv)
 //         std::cout << " 2: " << time ;
          
                   std::cout << " 4: " <<  "\n";
-          for( int km=0; km < sz; km+=4)
+          for( int km=0; km < sz; km+=2)
             {
                 
                 a = _mm_load_pd(&Dvec[km]);
                 b = _mm_load_pd(&tresult[km]);
                 c = _mm_mul_pd(a,b);
-                a = _mm_load_pd(&Dvec[km+2]);
+               /* a = _mm_load_pd(&Dvec[km+2]);
                 b = _mm_load_pd(&tresult[km+2]);
-                d = _mm_mul_pd(a,b);
-                e = _mm_hadd_pd(c,d);
-                dt += e[0]+e[1];
+                d = _mm_mul_pd(a,b);*/
+                //e = _mm_hadd_pd(c,d);
+                dt += c[0]+c[1];
                     
             }
           time = timer.elapsed();
@@ -497,7 +497,7 @@ int main(int argc, char** argv)
         // std::cout << " 5: " <<  "\n";
          dt = 0.0;
          
-        for(int j=0; j< sz;j+=4)
+        for(int j=0; j< sz;j+=2)
         {
             
             a = _mm_load_pd(&Dvec[j]);
@@ -518,7 +518,7 @@ int main(int argc, char** argv)
             
                dt+= jj[0]+jj[1];
             
-              a = _mm_load_pd(&Dvec[j+2]);
+            /*  a = _mm_load_pd(&Dvec[j+2]);
             b = _mm_load_pd(&tresult[j+2]);
             //c[0] = alpha;
             //c[1] = alpha;            
@@ -533,7 +533,7 @@ int main(int argc, char** argv)
             
              _mm_store_sd (&Xvec[j+2], hh);
             _mm_store_sd (&Rvec[j+2], ii);
-            dt+= jj[0]+jj[1];
+            dt+= jj[0]+jj[1];*/
         }
                     
         MPI_Allreduce(&dt, &dt1,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
@@ -547,7 +547,7 @@ int main(int argc, char** argv)
         double beta = dt1/(*dt0);        
         
                //  std::cout << " 6: " <<  "\n";
-         for(int j=0; j< sz;j+=4)
+         for(int j=0; j< sz;j+=2)
         {
              a = _mm_load_pd(&Dvec[j]);
             b = _mm_load_pd(&Rvec[j]);
@@ -556,13 +556,13 @@ int main(int argc, char** argv)
             f = _mm_mul_pd(c,a);
             g = _mm_add_pd(b,f);
             _mm_store_sd (&Dvec[j], g);
-           
+           /*
             a = _mm_load_pd(&Dvec[j+2]);
             b = _mm_load_pd(&Rvec[j+2]);
             f = _mm_mul_pd(c,a);
             g = _mm_add_pd(b,f);
                        
-            _mm_store_sd (&Dvec[j+2], g); 
+            _mm_store_sd (&Dvec[j+2], g); */
         }      
         // std::cout << " 7: " <<  "\n";
          *dt0 = dt1;
