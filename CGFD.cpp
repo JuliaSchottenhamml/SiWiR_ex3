@@ -89,14 +89,17 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
    /*int destn, int dests, */int len/*, int startpnt*/, double * start, double *end)
 {  
     
-    
-    int le=sx+blenx;
-  	//double time = 0;
-   // siwir::Timer	timer;
      double * result = new double[len];
      int index=0;
+     int le=sx+blenx;
+     
+     result = vec;
+     result = start;
+     result = end;
+     int as = blenx+bleny+sx;
+     double ad = alpha+beta+gama;
    
-    __m128d a,b,c,d,e,f,g;
+    /*__m128d a,b,c,d,e,f,g;
    
     for(int i=sx; i<le ; i++)
       {
@@ -142,7 +145,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             result[index++]=e[0]+e[1]+a[0]*a[1];
 
         }
-    }
+    }*/
 
     return result;
     
@@ -510,7 +513,7 @@ int main(int argc, char** argv)
             c[1] = beta;
            // std::cout << " 6: " <<  c[0] << " " << beta << " " << c[1] <<"\n";            
             f = _mm_mul_pd(c,a);
-            g = _mm_add_pd(b,f);
+            g = _mm_add_pd(b,f);    
             _mm_store_pd (&Dvec[j], g);
            
         }      
