@@ -167,20 +167,8 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
 
 inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double hx, double hy, int dests, int len)
 { 
-  // vector<double> fresult(tgrdpoint,0);
-
-    //int bleny =  dim[1];    
-    //std::cout << rank << " in cal fvec ";
-       
-    //int sy = 0;
-   // int len=0;
-    //int sz=blenx*bleny;
-   // int abc = sz%4;
-    /*if(abc != 0)
-    len = sz + (4-sz%4);
-    else
-    len = sz;*/
-    double * result = new double[len];
+  
+     double * result = new double[len];
     
     int gridno = 0;
      
@@ -189,25 +177,25 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
     double x = 0.0;
     double y = 0.0;
 
-
+    int le = sx+blenx;
     int l = 0;
-    for(int i=sx; i< sx+blenx ; i++)
+    for(int i=sx; i< le ; i++)
     {
         for(int j=0; j<bleny ; j++)
         {
             
-            gama2 = 0.0;
-            gridno= i*bleny + j;            
+            //gama2 = 0.0;
+            gridno= i*bleny + j +1;            
             //int k = (j-sy)%blenx;
             x = (((gridno-1)%bleny)+1)*hx;
             y = (((gridno-1)/bleny)+1)*hy;
             //std::cout << "x, y" << x << " " <<y;
             double f = fxy(x,y);
            // std::cout << " x, y, f " << x << " " <<y << " " << f << "\n";                      
-            if(dests == -1)
+            if(dests == -1 && i == le-1)
             {
-             gama2 = gama*border(x,y);
-             result[l++] = f-gama2;
+             //gama2 = 
+             result[l++] = f-gama*border(x,y);
             }
             else 
                 result[l++] = f;
@@ -433,7 +421,7 @@ int main(int argc, char** argv)
       while(ik < iter)
        {
             iterat = ik;
-        std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
+        //std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
         ev=0.0;
         wv=0.0;
         sv=0.0;
@@ -466,15 +454,15 @@ int main(int argc, char** argv)
           wv = start[0];
           nv = start[1];
         }
-         std::cout <<  "\n" << rank << " sv nv ev wv " << sv << nv << ev << wv;
+         //std::cout <<  "\n" << rank << " sv nv ev wv " << sv << nv << ev << wv;
         
           //MPI_Barrier(MPI_COMM_WORLD);
-          time = timer.elapsed();
-           std::cout <<  " time, 1:" << time;
+          //time = timer.elapsed();
+           //std::cout <<  " time, 1:" << time;
            double * mresult = new double[sz];
          mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,ev,wv,nv,sv);
-        time = timer.elapsed();
-         std::cout << " 2: " << time ;
+        //time = timer.elapsed();
+         //std::cout << " 2: " << time ;
          
                   //std::cout << " 4: " <<  "\n";
           for( int km=0; km < sz; km+=2)
