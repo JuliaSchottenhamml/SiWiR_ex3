@@ -322,32 +322,40 @@ int main(int argc, char** argv)
          std::cout << rank << " sx = " << sx << " ";*/
    
    int abc = 0;
-     
+    int len=0; 
    //int bleny =  nnx;
               
     int sz=nnx*blenx;
-    abc = sz%4;
+    abc = sz%2;
     
     if(abc != 0)
-    sz = sz + (4-abc);
+    len = sz + 1;
     else 
-    sz = sz + 4;
+    len = sz + 2;
         
-    double * tresult = new double[sz];
-    double * fresult = new double[sz];
+    double * tresult = new double[len];
+    double * fresult = new double[len];
     
    // double * nresult = new double[sz];
-    double * Xvec = new double[sz];
-    double * Rvec = new double[sz];
-    double * Dvec = new double[sz]; 
+    double * Xvec = new double[len];
+    double * Rvec = new double[len];
+    double * Dvec = new double[len]; 
     double * Fvec = new double[gridpoint];
     
-    for(int i=0;i<sz;i+=4)
+    
+    
+    for(int i=0;i<len;i+=2)
     {
         Xvec[i]=0.0;
         Xvec[i+1]=0.0;
-        Xvec[i+2]=0.0;
-        Xvec[i+3]=0.0;
+        Rvec[i]=0.0;
+        Rvec[i+1]=0.0;
+        Dvec[i]=0.0;
+        Dvec[i+1]=0.0;
+        //tresult[i]=0.0;
+//        tresult[i+1]=0.0;
+//        fresult[i]=0.0;
+//        fresult[i+1]=0.0;        
     }
     
     if(rank == size-1)
@@ -356,11 +364,24 @@ int main(int argc, char** argv)
     
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,0.0,0.0,0.0,0.0);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,dests,sz);
-    
+       
+       if(abc != 0)
+       {
+        tresult[sz]=0.0;
+        fresult[sz]=0.0;
+      }
+        else
+       {
+        tresult[sz]=0.0;
+        tresult[sz+1]=0.0;
+        fresult[sz]=0.0;
+        fresult[sz+1]=0.0;
+       }
+       
     __m128d a,b,c,d,e,f,g,hh,ii,jj;   
        
    // std::cout << "\n" << rank << " " << iter << " " << blenx << " " << nnx << " " << sx << " " << gama << " " << hx << " " << hy << " " << startpnt;
-      for(int i = 0; i< sz; i+=2)
+      for(int i = 0; i< len; i+=2)
     {
         //std::cout << "\n" << rank << " " << fresult[i];
         a = _mm_load_pd(&fresult[i]);
@@ -436,14 +457,20 @@ int main(int argc, char** argv)
           //MPI_Barrier(MPI_COMM_WORLD);
           //time = timer.elapsed();
            //std::cout <<  " time, 1:" << time;
-         double * mresult = new double[sz];
+         double * mresult = new double[len];
          mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,ev,wv,nv,sv);
-        //time = timer.elapsed();
-         //std::cout << " 2: " << time ;
-         
-                  //std::cout << " 4: " <<  "\n";
-                  dt = 0.0;
-          for( int km=0; km < sz; km+=2)
+        if(abc != 0)
+       {
+        mresult[sz]=0.0;
+       }
+        else
+       {
+        mresult[sz]=0.0;
+        mresult[sz+1]=0.0;
+       }
+       
+                 dt = 0.0;
+          for( int km=0; km < len; km+=2)
             {
                 
                 a = _mm_load_pd(&Dvec[km]);
@@ -468,7 +495,7 @@ int main(int argc, char** argv)
         // std::cout << " 5: " <<  "\n";
          dt = 0.0;
          
-        for(int j=0; j< sz;j+=2)
+        for(int j=0; j< len;j+=2)
         {
             
             a = _mm_load_pd(&Dvec[j]);
@@ -518,7 +545,7 @@ int main(int argc, char** argv)
         double beta = dt1/(*dt0);        
         
                //  std::cout << " 6: " <<  "\n";
-         for(int j=0; j< sz;j+=2)
+         for(int j=0; j< len;j+=2)
         {
              a = _mm_load_pd(&Dvec[j]);
             b = _mm_load_pd(&Rvec[j]);
