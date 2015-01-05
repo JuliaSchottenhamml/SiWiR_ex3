@@ -47,14 +47,14 @@ inline double border(const double x, const double y){
     
        //worksheet = new double[proc*LD1];
 
-       if(procn%4==0)
+       /*if(procn%4==0)
            ver = 4;
        else if (procn%5==0)
            ver = 5;
        else if (procn%6==0)
            ver = 6;
-       else if (procn%7==0)
-           ver = 7;
+       else if (procn%7==0)*/
+           ver = procn;
        int remM = dimM%ver;
        int bn = dimM/ver;
         
@@ -166,19 +166,13 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
     {
         for(int j=0; j<bleny ; j++)
         {
-            
-            //gama2 = 0.0;
             gridno = i*bleny + j;            
-            //int k = (j-sy)%blenx;
             x = (((gridno)%bleny)+1)*hx;
             y = (((gridno)/bleny)+1)*hy;
-            //std::cout << "x, y" << x << " " <<y;
             double f = fxy(x,y);
-           // std::cout << " x, y, f " << x << " " <<y << " " << f << "\n";                      
             if(dests == -1 && i == le-1)
             {
-             //gama2 = 
-             result[l++] = f-(gama*border(x,domyh));
+              result[l++] = f-(gama*border(x,domyh));
             }
             else 
                 result[l++] = f;
@@ -273,8 +267,7 @@ int main(int argc, char** argv)
     hy = (double)((domyh-domyl)/(double)(ny));
     bita = -(1.0)/(hx*hx);
     gama = -(1.0)/(hy*hy);
-    alfa = ((-2.0)*gama+ (-2.0)*bita + k * k);
-
+    alfa = ( k * k - (2.0)*gama - (2.0)*bita );
 
     if (rank == 0)
    {
@@ -302,21 +295,7 @@ int main(int argc, char** argv)
     std::cout << rank << " blenx = " << nnx << " " << status.MPI_ERROR; 
      std::cout << rank << " startpoint = " << startpnt << " " << status.MPI_ERROR; 
   
-  /*std::cout << rank << " nnx = " << nnx << " "; 
-    std::cout << rank << " nny = " << nny << " "; 
-     std::cout << rank << " nx = " << nx << " "; 
-      std::cout << rank << " ny = " << ny << " "; 
-      std::cout << rank << " iter = " << iter << " ";  
-       std::cout << rank << " error = " << error << " ";              
-        std::cout << rank << " gridpoint = " << gridpoint << " "; 
-         std::cout << rank << " hx = " << hx << " "; 
-         std::cout << rank << " hy = " << hy << " "; 
-         std::cout << rank << " alpha = " << alfa << " "; 
-         std::cout << rank << " beta = " << bita << " "; 
-         std::cout << rank << " gama = " << gama << " "; 
-          std::cout << rank << " blenx = " << blenx << " "; 
-         std::cout << rank << " sx = " << sx << " ";*/
-   
+ 
    int abc = 0;
     int len=0; 
    //int bleny =  nnx;
@@ -348,10 +327,6 @@ int main(int argc, char** argv)
         Rvec[i+1]=0.0;
         Dvec[i]=0.0;
         Dvec[i+1]=0.0;
-        //tresult[i]=0.0;
-//        tresult[i+1]=0.0;
-//        fresult[i]=0.0;
-//        fresult[i+1]=0.0;        
     }
     
     if(rank == size-1)
@@ -398,21 +373,13 @@ int main(int argc, char** argv)
         _mm_store_pd (&Dvec[i], c);
         d = _mm_mul_pd(c,c);
         resdlocal += d[0] + d[1];
-        /*a = _mm_load_pd(&fresult[i+2]);
-        b = _mm_load_pd(&tresult[i+2]);
-        c = _mm_sub_pd(a,b);
-      _mm_store_sd (&Rvec[i+2], c);
-        _mm_store_sd (&Dvec[i+2], c);
-         d = _mm_mul_pd(c,c);
-        resdlocal += d[0] + d[1];*/
-       //std::cout << "\n" << rank << "I am here 1 " ;
-    } 
+     } 
     
     delete[] tresult;
     delete[] fresult;
      
    
-    std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
+    //std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
     
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
@@ -442,26 +409,23 @@ int main(int argc, char** argv)
          MPI_Isend(&Dvec[0],nnx,MPI_DOUBLE, gn, gn+130, MPI_COMM_WORLD,&request);
          
          MPI_Recv(end,nnx, MPI_DOUBLE,hn, rank+130, MPI_COMM_WORLD,&status);
-         if(rank == size-1)
-         {
-         for( int r=0;r<nnx;r+=2)
-         {       
-         end[r]=0.0;
-         end[r+1]=0.0;
-         //end[2]=0.0;
-         }
-        }
         
          MPI_Isend(&Dvec[sz-nnx],nnx,MPI_DOUBLE, hn, hn+140, MPI_COMM_WORLD,&request);
          MPI_Recv(start,nnx, MPI_DOUBLE,gn, rank+140, MPI_COMM_WORLD,&status);
-        if(rank==0)
-        {
-          for( int r=0;r<nnx;r+=2)
-         {       
+        
+        for( int r=0;r<nnx;r+=2)
+         {
+         if(rank==0)
+        {       
          start[r]=0.0;
          start[r+1]=0.0;
          //end[2]=0.0;
          }
+         if(rank == size-1)
+         {               
+         end[r]=0.0;
+         end[r+1]=0.0;
+        }
         }
          //std::cout <<  "\n" << rank << " sv nv ev wv " << sv << nv << ev << wv;
         
@@ -480,7 +444,7 @@ int main(int argc, char** argv)
         mresult[sz+1]=0.0;
        }
        
-                 dt = 0.0;
+      dt = 0.0;
           for( int km=0; km < len; km+=2)
             {
                 
@@ -490,16 +454,12 @@ int main(int argc, char** argv)
                 dt += c[0]+c[1];
                     
             }
-          //time = timer.elapsed();
-         //std::cout << " 3: " << time << "\n";
+        
          double dt3 = 0.0;  
          MPI_Allreduce(&dt, &dt3,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
-          // time = timer.elapsed();
-	   //std::cout <<  " time, 4:" << time;
-	    // std::cout << rank<< " " << dt << " 5: rank " <<  dt3<<"\n";
+      
          alpha = *dt0 / dt3;
-         // time = timer.elapsed();
-//	    std::cout << " 5: " << time << "\n";
+     
        
          dt = 0.0;
          
@@ -523,23 +483,7 @@ int main(int argc, char** argv)
             _mm_store_pd (&Rvec[j], ii);
             
                dt+= jj[0]+jj[1];
-            
-            /*  a = _mm_load_pd(&Dvec[j+2]);
-            b = _mm_load_pd(&tresult[j+2]);
-            //c[0] = alpha;
-            //c[1] = alpha;            
-            d = _mm_load_pd(&Xvec[j+2]);
-            e = _mm_load_pd(&Rvec[j+2]);
-            
-            f = _mm_mul_pd(c,a);
-            g = _mm_mul_pd(c,b);
-            hh = _mm_add_pd(d,f);
-            ii = _mm_sub_pd(e,g);
-            jj = _mm_mul_pd(hh,hh);
-            
-             _mm_store_sd (&Xvec[j+2], hh);
-            _mm_store_sd (&Rvec[j+2], ii);
-            dt+= jj[0]+jj[1];*/
+
         }
                     
         MPI_Allreduce(&dt, &dt1,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
@@ -563,14 +507,7 @@ int main(int argc, char** argv)
             f = _mm_mul_pd(c,a);
             g = _mm_add_pd(b,f);
             _mm_store_pd (&Dvec[j], g);
-            //std::cout << " 7: " <<  g[0] << " " << f[0] << " " << f[1] << " " << g[1] <<"\n";
-           /*
-            a = _mm_load_pd(&Dvec[j+2]);
-            b = _mm_load_pd(&Rvec[j+2]);
-            f = _mm_mul_pd(c,a);
-            g = _mm_add_pd(b,f);
-                       
-            _mm_store_sd (&Dvec[j+2], g); */
+           
         }      
         // std::cout << " 7: " <<  "\n";
          *dt0 = dt1;
