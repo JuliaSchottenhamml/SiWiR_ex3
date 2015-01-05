@@ -471,7 +471,7 @@ int main(int argc, char** argv)
         // time = timer.elapsed();
 //         std::cout << " 2: " << time ;
          
-                  std::cout << " 4: " <<  "\n";
+                  //std::cout << " 4: " <<  "\n";
           for( int km=0; km < sz; km+=2)
             {
                 
