@@ -379,12 +379,13 @@ int main(int argc, char** argv)
         hn=rank+1;
         else 
         hn = 0;
-        
+         std::cout << "\n ";
         for(int s=0;s<len;s++)
          {
               std::cout << rank << " " << Dvec[s] ;
          }
         
+                 std::cout << "\n ";
          MPI_Isend(&Dvec[0],nnx,MPI_DOUBLE, gn, gn+130, MPI_COMM_WORLD,&request);
          
          MPI_Recv(end,nnx, MPI_DOUBLE,hn, rank+130, MPI_COMM_WORLD,&status);
@@ -408,26 +409,26 @@ int main(int argc, char** argv)
          }
         }
         
-        std::cout << "\n ghost layer end sent \n";
+        std::cout << "\n" << rank << " ghost layer end sent \n";
          for(int s=0;s<nnx;s++)
          {
               std::cout << rank << " " << Dvec[s] ;
          }
          
-        std::cout << "\n ghost layer end  recvd \n";
+        std::cout << "\n" << rank << " ghost layer end  recvd \n";
         
         for(int s=0;s<nnx;s++)
          {
               std::cout << rank << " " << end[s] ;
          }
          
-         std::cout << " \n ghost layer start sent\n";
+         std::cout << "\n" << rank << "  ghost layer start sent\n";
           for(int s=0;s<nnx;s++)
          {
               std::cout << rank << " " << Dvec[sz-nnx+s] ;
          }
         
-        std::cout << " \n ghost layer start recvd\n";
+        std::cout << "\n" << rank << "  ghost layer start recvd\n";
         for(int s=0;s<nnx;s++)
          {
               std::cout << rank << " " << start[s] ;
