@@ -174,14 +174,14 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
             gridno = i*bleny + j;            
             //int k = (j-sy)%blenx;
             x = (((gridno)%bleny)+1)*hx;
-            y = (((gridno)/bleny)+1)*hy;
+            //y = (((gridno)/bleny)+1)*hy;
             //std::cout << "x, y" << x << " " <<y;
             double f = fxy(x,y);
            // std::cout << " x, y, f " << x << " " <<y << " " << f << "\n";                      
             if(dests == -1 && i == le-1)
             {
              //gama2 = 
-             result[l++] = f-(gama*border(x,y));
+             result[l++] = f-(gama*border(x,domyh));
             }
             else 
                 result[l++] = f;
