@@ -251,9 +251,11 @@ int main(int argc, char** argv)
 
     
   // double ev=0.0,wv=0.0,sv=0.0,nv=0.0;
-    MPI_Datatype columntype;   
-    MPI_Type_vector( 2, 1, 2, MPI_DOUBLE, &columntype );
-    MPI_Type_commit( &columntype );  
+   // MPI_Datatype columntype;   
+    //MPI_Type_vector( 2, 1, 2, MPI_DOUBLE, &columntype );
+    //MPI_Type_commit( &columntype );  
+    
+    std::cout << rank << "111 ";
       
     //*dt0=0.0;   
     nx = atoi(argv[1]);
@@ -268,7 +270,7 @@ int main(int argc, char** argv)
     bita = -(1.0)/(hx*hx);
     gama = -(1.0)/(hy*hy);
     alfa = ( k * k - (2.0)*gama - (2.0)*bita );
-
+     std::cout << rank << "222 ";
     if (rank == 0)
    {
     worksheet = gcapt(worksheet, size, nny, nnx); 
@@ -286,7 +288,8 @@ int main(int argc, char** argv)
     }
            
     }
-      
+     
+     std::cout << rank << "333 ";  
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+110, MPI_COMM_WORLD,&status);
     MPI_Recv(&startpnt,1, MPI_INT,0, rank+120, MPI_COMM_WORLD,&status);
