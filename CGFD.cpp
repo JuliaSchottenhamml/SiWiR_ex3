@@ -23,7 +23,7 @@
 # define k 2.0*M_PI
 
 #define ERRLIMIT 0;
-int iterat = 0;
+//int iterat = 0;
 
 inline double fxy(const double x, const double y){
 
@@ -397,7 +397,7 @@ int main(int argc, char** argv)
       int ik=0;
       while(ik < iter)
        {
-            iterat = ik;
+            //iterat = ik;
         //std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
         ev=0.0;
         wv=0.0;
@@ -428,8 +428,8 @@ int main(int argc, char** argv)
          MPI_Recv(start,1, columntype,gn, rank+140, MPI_COMM_WORLD,&status);
         if(rank!=0)
         {
-          wv = start[0];
-          nv = start[1];
+          nv = start[0];
+          wv = start[1];
         }
          //std::cout <<  "\n" << rank << " sv nv ev wv " << sv << nv << ev << wv;
         
