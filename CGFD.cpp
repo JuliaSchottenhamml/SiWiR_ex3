@@ -509,8 +509,8 @@ int main(int argc, char** argv)
         {
        
        // gridno = i*bleny + j;            
-            xx = (i%nnx)+1)*hx;
-            yy = (i/nnx)+1)*hy;
+            xx = ((i%nnx)+1)*hx;
+            yy = ((i/nnx)+1)*hy;
          
         fOut << xx << " " << yy << " " << Fvec[i] << "\n";
         
