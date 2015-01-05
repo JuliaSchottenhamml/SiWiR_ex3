@@ -128,7 +128,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
               if(i==le-1)
               e[1] = end[j];
               else
-              e[0] = vec[index+bleny];
+              e[1] = vec[index+bleny];
               
             f = _mm_mul_pd(b,d);
             g = _mm_mul_pd(c,e);  
