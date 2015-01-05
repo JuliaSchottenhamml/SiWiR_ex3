@@ -103,7 +103,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  
             if(j==0)
                d[0] = 0.0;
                
-            if(j < len-1)
+            if(j < bleny-1)
                 d[1] = vec[index+1];
             if(j == bleny-1)
                d[1] =0.0; 
@@ -126,7 +126,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  
             //if(iterat >75 && iterat < 78 && i==sx && j==0)
             //std::cout <<  " time, 2:" << time << "\n";          
             
-            e = _mm_hadd_pd(f,g);
+            e = _mm_add_pd(f,g);
                 
             result[index++]=e[0]+e[1]+a[0]*a[1];
 
