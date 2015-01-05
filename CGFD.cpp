@@ -287,7 +287,7 @@ int main(int argc, char** argv)
   
     std::cout << rank << " sx = " << sx << " " << status.MPI_ERROR; 
     std::cout << rank << " blenx = " << nnx << " " << status.MPI_ERROR; 
-     //std::cout << rank << " startpoint = " << startpnt << " " << status.MPI_ERROR; 
+     // std::cout << rank << " startpoint = " << startpnt << " " << status.MPI_ERROR; 
   
  
    int abc = 0;
@@ -310,7 +310,11 @@ int main(int argc, char** argv)
     double * Rvec = (double *) calloc(len, sizeof(double));
     double * Dvec = (double *) calloc(len, sizeof(double)) ;
     double * Fvec = (double *) calloc(gridpoint, sizeof(double));
-    
+    for(int i=0;i<len;i+=2)
+    {
+        std:: cout << " " << Dvec[i] ;
+        std:: cout << " " << Dvec[i+1] ;
+    }
        
     
  //   for(int i=0;i<len;i+=2)
