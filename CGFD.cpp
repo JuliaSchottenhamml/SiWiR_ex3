@@ -146,7 +146,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  
 inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double hx, double hy,int dests, int len)
 { 
   
-     double * result = new double[len];
+     double * result =(double *) calloc(len, sizeof(double));
     
     int gridno = 0;
      
