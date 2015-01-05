@@ -172,7 +172,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
     
     int gridno = 0;
      
-    double gama2 = 0.0;
+    //double gama2 = 0.0;
 
     double x = 0.0;
     double y = 0.0;
