@@ -562,7 +562,7 @@ int main(int argc, char** argv)
 	std::cout << rank << " time," << time << std::endl;
 	double residual =0.0;
 	residual = sqrt(dt1);
-    std::cout << "finale residuam:  " << residual << "\n Writing data to data/solution.txt" ;
+    std::cout << "finale residuam:  " << residual << " " << dt1 << "\n Writing data to data/solution.txt" ;
 	
 	std::ofstream	fOut("data/solution.txt");
 
