@@ -92,16 +92,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  
      double * result = new double[len];
      int index=0;
      int le=sx+blenx;
-     /*len = le;
-     len = index;
-     result = vec;
-     result = start;
-     result = end;
-     int as = blenx+bleny+sx;
-     double ad = alpha+beta+gama;
-     gama = ad;
-     len = as;*/
-   
+       
     __m128d a,b,c,d,e,f,g;
    
     for(int i=sx; i<le ; i++)
@@ -343,15 +334,15 @@ int main(int argc, char** argv)
     if(rank == size-1)
     dests = -1;
    
-       double *start = new double[nnx];
+    double *start = new double[nnx];
     double *end = new double[nnx];
      
-     for( int r=0;r<nnx;r+=2)
+     for( int r=0;r<nnx;r++)
          {       
          start[r]=0.0;
-         start[r+1]=0.0;
+         //start[r+1]=0.0;
          end[r]=0.0;
-         end[r+1]=0.0;
+         //end[r+1]=0.0;
          //end[2]=0.0;
          }      
          
@@ -424,18 +415,18 @@ int main(int argc, char** argv)
          MPI_Isend(&Dvec[sz-nnx],nnx,MPI_DOUBLE, hn, hn+140, MPI_COMM_WORLD,&request);
          MPI_Recv(start,nnx, MPI_DOUBLE,gn, rank+140, MPI_COMM_WORLD,&status);
         
-        for( int r=0;r<nnx;r+=2)
+        for( int r=0;r<nnx;r++)
          {
          if(rank==0)
         {       
          start[r]=0.0;
-         start[r+1]=0.0;
+        // start[r+1]=0.0;
          //end[2]=0.0;
          }
          if(rank == size-1)
          {               
          end[r]=0.0;
-         end[r+1]=0.0;
+        // end[r+1]=0.0;
         }
         }
          //std::cout <<  "\n" << rank << " sv nv ev wv " << sv << nv << ev << wv;
