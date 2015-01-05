@@ -444,7 +444,7 @@ int main(int argc, char** argv)
           //time = timer.elapsed();
            //std::cout <<  " time, 1:" << time;
          double * mresult = new double[len];
-         mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,start,end);
+         mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,len,start,end);
         if(abc != 0)
        {
         mresult[sz]=0.0;
