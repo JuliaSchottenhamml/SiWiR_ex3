@@ -392,25 +392,31 @@ int main(int argc, char** argv)
     
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,startpnt,0.0,0.0,0.0,0.0);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz);
-       
+    
+    __m128d a,b,c,d,e,f,g,hh,ii,jj;   
        
    // std::cout << "\n" << rank << " " << iter << " " << blenx << " " << nnx << " " << sx << " " << gama << " " << hx << " " << hy << " " << startpnt;
       for(int i = 0; i< sz; i+=4)
     {
        // std::cout << "\n" << rank << " " << fresult[i];
-        Rvec[i] = fresult[i]-tresult[i];
-        Rvec[i+1] = fresult[i+1]-tresult[i+1];
-        Rvec[i+2] = fresult[i+2]-tresult[i+2];
-        Rvec[i+3] = fresult[i+3]-tresult[i+3];
-        Dvec[i]=Rvec[i];
-        Dvec[i+1]=Rvec[i+1];
-        Dvec[i+2]=Rvec[i+2];
-        Dvec[i+3]=Rvec[i+3];
-        resdlocal += Rvec[i] * Rvec[i];
-        resdlocal += Rvec[i+1] * Rvec[i+1];
-        resdlocal += Rvec[i+2] * Rvec[i+2];
-        resdlocal += Rvec[i+3] * Rvec[i+3];
-       //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
+        a = _mm_load_pd(&fresult[i]);
+        b = _mm_load_pd(&tresult[i]);
+        c = _mm_sub_pd(a,b);
+        Rvec[i] = c[0];
+        Rvec[i+1] = c[1];
+        Dvec[i]=c[0];
+        Dvec[i+1]=c[1];
+        d = _mm_mul_pd(c,c);
+        resdlocal += d[0] + d[1];
+        a = _mm_load_pd(&fresult[i+2]);
+        b = _mm_load_pd(&tresult[i+2]);
+        c = _mm_sub_pd(a,b);
+        Rvec[i+2] = c[0];
+        Rvec[i+3] = c[1];
+        Dvec[i+2]=c[0];
+         d = _mm_mul_pd(c,c);
+        resdlocal += d[0] + d[1];
+         //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
     } 
      
    
@@ -470,10 +476,16 @@ int main(int argc, char** argv)
          
           for( int km=0; km < sz; km+=4)
             {
-                    dt += Dvec[km]*tresult[km];
-                     dt += Dvec[km+1]*tresult[km+1];
-                      dt += Dvec[km+2]*tresult[km+2];
-                       dt += Dvec[km+3]*tresult[km+3];
+                
+                a = _mm_load_pd(&Dvec[km]);
+                b = _mm_load_pd(&tresult[km]);
+                c = _mm_mul_pd(a,b);
+                a = _mm_load_pd(&Dvec[km+2]);
+                b = _mm_load_pd(&tresult[km+2]);
+                d = _mm_mul_pd(a,b);
+                e = _mm_hadd_pd(c,d);
+                dt + = e[0]+e[1];
+                    
             }
           time = timer.elapsed();
          //std::cout << " 3: " << time << "\n";
@@ -489,18 +501,44 @@ int main(int argc, char** argv)
          
         for(int j=0; j< sz;j+=4)
         {
-            Xvec[j] += alpha * Dvec[j];
-            Xvec[j+1] += alpha * Dvec[j+1];
-             Xvec[j+2] += alpha * Dvec[j+2];
-               Xvec[j+3] += alpha * Dvec[j+3]; 
-               Rvec[j] -= alpha * tresult[j];
-             Rvec[j+1] -= alpha * tresult[j+1];
-              Rvec[j+2] -= alpha * tresult[j+2];
-               Rvec[j+3] -= alpha * tresult[j+3]; 
-               dt += Xvec[j]*Xvec[j];
-              dt += Xvec[j+1]*Xvec[j+1];
-                 dt += Xvec[j+2]*Xvec[j+2];
-                dt += Xvec[j+3]*Xvec[j+3];
+            
+            a = _mm_load_pd(&Dvec[j]);
+            b = _mm_load_pd(&tresult[j]);
+            c[0] = alpha;
+            c[1] = alpha;            
+            d = _mm_load_pd(&Xvec[j]);
+            e = _mm_load_pd(&Rvec[j]);
+            
+            f = _mm_mul_pd(c,a);
+            g = _mm_mul_pd(c,b);
+            hh = _mm_add_pd(d,f);
+            ii = _mm_sub_pd(e,g);
+            jj = _mm_mul_pd(hh,hh);
+            
+            Xvec[j] = hh[0];
+            Xvec[j+1]  = hh[1];
+            Rvec[j] = ii[0];
+            Rvec[j+1]  = jj[1];
+            dt+ = jj[0]+jj[1];
+            
+              a = _mm_load_pd(&Dvec[j+2]);
+            b = _mm_load_pd(&tresult[j+2]);
+            //c[0] = alpha;
+            //c[1] = alpha;            
+            d = _mm_load_pd(&Xvec[j+2]);
+            e = _mm_load_pd(&Rvec[j+2]);
+            
+            f = _mm_mul_pd(c,a);
+            g = _mm_mul_pd(c,b);
+            hh = _mm_add_pd(d,f);
+            ii = _mm_sub_pd(e,g);
+            jj = _mm_mul_pd(hh,hh);
+            
+            Xvec[j+2] = hh[0];
+            Xvec[j+3]  = hh[1];
+            Rvec[j+2] = ii[0];
+            Rvec[j+3]  = jj[1];
+            dt+ = jj[0]+jj[1];
         }
                     
         MPI_Allreduce(&dt, &dt1,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
@@ -515,10 +553,32 @@ int main(int argc, char** argv)
         
          for(int j=0; j< sz;j+=4)
         {
-            Dvec[j]   = Rvec[j]-beta * Dvec[j];
-            Dvec[j+1] = Rvec[j+1]-beta * Dvec[j+1];
-            Dvec[j+2] = Rvec[j+2]-beta * Dvec[j+2];
-            Dvec[j+3] = Rvec[j+3]-beta * Dvec[j+3]; 
+             a = _mm_load_pd(&Dvec[j]);
+            b = _mm_load_pd(&Rvec[j]);
+            c[0] = beta;
+            c[1] = beta;            
+           // d = _mm_load_pd(&Xvec[j]);
+            //e = _mm_load_pd(&Rvec[j]);
+            
+            f = _mm_mul_pd(c,a);
+            g = _mm_sub_pd(b,f);
+                       
+            
+            Dvec[j]   = g[0];
+            Dvec[j+1] = g[1];
+            a = _mm_load_pd(&Dvec[j+2]);
+            b = _mm_load_pd(&Rvec[j+3]);
+            c[0] = beta;
+            c[1] = beta;            
+           // d = _mm_load_pd(&Xvec[j]);
+            //e = _mm_load_pd(&Rvec[j]);
+            
+            f = _mm_mul_pd(c,a);
+            g = _mm_sub_pd(b,f);
+                       
+            
+            Dvec[j+2]   = g[0];
+            Dvec[j+3] = g[1]; 
         }      
         
          *dt0 = dt1;
