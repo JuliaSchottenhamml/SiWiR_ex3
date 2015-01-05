@@ -464,12 +464,14 @@ int main(int argc, char** argv)
           wv = start[0];
           nv = start[1];
         }
+         std::cout <<  "\n" << rank << " sv nv ev wv " << sv << nv << ev << wv;
+        
           //MPI_Barrier(MPI_COMM_WORLD);
-//          time = timer.elapsed();
-//           std::cout <<  " time, 1:" << time;
+          time = timer.elapsed();
+           std::cout <<  " time, 1:" << time;
          tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,startpnt,ev,wv,nv,sv);
-        // time = timer.elapsed();
-//         std::cout << " 2: " << time ;
+        time = timer.elapsed();
+         std::cout << " 2: " << time ;
          
                   //std::cout << " 4: " <<  "\n";
           for( int km=0; km < sz; km+=2)
