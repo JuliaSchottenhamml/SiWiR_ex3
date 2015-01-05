@@ -355,8 +355,8 @@ int main(int argc, char** argv)
          //end[2]=0.0;
          }      
          
-       tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,start,end);        
-       fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz);
+       tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/len,start,end);        
+       fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,len);
        
        if(abc != 0)
        {
