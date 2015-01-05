@@ -360,7 +360,7 @@ int main(int argc, char** argv)
     //std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
     //MPI_Barrier(MPI_COMM_WORLD);
    
-    if(fabs(sqrt(*dt0)) > fabs(error))
+    if(fabs(sqrt(*dt0)) > error)
      {   
       //std::cout << "\n %% rank = " << rank << "before for "<< size ; 
       int ik=0;
