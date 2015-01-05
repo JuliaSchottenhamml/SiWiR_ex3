@@ -151,7 +151,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
     
 }
 
-inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double hx, double hy, int dests, int len)
+inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double hx, /*double hy,*/int dests, int len)
 { 
   
      double * result = new double[len];
@@ -355,7 +355,7 @@ int main(int argc, char** argv)
      
     
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,0.0,0.0,0.0,0.0);        
-       fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz);
+       fresult = cal_fVec(blenx,nnx,sx,gama, hx ,dests,sz);
     
     __m128d a,b,c,d,e,f,g,hh,ii,jj;   
        
