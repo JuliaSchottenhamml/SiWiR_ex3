@@ -3,8 +3,9 @@
 #PBS -l nodes=4:ppn=32
 #PBS -l walltime=0:10:00
 #PBS -M karnajitsen@gmail.com -m abe
-#PBS -o $PBS_CG.out -e $PBS_CG.err
+#PBS -o PBS_CG.out -e PBS_CG.err
 
+rm -rf PBS_CG.*
 . /etc/profile.d/modules.sh
 module load openmpi/1.6.5-ib
 module load gcc/4.8.2
@@ -12,4 +13,4 @@ module load gcc/4.8.2
 rm -rf data/solution.txt
 make clean
 make test
- mpirun -np 4 ./cg 10000 10000 100 -1
+ mpirun -np 4 ./cg 10001 10001 100 -1

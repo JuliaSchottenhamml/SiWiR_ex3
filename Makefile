@@ -1,5 +1,5 @@
 CC=mpic++
-CFLAGS= -march=native -mtune=native -std=c++0x -Wall -Wextra -Wshadow -Werror -O3 -DNDEBUG
+CFLAGS= -march=native -mtune=native -std=c++0x -Wall -Wextra -Wshadow -Werror -O3 -DNDEBUG -msse3
 LDFLAGS=
 SOURCES=CGFD.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
