@@ -85,7 +85,7 @@ inline double border(const double x, const double y){
        return worksheet;
    }
 
-inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alpha, const double beta, const double gama,
+inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  double beta,  double gama,
    /*int destn, int dests, */int len/*, int startpnt*/, double * start, double *end)
 {  
     
