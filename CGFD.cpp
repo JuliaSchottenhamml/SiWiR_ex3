@@ -11,6 +11,7 @@
 #include <functional>
 #include "immintrin.h"
 #include <memory>
+#include <stdlib.h>
 #define LD 64
 #define domxl 0.0
 #define domxh 2.0
@@ -41,20 +42,11 @@ inline double border(const double x, const double y){
                       
        int m =0;
         int n =0;
-        int p =0;
-        int s = 0;
+      //  int p =0;
+       // int s = 0;
         int ver =0;
     
-       //worksheet = new double[proc*LD1];
-
-       /*if(procn%4==0)
-           ver = 4;
-       else if (procn%5==0)
-           ver = 5;
-       else if (procn%6==0)
-           ver = 6;
-       else if (procn%7==0)*/
-           ver = procn;
+         ver = procn;
        int remM = dimM%ver;
        int bn = dimM/ver;
         
@@ -64,22 +56,22 @@ inline double border(const double x, const double y){
                     int q = i*LD1;
                 //worksheet[q+1]=dimN;
                 worksheet[q]=n;
-                worksheet[q+2]=s;
+                //worksheet[q+2]=s;
                 //worksheet[q+3]=0;
                 if(i<remM)
                 {
                   m=bn+1;  
                   worksheet[q+1]=m; 
                   n += m;
-                  p= m*dimN;
+                  //p= m*dimN;
                 } 
                 else
                 {
                 worksheet[q+1]=bn;  
                 n += bn;
-                p = bn*dimN;
+                //p = bn*dimN;
                 }                
-                s += p;                 
+                //s += p;                 
                //worksheet[q+5]=dimN;
             }   
        return worksheet;
@@ -89,7 +81,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  
    /*int destn, int dests, */int len/*, int startpnt*/, double * start, double *end)
 {  
     
-     double * result = new double[len];
+     double * result = (double *) calloc(len, sizeof(double));
      int index=0;
      int le=sx+blenx;
        
@@ -243,9 +235,9 @@ int main(int argc, char** argv)
     double alfa=0.0;
     double bita=0.0;
     double gama=0.0;
-     double dt1 = 0.0;
+    double dt1 = 0.0;
     double hx = 0.0, hy=0.0; 
-    int startpnt =0;
+    //Sint startpnt =0;
     double dt = 0.0; 
 
     
@@ -254,7 +246,7 @@ int main(int argc, char** argv)
     //MPI_Type_vector( 2, 1, 2, MPI_DOUBLE, &columntype );
     //MPI_Type_commit( &columntype );  
     
-    std::cout << rank << "111 ";
+   // std::cout << rank << "111 ";
       
     //*dt0=0.0;   
     nx = atoi(argv[1]);
@@ -278,12 +270,12 @@ int main(int argc, char** argv)
     {
     sx = worksheet[t*3];
     blenx = worksheet[t*3+1];
-    startpnt = worksheet[t*3+2];
+    //startpnt = worksheet[t*3+2];
     
     
     MPI_Isend(&blenx,1,MPI_INT,t,t+100,MPI_COMM_WORLD,&request);
     MPI_Isend(&sx,1,MPI_INT,t,t+110,MPI_COMM_WORLD,&request);
-    MPI_Isend(&startpnt,1,MPI_INT,t,t+120,MPI_COMM_WORLD,&request);
+   // MPI_Isend(&startpnt,1,MPI_INT,t,t+120,MPI_COMM_WORLD,&request);
     }
            
     }
@@ -291,7 +283,7 @@ int main(int argc, char** argv)
      //std::cout << rank << "333 ";  
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+110, MPI_COMM_WORLD,&status);
-    MPI_Recv(&startpnt,1, MPI_INT,0, rank+120, MPI_COMM_WORLD,&status);
+   // MPI_Recv(&startpnt,1, MPI_INT,0, rank+120, MPI_COMM_WORLD,&status);
   
     //std::cout << rank << " sx = " << sx << " " << status.MPI_ERROR; 
     //std::cout << rank << " blenx = " << nnx << " " << status.MPI_ERROR; 
@@ -310,57 +302,57 @@ int main(int argc, char** argv)
     else 
     len = sz + 2;
         
-    double * tresult = new double[len];
-    double * fresult = new double[len];
+    double * tresult = (double *) calloc(len, sizeof(double));
+    double * fresult = (double *) calloc(len, sizeof(double));
     
    // double * nresult = new double[sz];
-    double * Xvec = new double[len];
-    double * Rvec = new double[len];
-    double * Dvec = new double[len]; 
-    double * Fvec = new double[gridpoint];
+    double * Xvec = (double *) calloc(len, sizeof(double));
+    double * Rvec = (double *) calloc(len, sizeof(double));
+    double * Dvec = (double *) calloc(len, sizeof(double)) ;
+    double * Fvec = (double *) calloc(gridpoint, sizeof(double));
     
        
     
-    for(int i=0;i<len;i+=2)
-    {
-        Xvec[i]=0.0;
-        Xvec[i+1]=0.0;
-        Rvec[i]=0.0;
-        Rvec[i+1]=0.0;
-        Dvec[i]=0.0;
-        Dvec[i+1]=0.0;
-    }
+ //   for(int i=0;i<len;i+=2)
+//    {
+//        Xvec[i]=0.0;
+//        Xvec[i+1]=0.0;
+//        Rvec[i]=0.0;
+//        Rvec[i+1]=0.0;
+//        Dvec[i]=0.0;
+//        Dvec[i+1]=0.0;
+//    }
     
     if(rank == size-1)
     dests = -1;
    
-    double *start = new double[nnx];
-    double *end = new double[nnx];
+    double *start = (double *) calloc(nnx, sizeof(double));
+    double *end = (double *) calloc(nnx, sizeof(double));
      
-     for( int r=0;r<nnx;r++)
-         {       
-         start[r]=0.0;
-         //start[r+1]=0.0;
-         end[r]=0.0;
-         //end[r+1]=0.0;
-         //end[2]=0.0;
-         }      
+ //    for( int r=0;r<nnx;r++)
+//         {       
+//         start[r]=0.0;
+//         //start[r+1]=0.0;
+//         end[r]=0.0;
+//         //end[r+1]=0.0;
+//         //end[2]=0.0;
+//         }      
          
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/len,start,end);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,len);
        
-       if(abc != 0)
-       {
-        tresult[sz]=0.0;
-        fresult[sz]=0.0;
-      }
-        else
-       {
-        tresult[sz]=0.0;
-        tresult[sz+1]=0.0;
-        fresult[sz]=0.0;
-        fresult[sz+1]=0.0;
-       }
+       //if(abc != 0)
+//       {
+//        tresult[sz]=0.0;
+//        fresult[sz]=0.0;
+//      }
+//        else
+//       {
+//        tresult[sz]=0.0;
+//        tresult[sz+1]=0.0;
+//        fresult[sz]=0.0;
+//        fresult[sz+1]=0.0;
+//       }
        
     __m128d a,b,c,d,e,f,g,hh,ii,jj;   
        
@@ -377,8 +369,8 @@ int main(int argc, char** argv)
         resdlocal += d[0] + d[1];
      } 
     
-    delete[] tresult;
-    delete[] fresult;
+    free(tresult);
+    free(fresult);
      
    
     //std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
@@ -434,17 +426,9 @@ int main(int argc, char** argv)
           //MPI_Barrier(MPI_COMM_WORLD);
           //time = timer.elapsed();
            //std::cout <<  " time, 1:" << time;
-         double * mresult = new double[len];
-         mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,len,start,end);
-        if(abc != 0)
-       {
-        mresult[sz]=0.0;
-       }
-        else
-       {
-        mresult[sz]=0.0;
-        mresult[sz+1]=0.0;
-       }
+         double * mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,len,start,end);
+        // mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,len,start,end);
+       
        
       dt = 0.0;
           for( int km=0; km < len; km+=2)
@@ -514,7 +498,7 @@ int main(int argc, char** argv)
         // std::cout << " 7: " <<  "\n";
          *dt0 = dt1;
          ik++;
-         delete[] mresult;
+         free(mresult);
    
         }                
     }       
@@ -543,18 +527,25 @@ int main(int argc, char** argv)
 	
 	std::ofstream	fOut("data/solution.txt");
 
+    double x =0.0, y=0.0;
 	for (int i= 0; i< gridpoint; i++ )
         {
-        //if(i%nnx == 0 )
-        //std::cout << "\n"; 
-        //residual +=  Fvec[i]*Fvec[i];
+       
+       // gridno = i*bleny + j;            
+            x = (((i)%nnx)+1)*hx;
+            y = (((i)/nnx)+1)*hy;
          
-        fOut << Fvec[i] << "\n";
+        fOut << x<< " " y << " " << Fvec[i] << "\n";
         
         }
         fOut << std::endl;
         
     }
+    
+    free(Dvec);
+    free(Rvec);
+    free(Xvec);
+    free(Fvec);
     MPI_Barrier(MPI_COMM_WORLD);
    //:wq
   // MPI_Type_free( &columntype );
