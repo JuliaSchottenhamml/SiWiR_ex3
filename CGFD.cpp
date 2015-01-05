@@ -187,6 +187,8 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
 int main(int argc, char** argv)
 {
 
+    
+    std::cout << argc << "= invalid number of argument.. Program exiting..&&&&&&&&&&&&";
             
     if (argc < 5)
     {
