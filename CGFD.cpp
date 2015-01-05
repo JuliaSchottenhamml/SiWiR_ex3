@@ -403,7 +403,7 @@ int main(int argc, char** argv)
          }
         }
         
-        cout << " ghost layer end \n";
+        std::cout << " ghost layer end \n";
          for(int s=0;s<nnx;s++)
          {
               std::cout << rank << " " << Dvec[s] ;
@@ -414,10 +414,10 @@ int main(int argc, char** argv)
               std::cout << rank << " " << end[s] ;
          }
          
-         cout << " ghost layer start \n";
+         std::cout << " ghost layer start \n";
           for(int s=0;s<nnx;s++)
          {
-              std::cout << rank << " " << Dvec[ssz-nnx+s] ;
+              std::cout << rank << " " << Dvec[sz-nnx+s] ;
          }
         
         for(int s=0;s<nnx;s++)
