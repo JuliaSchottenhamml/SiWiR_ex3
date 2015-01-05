@@ -36,7 +36,7 @@ inline double border(const double x, const double y){
     }
     
     
-  inline double * gcapt(double * worksheet, int const procn, int dimM, int dimN)
+  inline double * gcapt(double * worksheet, int const procn, int dimM/*, int dimN*/)
    {
         
                       
@@ -264,7 +264,7 @@ int main(int argc, char** argv)
      //std::cout << rank << "222 ";
     if (rank == 0)
    {
-    worksheet = gcapt(worksheet, size, nny, nnx); 
+    worksheet = gcapt(worksheet, size, nny); 
     
     for(int t=0;t<size;t++)
     {
@@ -527,15 +527,15 @@ int main(int argc, char** argv)
 	
 	std::ofstream	fOut("data/solution.txt");
 
-    double x =0.0, y=0.0;
+    double xx =0.0, yy=0.0;
 	for (int i= 0; i< gridpoint; i++ )
         {
        
        // gridno = i*bleny + j;            
-            x = (((i)%nnx)+1)*hx;
-            y = (((i)/nnx)+1)*hy;
+            xx = (((i)%nnx)+1)*hx;
+            yy = (((i)/nnx)+1)*hy;
          
-        fOut << x<< " " y << " " << Fvec[i] << "\n";
+        fOut << xx << " " << yy << " " << Fvec[i] << "\n";
         
         }
         fOut << std::endl;
