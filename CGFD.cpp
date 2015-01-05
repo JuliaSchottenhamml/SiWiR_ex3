@@ -403,8 +403,8 @@ int main(int argc, char** argv)
         a = _mm_load_pd(&fresult[i]);
         b = _mm_load_pd(&tresult[i]);
         c = _mm_sub_pd(a,b);
-        _mm_store_sd (&Rvec[i], c);
-        _mm_store_sd (&Dvec[i], c);
+        _mm_store_pd (&Rvec[i], c);
+        _mm_store_pd (&Dvec[i], c);
         d = _mm_mul_pd(c,c);
         resdlocal += d[0] + d[1];
         /*a = _mm_load_pd(&fresult[i+2]);
@@ -506,7 +506,7 @@ int main(int argc, char** argv)
          alpha = *dt0 / dt3;
          // time = timer.elapsed();
 //	    std::cout << " 5: " << time << "\n";
-        // std::cout << " 5: " <<  "\n";
+         std::cout << " 5: alpha " <<  alpha<<"\n";
          dt = 0.0;
          
         for(int j=0; j< len;j+=2)
@@ -525,8 +525,8 @@ int main(int argc, char** argv)
             ii = _mm_sub_pd(e,g);
             jj = _mm_mul_pd(ii,ii);
             
-            _mm_store_sd (&Xvec[j], hh);
-            _mm_store_sd (&Rvec[j], ii);
+            _mm_store_pd (&Xvec[j], hh);
+            _mm_store_pd (&Rvec[j], ii);
             
                dt+= jj[0]+jj[1];
             
@@ -558,18 +558,18 @@ int main(int argc, char** argv)
 
         double beta = dt1/(*dt0);        
         
-               //  std::cout << " 6: " <<  "\n";
+          std::cout << " 7: " <<  beta  <<  "\n";
          for(int j=0; j< len;j+=2)
         {
              a = _mm_load_pd(&Dvec[j]);
             b = _mm_load_pd(&Rvec[j]);
             c[0] = beta;
             c[1] = beta;
-            std::cout << " 6: " <<  c[0] << " " << beta << " " << c[1] <<"\n";            
+           // std::cout << " 6: " <<  c[0] << " " << beta << " " << c[1] <<"\n";            
             f = _mm_mul_pd(c,a);
             g = _mm_add_pd(b,f);
-            _mm_store_sd (&Dvec[j], g);
-            std::cout << " 7: " <<  g[0] << " " << f[0] << " " << f[1] << " " << g[1] <<"\n";
+            _mm_store_pd (&Dvec[j], g);
+            //std::cout << " 7: " <<  g[0] << " " << f[0] << " " << f[1] << " " << g[1] <<"\n";
            /*
             a = _mm_load_pd(&Dvec[j+2]);
             b = _mm_load_pd(&Rvec[j+2]);
