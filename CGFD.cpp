@@ -92,7 +92,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  
      double * result = new double[len];
      int index=0;
      int le=sx+blenx;
-     len = le;
+     /*len = le;
      len = index;
      result = vec;
      result = start;
@@ -100,9 +100,9 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  
      int as = blenx+bleny+sx;
      double ad = alpha+beta+gama;
      gama = ad;
-     len = as;
+     len = as;*/
    
-    /*__m128d a,b,c,d,e,f,g;
+    __m128d a,b,c,d,e,f,g;
    
     for(int i=sx; i<le ; i++)
       {
@@ -148,7 +148,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  
             result[index++]=e[0]+e[1]+a[0]*a[1];
 
         }
-    }*/
+    }
 
     return result;
     
