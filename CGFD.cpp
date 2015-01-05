@@ -86,7 +86,7 @@ inline double border(const double x, const double y){
    }
 
 inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alpha, const double beta, const double gama,
-   /*int destn, int dests, */int len, int startpnt, double ev, double wv, double nv, double sv)
+   /*int destn, int dests, */int len/*, int startpnt*/, double ev, double wv, double nv, double sv)
 {  
     
     
@@ -94,19 +94,19 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
   	//double time = 0;
     siwir::Timer	timer;
      double * result = new double[len];
-    int gridno = 0;
+    //int gridno = 0;
     //double gama1 = 0.0;
     //double gama2 = 0.0;
     int index=0;
    
-    int l =0;
-    gridno= sx*bleny;
-    index = gridno-startpnt;
+    //int l =0;
+    //gridno= sx*bleny+1;
+    //index = 0;
     __m128d a,b,c,d,e,f,g;
    
     for(int i=sx; i<le ; i++)
       {
-        for(int j=0; j<bleny ; j++,gridno++, index++)
+        for(int j=0; j<bleny ; j++)
         {
             //int pm = 0;
             //int ppm =0;
@@ -116,7 +116,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             //if(iterat >75 && iterat < 78 && i==sx && j==0)
             //std::cout <<  " time, 1:" << time << " " << vec[index]; 
              a[0]=alpha;
-             a[1]= vec[index];;
+             a[1]= vec[index];
              b[0]= beta;
              b[1] =beta;
              c[0]=gama;
@@ -125,7 +125,6 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
               
             if(j!=0 && i!=sx)
                d[0]=vec[index-1];
-               
             if(j!=0 && i==sx)
                d[0]=wv;
             if(j==0)
@@ -157,7 +156,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             
             e = _mm_hadd_pd(f,g);
                 
-            result[l++]=e[0]+e[1]+a[0]*a[1];
+            result[index++]=e[0]+e[1]+a[0]*a[1];
 
         }
     }
@@ -390,7 +389,7 @@ int main(int argc, char** argv)
     dests = -1;
      
     
-       tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,startpnt,0.0,0.0,0.0,0.0);        
+       tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,0.0,0.0,0.0,0.0);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,sz);
     
     __m128d a,b,c,d,e,f,g,hh,ii,jj;   
@@ -469,7 +468,7 @@ int main(int argc, char** argv)
           //MPI_Barrier(MPI_COMM_WORLD);
           time = timer.elapsed();
            std::cout <<  " time, 1:" << time;
-         tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,startpnt,ev,wv,nv,sv);
+         tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,ev,wv,nv,sv);
         time = timer.elapsed();
          std::cout << " 2: " << time ;
          
