@@ -398,7 +398,7 @@ int main(int argc, char** argv)
    // std::cout << "\n" << rank << " " << iter << " " << blenx << " " << nnx << " " << sx << " " << gama << " " << hx << " " << hy << " " << startpnt;
       for(int i = 0; i< sz; i+=4)
     {
-       // std::cout << "\n" << rank << " " << fresult[i];
+        std::cout << "\n" << rank << " " << fresult[i];
         a = _mm_load_pd(&fresult[i]);
         b = _mm_load_pd(&tresult[i]);
         c = _mm_sub_pd(a,b);
@@ -414,9 +414,10 @@ int main(int argc, char** argv)
         Rvec[i+2] = c[0];
         Rvec[i+3] = c[1];
         Dvec[i+2]=c[0];
+        Dvec[i+3]=c[1];
          d = _mm_mul_pd(c,c);
         resdlocal += d[0] + d[1];
-         //std::cout << "\n" << rank << " " << (int)sizeof(tresult) << " " << fresult[i] << " " << tresult[i] << " " << mresult[i];
+       std::cout << "\n" << rank << "I am here 1 " ;
     } 
      
    
@@ -434,7 +435,7 @@ int main(int argc, char** argv)
       while(ik < iter)
        {
             iterat = ik;
-        //std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
+        std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
         ev=0.0;
         wv=0.0;
         sv=0.0;
@@ -537,7 +538,7 @@ int main(int argc, char** argv)
             Xvec[j+2] = hh[0];
             Xvec[j+3]  = hh[1];
             Rvec[j+2] = ii[0];
-            Rvec[j+3]  = jj[1];
+            Rvec[j+3]  = ii[1];
             dt+= jj[0]+jj[1];
         }
                     
@@ -568,8 +569,8 @@ int main(int argc, char** argv)
             Dvec[j+1] = g[1];
             a = _mm_load_pd(&Dvec[j+2]);
             b = _mm_load_pd(&Rvec[j+3]);
-            c[0] = beta;
-            c[1] = beta;            
+           // c[0] = beta;
+            //c[1] = beta;            
            // d = _mm_load_pd(&Xvec[j]);
             //e = _mm_load_pd(&Rvec[j]);
             
