@@ -329,30 +329,10 @@ int main(int argc, char** argv)
     double *start = (double *) calloc(nnx, sizeof(double));
     double *end = (double *) calloc(nnx, sizeof(double));
      
- //    for( int r=0;r<nnx;r++)
-//         {       
-//         start[r]=0.0;
-//         //start[r+1]=0.0;
-//         end[r]=0.0;
-//         //end[r+1]=0.0;
-//         //end[2]=0.0;
-//         }      
-         
+
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/len,start,end);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,len);
        
-       //if(abc != 0)
-//       {
-//        tresult[sz]=0.0;
-//        fresult[sz]=0.0;
-//      }
-//        else
-//       {
-//        tresult[sz]=0.0;
-//        tresult[sz+1]=0.0;
-//        fresult[sz]=0.0;
-//        fresult[sz+1]=0.0;
-//       }
        
     __m128d a,b,c,d,e,f,g,hh,ii,jj;   
        
@@ -387,7 +367,7 @@ int main(int argc, char** argv)
       while(ik < iter)
        {
             //iterat = ik;
-        //std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
+        std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
                 
         int gn=0;
         int hn =0;
@@ -412,14 +392,11 @@ int main(int argc, char** argv)
          if(rank==0)
         {       
          start[r]=0.0;
-        // start[r+1]=0.0;
-         //end[2]=0.0;
-         }
+        }
          if(rank == size-1)
          {               
          end[r]=0.0;
-        // end[r+1]=0.0;
-        }
+         }
         }
          //std::cout <<  "\n" << rank << " sv nv ev wv " << sv << nv << ev << wv;
         
@@ -532,8 +509,8 @@ int main(int argc, char** argv)
         {
        
        // gridno = i*bleny + j;            
-            xx = (((i)%nnx)+1)*hx;
-            yy = (((i)/nnx)+1)*hy;
+            xx = (i%nnx)+1)*hx;
+            yy = (i/nnx)+1)*hy;
          
         fOut << xx << " " << yy << " " << Fvec[i] << "\n";
         
