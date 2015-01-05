@@ -436,11 +436,7 @@ int main(int argc, char** argv)
        {
             //iterat = ik;
         //std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
-        ev=0.0;
-        wv=0.0;
-        sv=0.0;
-        nv=0.0;
-        
+                
         int gn=0;
         int hn =0;
         if(rank!=0)
