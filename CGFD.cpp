@@ -448,7 +448,7 @@ int main(int argc, char** argv)
          }
         }
         
-         MPI_Isend(&Dvec[sz-nnx],bleny,MPI_DOUBLE, hn, hn+140, MPI_COMM_WORLD,&request);
+         MPI_Isend(&Dvec[sz-nnx],nnx,MPI_DOUBLE, hn, hn+140, MPI_COMM_WORLD,&request);
          MPI_Recv(start,nnx, MPI_DOUBLE,gn, rank+140, MPI_COMM_WORLD,&status);
         if(rank==0)
         {
