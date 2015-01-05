@@ -383,9 +383,13 @@ int main(int argc, char** argv)
          MPI_Isend(&Dvec[0],nnx,MPI_DOUBLE, gn, gn+130, MPI_COMM_WORLD,&request);
          
          MPI_Recv(end,nnx, MPI_DOUBLE,hn, rank+130, MPI_COMM_WORLD,&status);
+         
+             
         
          MPI_Isend(&Dvec[sz-nnx],nnx,MPI_DOUBLE, hn, hn+140, MPI_COMM_WORLD,&request);
          MPI_Recv(start,nnx, MPI_DOUBLE,gn, rank+140, MPI_COMM_WORLD,&status);
+        
+        
         
         for( int r=0;r<nnx;r++)
          {
@@ -398,6 +402,29 @@ int main(int argc, char** argv)
          end[r]=0.0;
          }
         }
+        
+        cout << " ghost layer end \n";
+         for(int s=0;s<nnx;s++)
+         {
+              std::cout << rank << " " << Dvec[s] ;
+         }
+        
+        for(int s=0;s<nnx;s++)
+         {
+              std::cout << rank << " " << end[s] ;
+         }
+         
+         cout << " ghost layer start \n";
+          for(int s=0;s<nnx;s++)
+         {
+              std::cout << rank << " " << Dvec[ssz-nnx+s] ;
+         }
+        
+        for(int s=0;s<nnx;s++)
+         {
+              std::cout << rank << " " << start[s] ;
+         }
+        
          //std::cout <<  "\n" << rank << " sv nv ev wv " << sv << nv << ev << wv;
         
           //MPI_Barrier(MPI_COMM_WORLD);
