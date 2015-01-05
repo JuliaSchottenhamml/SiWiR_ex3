@@ -553,24 +553,14 @@ int main(int argc, char** argv)
             b = _mm_load_pd(&Rvec[j]);
             c[0] = beta;
             c[1] = beta;            
-           // d = _mm_load_pd(&Xvec[j]);
-            //e = _mm_load_pd(&Rvec[j]);
-            
             f = _mm_mul_pd(c,a);
-            g = _mm_sub_pd(b,f);
-                       
-            
-              _mm_store_sd (&Dvec[j], g);
+            g = _mm_add_pd(b,f);
+            _mm_store_sd (&Dvec[j], g);
            
             a = _mm_load_pd(&Dvec[j+2]);
-            b = _mm_load_pd(&Rvec[j+3]);
-           // c[0] = beta;
-            //c[1] = beta;            
-           // d = _mm_load_pd(&Xvec[j]);
-            //e = _mm_load_pd(&Rvec[j]);
-            
+            b = _mm_load_pd(&Rvec[j+2]);
             f = _mm_mul_pd(c,a);
-            g = _mm_sub_pd(b,f);
+            g = _mm_add_pd(b,f);
                        
             _mm_store_sd (&Dvec[j+2], g); 
         }      
