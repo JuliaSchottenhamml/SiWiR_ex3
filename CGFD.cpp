@@ -132,12 +132,12 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  
 
         }
     }
-    std:: cout << "####";
-      for(int i=0;i<len;i+=2)
-    {
-        std:: cout << " " << result[i] ;
-        std:: cout << " " << result[i+1] ;
-    }
+    //std:: cout << "####";
+ //     for(int i=0;i<len;i+=2)
+//    {
+//        std:: cout << " " << result[i] ;
+//        std:: cout << " " << result[i+1] ;
+//    }
 
     return result;
     
