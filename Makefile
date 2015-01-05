@@ -6,8 +6,8 @@ OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=MatrixMult
 COMMON=Timer.h
 
-all: $(SOURCES) $(EXECUTABLE)
-	
+all: 
+	$(CC) $(CFLAGS) $(SOURCES) -o cg
 test: 
 	$(CC) $(CFLAGS) $(SOURCES) -o cg
 

@@ -557,7 +557,8 @@ int main(int argc, char** argv)
         
     }
     MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Type_free( &columntype );
+   //:wq
+  // MPI_Type_free( &columntype );
     MPI_Finalize();
 #ifdef USE_LIKWID
 	likwid_markerStopRegion("dummy");
