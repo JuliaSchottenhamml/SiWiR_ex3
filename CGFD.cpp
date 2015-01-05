@@ -490,10 +490,6 @@ int main(int argc, char** argv)
                 a = _mm_load_pd(&Dvec[km]);
                 b = _mm_load_pd(&mresult[km]);
                 c = _mm_mul_pd(a,b);
-               /* a = _mm_load_pd(&Dvec[km+2]);
-                b = _mm_load_pd(&tresult[km+2]);
-                d = _mm_mul_pd(a,b);*/
-                //e = _mm_hadd_pd(c,d);
                 dt += c[0]+c[1];
                     
             }
@@ -503,10 +499,11 @@ int main(int argc, char** argv)
          MPI_Allreduce(&dt, &dt3,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
           // time = timer.elapsed();
 	   //std::cout <<  " time, 4:" << time;
+	     std::cout << rank<<  " 5: rank " <<  dt3<<"\n";
          alpha = *dt0 / dt3;
          // time = timer.elapsed();
 //	    std::cout << " 5: " << time << "\n";
-         std::cout << " 5: alpha " <<  alpha<<"\n";
+       
          dt = 0.0;
          
         for(int j=0; j< len;j+=2)
@@ -523,7 +520,7 @@ int main(int argc, char** argv)
             g = _mm_mul_pd(c,b);
             hh = _mm_add_pd(d,f);
             ii = _mm_sub_pd(e,g);
-            jj = _mm_mul_pd(hh,hh);
+            jj = _mm_mul_pd(ii,ii);
             
             _mm_store_pd (&Xvec[j], hh);
             _mm_store_pd (&Rvec[j], ii);
@@ -550,7 +547,7 @@ int main(int argc, char** argv)
                     
         MPI_Allreduce(&dt, &dt1,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
 
-        if(fabs(sqrt(dt1)) < fabs(error))
+        if(fabs(sqrt(dt1)) <= fabs(error))
         {
             std::cout << rank << "\n residue I am here to break you loop " << fabs(dt1) << " " << fabs(error) << "\n";
             break;
