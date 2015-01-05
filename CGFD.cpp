@@ -205,7 +205,7 @@ int main(int argc, char** argv)
 	//double  iresd;
 #ifdef USE_LIKWID
 	likwid_markerInit();
-	likwid_markerStartRegion("dummy");
+	likwid_markerStartRegion("dummy"); 
 #endif
 
 	siwir::Timer	timer;
