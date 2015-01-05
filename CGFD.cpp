@@ -436,12 +436,13 @@ int main(int argc, char** argv)
           //MPI_Barrier(MPI_COMM_WORLD);
           //time = timer.elapsed();
            //std::cout <<  " time, 1:" << time;
-           double * mresult = new double[sz];
+         double * mresult = new double[sz];
          mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,ev,wv,nv,sv);
         //time = timer.elapsed();
          //std::cout << " 2: " << time ;
          
                   //std::cout << " 4: " <<  "\n";
+                  dt = 0.0
           for( int km=0; km < sz; km+=2)
             {
                 
@@ -455,7 +456,7 @@ int main(int argc, char** argv)
                 dt += c[0]+c[1];
                     
             }
-          time = timer.elapsed();
+          //time = timer.elapsed();
          //std::cout << " 3: " << time << "\n";
          double dt3 = 0.0;  
          MPI_Allreduce(&dt, &dt3,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
