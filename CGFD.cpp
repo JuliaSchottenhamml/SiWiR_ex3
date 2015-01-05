@@ -361,7 +361,7 @@ int main(int argc, char** argv)
         
     double * tresult = new double[sz];
     double * fresult = new double[sz];
-    //double * mresult = new double[sz];
+    
    // double * nresult = new double[sz];
     double * Xvec = new double[sz];
     double * Rvec = new double[sz];
@@ -414,6 +414,9 @@ int main(int argc, char** argv)
         resdlocal += d[0] + d[1];*/
        //std::cout << "\n" << rank << "I am here 1 " ;
     } 
+    
+    delete[] tresult;
+    delete[] fresult;
      
    
    // std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
@@ -468,7 +471,8 @@ int main(int argc, char** argv)
           //MPI_Barrier(MPI_COMM_WORLD);
           time = timer.elapsed();
            std::cout <<  " time, 1:" << time;
-         tresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,ev,wv,nv,sv);
+           double * mresult = new double[sz];
+         mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,ev,wv,nv,sv);
         time = timer.elapsed();
          std::cout << " 2: " << time ;
          
@@ -477,7 +481,7 @@ int main(int argc, char** argv)
             {
                 
                 a = _mm_load_pd(&Dvec[km]);
-                b = _mm_load_pd(&tresult[km]);
+                b = _mm_load_pd(&mresult[km]);
                 c = _mm_mul_pd(a,b);
                /* a = _mm_load_pd(&Dvec[km+2]);
                 b = _mm_load_pd(&tresult[km+2]);
@@ -502,7 +506,7 @@ int main(int argc, char** argv)
         {
             
             a = _mm_load_pd(&Dvec[j]);
-            b = _mm_load_pd(&tresult[j]);
+            b = _mm_load_pd(&mresult[j]);
             c[0] = alpha;
             c[1] = alpha;            
             d = _mm_load_pd(&Xvec[j]);
@@ -568,6 +572,7 @@ int main(int argc, char** argv)
         // std::cout << " 7: " <<  "\n";
          *dt0 = dt1;
          ik++;
+         delete[] mresult;
    
         }                
     }       
