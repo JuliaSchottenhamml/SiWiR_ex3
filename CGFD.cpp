@@ -92,50 +92,36 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
     
     int le=sx+blenx;
   	//double time = 0;
-    siwir::Timer	timer;
+   // siwir::Timer	timer;
      double * result = new double[len];
-    //int gridno = 0;
-    //double gama1 = 0.0;
-    //double gama2 = 0.0;
-    int index=0;
+     int index=0;
    
-    //int l =0;
-    //gridno= sx*bleny+1;
-    //index = 0;
     __m128d a,b,c,d,e,f,g;
    
     for(int i=sx; i<le ; i++)
       {
         for(int j=0; j<bleny ; j++)
-        {
-            //int pm = 0;
-            //int ppm =0;
-            //int fm =0;
-            //int ffm =0;  
-            //time = timer.elapsed();
-            //if(iterat >75 && iterat < 78 && i==sx && j==0)
-            //std::cout <<  " time, 1:" << time << " " << vec[index]; 
+        {            
              a[0]=alpha;
              a[1]= vec[index];
              b[0]= beta;
              b[1] =beta;
              c[0]=gama;
              c[1]=gama;
-             //b[0] = vec[index];
-              
-            if(j!=0 && i!=sx)
-               d[0]=vec[index-1];
-            if(j!=0 && i==sx)
-               d[0]=wv;
+                          
+            if(index > 0)
+               d[0]=vec[index-1];            
             if(j==0)
                d[0] = 0.0;
+            if(index == 0)
+               d[0]=wv;  
                
-            if(j != bleny-1 && i!=le)
+            if(index < len-1)
                 d[1] = vec[index+1];
-            if(j != bleny-1 && i==le)
-                d[1] = ev;
             if(j == bleny-1)
                d[1] =0.0; 
+            if(index == len-1)
+               d[1] = ev;
             
             if(index-3>=0)
               e[0] = vec[index-3];
@@ -185,17 +171,17 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
         {
             
             //gama2 = 0.0;
-            gridno= i*bleny + j +1;            
+            gridno = i*bleny + j;            
             //int k = (j-sy)%blenx;
-            x = (((gridno-1)%bleny)+1)*hx;
-            y = (((gridno-1)/bleny)+1)*hy;
+            x = (((gridno)%bleny)+1)*hx;
+            y = (((gridno)/bleny)+1)*hy;
             //std::cout << "x, y" << x << " " <<y;
             double f = fxy(x,y);
            // std::cout << " x, y, f " << x << " " <<y << " " << f << "\n";                      
             if(dests == -1 && i == le-1)
             {
              //gama2 = 
-             result[l++] = f-gama*border(x,y);
+             result[l++] = f-(gama*border(x,y));
             }
             else 
                 result[l++] = f;
@@ -363,15 +349,6 @@ int main(int argc, char** argv)
         Xvec[i+2]=0.0;
         Xvec[i+3]=0.0;
     }
-    //double * Tvec = new double[sz];
-    //double * Tmpvec = new double[sz];
-              
-    //double resd =0.0;
-   
-   /* if(rank == 0)
-    destn = -1;
-    else 
-    destn = rank -1;*/  
     
     if(rank == size-1)
     dests = -1;
