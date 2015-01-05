@@ -421,7 +421,7 @@ int main(int argc, char** argv)
     delete[] fresult;
      
    
-   // std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
+    std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
     
     MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
@@ -499,7 +499,7 @@ int main(int argc, char** argv)
          MPI_Allreduce(&dt, &dt3,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
           // time = timer.elapsed();
 	   //std::cout <<  " time, 4:" << time;
-	     std::cout << rank<< " " << dt << " 5: rank " <<  dt3<<"\n";
+	    // std::cout << rank<< " " << dt << " 5: rank " <<  dt3<<"\n";
          alpha = *dt0 / dt3;
          // time = timer.elapsed();
 //	    std::cout << " 5: " << time << "\n";
@@ -555,7 +555,7 @@ int main(int argc, char** argv)
 
         double beta = dt1/(*dt0);        
         
-          std::cout << " 7: " <<  beta  <<  "\n";
+         // std::cout << " 7: " <<  beta  <<  "\n";
          for(int j=0; j< len;j+=2)
         {
              a = _mm_load_pd(&Dvec[j]);
