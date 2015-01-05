@@ -574,7 +574,7 @@ int main(int argc, char** argv)
                        
             _mm_store_sd (&Dvec[j+2], g); 
         }      
-        
+         std::cout << " 7: " <<  "\n";
          *dt0 = dt1;
          ik++;
    
