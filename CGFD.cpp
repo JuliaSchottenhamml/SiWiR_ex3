@@ -275,9 +275,9 @@ int main(int argc, char** argv)
     gridpoint = nnx*nny;
     hx = (double)((domxh-domxl)/(double)(nx));
     hy = (double)((domyh-domyl)/(double)(ny));
-    bita = 1/(hx*hx);
-    gama = 1/(hy*hy);
-    alfa = (-1.0)*(2.0*gama+ 2.0*bita + k * k);
+    bita = -(1.0)/(hx*hx);
+    gama = -(1.0)/(hy*hy);
+    alfa = ((-2.0)*gama+ (-2.0)*bita + k * k);
 
 
     if (rank == 0)
