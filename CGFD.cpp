@@ -471,6 +471,7 @@ int main(int argc, char** argv)
         // time = timer.elapsed();
 //         std::cout << " 2: " << time ;
          
+                  std::cout << " 4: " <<  "\n";
           for( int km=0; km < sz; km+=4)
             {
                 
@@ -493,7 +494,7 @@ int main(int argc, char** argv)
          alpha = *dt0 / dt3;
          // time = timer.elapsed();
 //	    std::cout << " 5: " << time << "\n";
-        
+         std::cout << " 5: " <<  "\n";
          dt = 0.0;
          
         for(int j=0; j< sz;j+=4)
@@ -545,6 +546,7 @@ int main(int argc, char** argv)
 
         double beta = dt1/(*dt0);        
         
+                 std::cout << " 6: " <<  "\n";
          for(int j=0; j< sz;j+=4)
         {
              a = _mm_load_pd(&Dvec[j]);
