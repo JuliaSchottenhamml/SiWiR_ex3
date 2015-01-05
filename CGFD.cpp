@@ -499,7 +499,7 @@ int main(int argc, char** argv)
          MPI_Allreduce(&dt, &dt3,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
           // time = timer.elapsed();
 	   //std::cout <<  " time, 4:" << time;
-	     std::cout << rank<<  " 5: rank " <<  dt3<<"\n";
+	     std::cout << rank<< " " << dt << " 5: rank " <<  dt3<<"\n";
          alpha = *dt0 / dt3;
          // time = timer.elapsed();
 //	    std::cout << " 5: " << time << "\n";
