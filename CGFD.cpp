@@ -185,7 +185,7 @@ int main(int argc, char** argv)
 {
 
     
-    std::cout << argc << "= invalid number of argument.. Program exiting..&&&&&&&&&&&&";
+    //std::cout << argc << "= invalid number of argument.. Program exiting..&&&&&&&&&&&&";
             
     if (argc < 5)
     {
@@ -269,7 +269,7 @@ int main(int argc, char** argv)
     bita = -(1.0)/(hx*hx);
     gama = -(1.0)/(hy*hy);
     alfa = ( k * k - (2.0)*gama - (2.0)*bita );
-     std::cout << rank << "222 ";
+     //std::cout << rank << "222 ";
     if (rank == 0)
    {
     worksheet = gcapt(worksheet, size, nny, nnx); 
@@ -288,14 +288,14 @@ int main(int argc, char** argv)
            
     }
      
-     std::cout << rank << "333 ";  
+     //std::cout << rank << "333 ";  
     MPI_Recv(&blenx,1, MPI_INT,0, rank+100, MPI_COMM_WORLD,&status);
     MPI_Recv(&sx,1, MPI_INT,0, rank+110, MPI_COMM_WORLD,&status);
     MPI_Recv(&startpnt,1, MPI_INT,0, rank+120, MPI_COMM_WORLD,&status);
   
-    std::cout << rank << " sx = " << sx << " " << status.MPI_ERROR; 
-    std::cout << rank << " blenx = " << nnx << " " << status.MPI_ERROR; 
-     std::cout << rank << " startpoint = " << startpnt << " " << status.MPI_ERROR; 
+    //std::cout << rank << " sx = " << sx << " " << status.MPI_ERROR; 
+    //std::cout << rank << " blenx = " << nnx << " " << status.MPI_ERROR; 
+     //std::cout << rank << " startpoint = " << startpnt << " " << status.MPI_ERROR; 
   
  
    int abc = 0;
