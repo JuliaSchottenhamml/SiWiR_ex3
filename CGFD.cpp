@@ -356,7 +356,7 @@ int main(int argc, char** argv)
        double *start = new double[nnx];
     double *end = new double[nnx];
      
-     for( int r=0;r<bleny;r+=2)
+     for( int r=0;r<nnx;r+=2)
          {       
          start[r]=0.0;
          start[r+1]=0.0;
@@ -435,7 +435,7 @@ int main(int argc, char** argv)
         else 
         hn = 0;
         
-         MPI_Isend(&Dvec[0],bleny,MPI_DOUBLE, gn, gn+130, MPI_COMM_WORLD,&request);
+         MPI_Isend(&Dvec[0],nnx,MPI_DOUBLE, gn, gn+130, MPI_COMM_WORLD,&request);
          
          MPI_Recv(end,nnx, MPI_DOUBLE,hn, rank+130, MPI_COMM_WORLD,&status);
          if(rank == size-1)
