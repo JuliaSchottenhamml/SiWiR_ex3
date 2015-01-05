@@ -86,7 +86,7 @@ inline double border(const double x, const double y){
    }
 
 inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alpha, const double beta, const double gama,
-   /*int destn, int dests, */int len/*, int startpnt*/, double ev, double wv, double nv, double sv)
+   /*int destn, int dests, */int len/*, int startpnt*/, double * start, double *end)
 {  
     
     
@@ -114,25 +114,34 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
             if(j==0)
                d[0] = 0.0;
             if(index == 0)
-               d[0]=wv;  
+               d[0]=start[2];  
                
             if(index < len-1)
                 d[1] = vec[index+1];
             if(j == bleny-1)
                d[1] =0.0; 
             if(index == len-1)
-               d[1] = ev;
+               d[1] = end[0];
             
-            if(index-3>=0)
+             if(index-1 < 0)
+              e[0] = start[0];
+              else if(index-2 < 0)
+              e[0] = start[1];
+              else if(index-3 < 0)
+              e[0] = start[2];
+              else
               e[0] = vec[index-3];
-              else
-              e[0] = nv;
               
-              if(index+3>=0)
-              e[1] = vec[index+3];
+              
+              if(index +1 ==len)
+              e[1] = end[2];
+              else if(index +2 ==len)
+              e[1] = end[1];
+               else if(index+3 ==len)
+              e[1] = end[0];
               else
-              e[1] = sv;
-         
+              e[1] = vec[index+3];
+            
             f = _mm_mul_pd(b,d);
             g = _mm_mul_pd(c,e);  
               
@@ -257,10 +266,10 @@ int main(int argc, char** argv)
     double hx = 0.0, hy=0.0; 
     int startpnt =0;
     double dt = 0.0; 
-    double *start = new double[2];
-    double *end = new double[2];
+    double *start = new double[3];
+    double *end = new double[3];
     
-   double ev=0.0,wv=0.0,sv=0.0,nv=0.0;
+  // double ev=0.0,wv=0.0,sv=0.0,nv=0.0;
     MPI_Datatype columntype;   
     MPI_Type_vector( 2, 1, 2, MPI_DOUBLE, &columntype );
     MPI_Type_commit( &columntype );  
@@ -361,8 +370,15 @@ int main(int argc, char** argv)
     if(rank == size-1)
     dests = -1;
      
-    
-       tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,0.0,0.0,0.0,0.0);        
+      end[0]=0.0;
+         end[1]=0.0;
+         end[2]=0.0;
+         
+          start[0]=0.0;
+          start[1]=0.0;
+          start[2]=0.0;
+         
+       tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/sz,start,end);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,dests,sz);
        
        if(abc != 0)
@@ -436,21 +452,23 @@ int main(int argc, char** argv)
         else 
         hn = 0;
         
-         MPI_Isend(&Dvec[0],1,columntype, gn, gn+130, MPI_COMM_WORLD,&request);
+         MPI_Isend(&Dvec[0],3,MPI_DOUBLE, gn, gn+130, MPI_COMM_WORLD,&request);
          
-         MPI_Recv(end,1, columntype,hn, rank+130, MPI_COMM_WORLD,&status);
-         if(rank != size-1)
+         MPI_Recv(end,3, MPI_DOUBLE,hn, rank+130, MPI_COMM_WORLD,&status);
+         if(rank == size-1)
          {
-         ev = end[0];
-         sv = end[1];
+         end[0]=0.0;
+         end[1]=0.0;
+         end[2]=0.0;
         }
         
-         MPI_Isend(&Dvec[sz-3],1,columntype, hn, hn+140, MPI_COMM_WORLD,&request);
-         MPI_Recv(start,1, columntype,gn, rank+140, MPI_COMM_WORLD,&status);
-        if(rank!=0)
+         MPI_Isend(&Dvec[sz-3],3,MPI_DOUBLE, hn, hn+140, MPI_COMM_WORLD,&request);
+         MPI_Recv(start,3, MPI_DOUBLE,gn, rank+140, MPI_COMM_WORLD,&status);
+        if(rank==0)
         {
-          nv = start[0];
-          wv = start[1];
+          start[0]=0.0;
+          start[1]=0.0;
+          start[2]=0.0;
         }
          //std::cout <<  "\n" << rank << " sv nv ev wv " << sv << nv << ev << wv;
         
@@ -458,7 +476,7 @@ int main(int argc, char** argv)
           //time = timer.elapsed();
            //std::cout <<  " time, 1:" << time;
          double * mresult = new double[len];
-         mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,sz,ev,wv,nv,sv);
+         mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,start,end);
         if(abc != 0)
        {
         mresult[sz]=0.0;
