@@ -109,22 +109,26 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx,const double alp
              c[0]=gama;
              c[1]=gama;
                           
-            if(index > 0)
+            if(j > 0)
                d[0]=vec[index-1];            
             if(j==0)
                d[0] = 0.0;
                
-            if(index < len-1)
+            if(j < len-1)
                 d[1] = vec[index+1];
             if(j == bleny-1)
                d[1] =0.0; 
             
               if(i==sx)
               e[0] = start[j];
+              else
+              e[0] = vec[index-bleny];
               
               
               if(i==le-1)
               e[1] = end[j];
+              else
+              e[0] = vec[index+bleny];
               
             f = _mm_mul_pd(b,d);
             g = _mm_mul_pd(c,e);  
