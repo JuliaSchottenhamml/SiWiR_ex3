@@ -484,7 +484,7 @@ int main(int argc, char** argv)
                 b = _mm_load_pd(&tresult[km+2]);
                 d = _mm_mul_pd(a,b);
                 e = _mm_hadd_pd(c,d);
-                dt + = e[0]+e[1];
+                dt += e[0]+e[1];
                     
             }
           time = timer.elapsed();
@@ -519,7 +519,7 @@ int main(int argc, char** argv)
             Xvec[j+1]  = hh[1];
             Rvec[j] = ii[0];
             Rvec[j+1]  = jj[1];
-            dt+ = jj[0]+jj[1];
+            dt+= jj[0]+jj[1];
             
               a = _mm_load_pd(&Dvec[j+2]);
             b = _mm_load_pd(&tresult[j+2]);
@@ -538,7 +538,7 @@ int main(int argc, char** argv)
             Xvec[j+3]  = hh[1];
             Rvec[j+2] = ii[0];
             Rvec[j+3]  = jj[1];
-            dt+ = jj[0]+jj[1];
+            dt+= jj[0]+jj[1];
         }
                     
         MPI_Allreduce(&dt, &dt1,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
