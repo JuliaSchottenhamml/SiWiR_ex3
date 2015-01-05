@@ -494,7 +494,7 @@ int main(int argc, char** argv)
          alpha = *dt0 / dt3;
          // time = timer.elapsed();
 //	    std::cout << " 5: " << time << "\n";
-         std::cout << " 5: " <<  "\n";
+        // std::cout << " 5: " <<  "\n";
          dt = 0.0;
          
         for(int j=0; j< sz;j+=4)
@@ -546,7 +546,7 @@ int main(int argc, char** argv)
 
         double beta = dt1/(*dt0);        
         
-                 std::cout << " 6: " <<  "\n";
+               //  std::cout << " 6: " <<  "\n";
          for(int j=0; j< sz;j+=4)
         {
              a = _mm_load_pd(&Dvec[j]);
@@ -564,7 +564,7 @@ int main(int argc, char** argv)
                        
             _mm_store_sd (&Dvec[j+2], g); 
         }      
-         std::cout << " 7: " <<  "\n";
+        // std::cout << " 7: " <<  "\n";
          *dt0 = dt1;
          ik++;
    
