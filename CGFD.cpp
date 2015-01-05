@@ -287,7 +287,7 @@ int main(int argc, char** argv)
   
     std::cout << rank << " sx = " << sx << " " << status.MPI_ERROR; 
     std::cout << rank << " blenx = " << nnx << " " << status.MPI_ERROR; 
-     std::cout << rank << " startpoint = " << startpnt << " " << status.MPI_ERROR; 
+     //std::cout << rank << " startpoint = " << startpnt << " " << status.MPI_ERROR; 
   
  
    int abc = 0;
