@@ -380,6 +380,11 @@ int main(int argc, char** argv)
         else 
         hn = 0;
         
+        for(int s=0;s<len;s++)
+         {
+              std::cout << rank << " " << Dvec[s] ;
+         }
+        
          MPI_Isend(&Dvec[0],nnx,MPI_DOUBLE, gn, gn+130, MPI_COMM_WORLD,&request);
          
          MPI_Recv(end,nnx, MPI_DOUBLE,hn, rank+130, MPI_COMM_WORLD,&status);
