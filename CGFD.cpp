@@ -564,10 +564,12 @@ int main(int argc, char** argv)
              a = _mm_load_pd(&Dvec[j]);
             b = _mm_load_pd(&Rvec[j]);
             c[0] = beta;
-            c[1] = beta;            
+            c[1] = beta;
+            std::cout << " 6: " <<  c[0] << " " << beta << " " << c[1] <<"\n";            
             f = _mm_mul_pd(c,a);
             g = _mm_add_pd(b,f);
             _mm_store_sd (&Dvec[j], g);
+            std::cout << " 7: " <<  g[0] << " " << f[0] << " " << f[1] << " " << g[1] <<"\n";
            /*
             a = _mm_load_pd(&Dvec[j+2]);
             b = _mm_load_pd(&Rvec[j+2]);
