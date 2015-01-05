@@ -132,6 +132,12 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  
 
         }
     }
+    std:: cout << "####";
+      for(int i=0;i<len;i+=2)
+    {
+        std:: cout << " " << result[i] ;
+        std:: cout << " " << result[i+1] ;
+    }
 
     return result;
     
@@ -337,6 +343,21 @@ int main(int argc, char** argv)
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/len,start,end);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,len);
        
+       std:: cout << "@@@@@@";
+      for(int i=0;i<len;i+=2)
+    {
+        std:: cout << " " << tresult[i] ;
+        std:: cout << " " << tresult[i+1] ;
+    }
+    
+     std:: cout << "$$$$$$$";
+      for(int i=0;i<len;i+=2)
+    {
+        std:: cout << " " << fresult[i] ;
+        std:: cout << " " << fresult[i+1] ;
+    }
+
+       
        
     __m128d a,b,c,d,e,f,g,hh,ii,jj;   
        
@@ -371,7 +392,7 @@ int main(int argc, char** argv)
       while(ik < iter)
        {
             //iterat = ik;
-        std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
+        //std::cout << "\n %% rank = " << rank << "iteration number= " << ik << "\n";
                 
         int gn=0;
         int hn =0;
