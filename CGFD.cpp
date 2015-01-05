@@ -398,26 +398,22 @@ int main(int argc, char** argv)
    // std::cout << "\n" << rank << " " << iter << " " << blenx << " " << nnx << " " << sx << " " << gama << " " << hx << " " << hy << " " << startpnt;
       for(int i = 0; i< sz; i+=4)
     {
-        std::cout << "\n" << rank << " " << fresult[i];
+        //std::cout << "\n" << rank << " " << fresult[i];
         a = _mm_load_pd(&fresult[i]);
         b = _mm_load_pd(&tresult[i]);
         c = _mm_sub_pd(a,b);
-        Rvec[i] = c[0];
-        Rvec[i+1] = c[1];
-        Dvec[i]=c[0];
-        Dvec[i+1]=c[1];
+        _mm_store_sd (&Rvec[i], c);
+        _mm_store_sd (&Dvec[i], c);
         d = _mm_mul_pd(c,c);
         resdlocal += d[0] + d[1];
         a = _mm_load_pd(&fresult[i+2]);
         b = _mm_load_pd(&tresult[i+2]);
         c = _mm_sub_pd(a,b);
-        Rvec[i+2] = c[0];
-        Rvec[i+3] = c[1];
-        Dvec[i+2]=c[0];
-        Dvec[i+3]=c[1];
+      _mm_store_sd (&Rvec[i+2], c);
+        _mm_store_sd (&Dvec[i+2], c);
          d = _mm_mul_pd(c,c);
         resdlocal += d[0] + d[1];
-       std::cout << "\n" << rank << "I am here 1 " ;
+       //std::cout << "\n" << rank << "I am here 1 " ;
     } 
      
    
@@ -516,11 +512,10 @@ int main(int argc, char** argv)
             ii = _mm_sub_pd(e,g);
             jj = _mm_mul_pd(hh,hh);
             
-            Xvec[j] = hh[0];
-            Xvec[j+1]  = hh[1];
-            Rvec[j] = ii[0];
-            Rvec[j+1]  = jj[1];
-            dt+= jj[0]+jj[1];
+            _mm_store_sd (&Xvec[j], hh);
+            _mm_store_sd (&Rvec[j], ii);
+            
+               dt+= jj[0]+jj[1];
             
               a = _mm_load_pd(&Dvec[j+2]);
             b = _mm_load_pd(&tresult[j+2]);
@@ -535,10 +530,8 @@ int main(int argc, char** argv)
             ii = _mm_sub_pd(e,g);
             jj = _mm_mul_pd(hh,hh);
             
-            Xvec[j+2] = hh[0];
-            Xvec[j+3]  = hh[1];
-            Rvec[j+2] = ii[0];
-            Rvec[j+3]  = ii[1];
+             _mm_store_sd (&Xvec[j+2], hh);
+            _mm_store_sd (&Rvec[j+2], ii);
             dt+= jj[0]+jj[1];
         }
                     
@@ -565,8 +558,8 @@ int main(int argc, char** argv)
             g = _mm_sub_pd(b,f);
                        
             
-            Dvec[j]   = g[0];
-            Dvec[j+1] = g[1];
+              _mm_store_sd (&Dvec[j], g);
+           
             a = _mm_load_pd(&Dvec[j+2]);
             b = _mm_load_pd(&Rvec[j+3]);
            // c[0] = beta;
@@ -577,9 +570,7 @@ int main(int argc, char** argv)
             f = _mm_mul_pd(c,a);
             g = _mm_sub_pd(b,f);
                        
-            
-            Dvec[j+2]   = g[0];
-            Dvec[j+3] = g[1]; 
+            _mm_store_sd (&Dvec[j+2], g); 
         }      
         
          *dt0 = dt1;
