@@ -316,11 +316,11 @@ int main(int argc, char** argv)
     double * Rvec = (double *) calloc(len, sizeof(double));
     double * Dvec = (double *) calloc(len, sizeof(double)) ;
     double * Fvec = (double *) calloc(gridpoint, sizeof(double));
-    for(int i=0;i<len;i+=2)
-    {
-        std:: cout << " " << Dvec[i] ;
-        std:: cout << " " << Dvec[i+1] ;
-    }
+  //  for(int i=0;i<len;i+=2)
+//    {
+//        std:: cout << " " << Dvec[i] ;
+//        std:: cout << " " << Dvec[i+1] ;
+//    }
        
     
  //   for(int i=0;i<len;i+=2)
@@ -343,19 +343,19 @@ int main(int argc, char** argv)
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/len,start,end);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,len);
        
-       std:: cout << "@@@@@@";
-      for(int i=0;i<len;i+=2)
-    {
-        std:: cout << " " << tresult[i] ;
-        std:: cout << " " << tresult[i+1] ;
-    }
+ //      std:: cout << "@@@@@@";
+//      for(int i=0;i<len;i+=2)
+//    {
+//        std:: cout << " " << tresult[i] ;
+//        std:: cout << " " << tresult[i+1] ;
+//    }
     
-     std:: cout << "$$$$$$$";
-      for(int i=0;i<len;i+=2)
-    {
-        std:: cout << " " << fresult[i] ;
-        std:: cout << " " << fresult[i+1] ;
-    }
+  //   std:: cout << "$$$$$$$";
+//      for(int i=0;i<len;i+=2)
+//    {
+//        std:: cout << " " << fresult[i] ;
+//        std:: cout << " " << fresult[i+1] ;
+//    }
 
        
        
@@ -404,7 +404,7 @@ int main(int argc, char** argv)
         hn=rank+1;
         else 
         hn = 0;
-         std::cout << "\n ";
+//       std::cout << "\n ";
         for(int s=0;s<len;s++)
          {
               std::cout << rank << " " << Dvec[s] ;
@@ -434,31 +434,31 @@ int main(int argc, char** argv)
          }
         }
         
-        std::cout << "\n" << rank << " ghost layer end sent \n";
-         for(int s=0;s<nnx;s++)
-         {
-              std::cout << rank << " " << Dvec[s] ;
-         }
-         
-        std::cout << "\n" << rank << " ghost layer end  recvd \n";
-        
-        for(int s=0;s<nnx;s++)
-         {
-              std::cout << rank << " " << end[s] ;
-         }
-         
-         std::cout << "\n" << rank << "  ghost layer start sent\n";
-          for(int s=0;s<nnx;s++)
-         {
-              std::cout << rank << " " << Dvec[sz-nnx+s] ;
-         }
-        
-        std::cout << "\n" << rank << "  ghost layer start recvd\n";
-        for(int s=0;s<nnx;s++)
-         {
-              std::cout << rank << " " << start[s] ;
-         }
-        
+     //   std::cout << "\n" << rank << " ghost layer end sent \n";
+//         for(int s=0;s<nnx;s++)
+//         {
+//              std::cout << rank << " " << Dvec[s] ;
+//         }
+//         
+//        std::cout << "\n" << rank << " ghost layer end  recvd \n";
+//        
+//        for(int s=0;s<nnx;s++)
+//         {
+//              std::cout << rank << " " << end[s] ;
+//         }
+//         
+//         std::cout << "\n" << rank << "  ghost layer start sent\n";
+//          for(int s=0;s<nnx;s++)
+//         {
+//              std::cout << rank << " " << Dvec[sz-nnx+s] ;
+//         }
+//        
+//        std::cout << "\n" << rank << "  ghost layer start recvd\n";
+//        for(int s=0;s<nnx;s++)
+//         {
+//              std::cout << rank << " " << start[s] ;
+//         }
+//        
          //std::cout <<  "\n" << rank << " sv nv ev wv " << sv << nv << ev << wv;
         
           //MPI_Barrier(MPI_COMM_WORLD);
