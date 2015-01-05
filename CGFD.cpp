@@ -497,10 +497,10 @@ int main(int argc, char** argv)
              Rvec[j+1] -= alpha * tresult[j+1];
               Rvec[j+2] -= alpha * tresult[j+2];
                Rvec[j+3] -= alpha * tresult[j+3]; 
-               dt += Rvec[j]*Rvec[j];
-              dt += Rvec[j+1]*Rvec[j+1];
-                 dt += Rvec[j+2]*Rvec[j+2];
-                dt += Rvec[j+3]*Rvec[j+3];
+               dt += Xvec[j]*Xvec[j];
+              dt += Xvec[j+1]*Xvec[j+1];
+                 dt += Xvec[j+2]*Xvec[j+2];
+                dt += Xvec[j+3]*Xvec[j+3];
         }
                     
         MPI_Allreduce(&dt, &dt1,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
