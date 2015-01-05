@@ -442,7 +442,7 @@ int main(int argc, char** argv)
          //std::cout << " 2: " << time ;
          
                   //std::cout << " 4: " <<  "\n";
-                  dt = 0.0
+                  dt = 0.0;
           for( int km=0; km < sz; km+=2)
             {
                 
