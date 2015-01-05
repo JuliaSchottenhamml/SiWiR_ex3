@@ -482,7 +482,7 @@ int main(int argc, char** argv)
             g = _mm_mul_pd(c,b);
             hh = _mm_add_pd(d,f);
             ii = _mm_sub_pd(e,g);
-            jj = _mm_mul_pd(hh,hh);
+            jj = _mm_mul_pd(ii,ii);
             
             _mm_store_sd (&Xvec[j], hh);
             _mm_store_sd (&Rvec[j], ii);
