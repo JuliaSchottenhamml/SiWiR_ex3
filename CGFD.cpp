@@ -519,7 +519,7 @@ int main(int argc, char** argv)
             break;
         }
 
-        double beta = dt1/(*dt0);        
+        double beta = dt1/(dt0);        
         
          // std::cout << " 7: " <<  beta  <<  "\n";
          for(int j=0; j< len;j+=2)
