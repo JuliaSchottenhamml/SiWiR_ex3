@@ -292,7 +292,8 @@ int main(int argc, char** argv)
    // MPI_Recv(&startpnt,1, MPI_INT,0, rank+120, MPI_COMM_WORLD,&status);
   
     std::cout << rank << " sx = " << sx << " " << status.MPI_ERROR; 
-    std::cout << rank << " blenx = " << nnx << " " << status.MPI_ERROR; 
+    std::cout << rank << " blenx = " << blenx << " " << status.MPI_ERROR; 
+    
      // std::cout << rank << " startpoint = " << startpnt << " " << status.MPI_ERROR; 
   
  
@@ -561,7 +562,7 @@ int main(int argc, char** argv)
 	std::cout << rank << " time," << time << std::endl;
 	double residual =0.0;
 	residual = sqrt(dt1);
-    std::cout << "finale residuam:  " << residual << " " << dt1 << "\n Writing data to data/solution.txt" ;
+    std::cout << "final residuum:  " << residual << " " << dt1 << "\n Writing data to data/solution.txt" ;
 	
 	std::ofstream	fOut("data/solution.txt");
 
