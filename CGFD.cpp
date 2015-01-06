@@ -237,7 +237,7 @@ int main(int argc, char** argv)
     double error=0.0;
     double* worksheet = new double[size*LD1];;
    	double time = 0;
-	double dt0[1]={0.0};   
+	double dt0=0.0;   
     double alfa=0.0;
     double bita=0.0;
     double gama=0.0;
@@ -381,12 +381,12 @@ int main(int argc, char** argv)
    
     //std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " <<  rank << " " << resdlocal;
     
-    MPI_Allreduce(&resdlocal, dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
+    MPI_Allreduce(&resdlocal, &dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
     //std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
     //MPI_Barrier(MPI_COMM_WORLD);
    
-    if(fabs(sqrt(*dt0)) > error)
+    if(fabs(sqrt(dt0)) > error)
      {   
       //std::cout << "\n %% rank = " << rank << "before for "<< size ; 
       int ik=0;
@@ -483,7 +483,7 @@ int main(int argc, char** argv)
          double dt3 = 0.0;  
          MPI_Allreduce(&dt, &dt3,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
       
-         alpha = *dt0 / dt3;
+         alpha = dt0 / dt3;
      
        
          dt = 0.0;
@@ -535,7 +535,7 @@ int main(int argc, char** argv)
            
         }      
         // std::cout << " 7: " <<  "\n";
-         *dt0 = dt1;
+         dt0 = dt1;
          ik++;
          free(mresult);
    
