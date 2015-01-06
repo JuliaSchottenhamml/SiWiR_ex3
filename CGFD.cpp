@@ -161,7 +161,7 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
     {
         for(int j=0; j<bleny ; j++)
         {
-            gridno = i*bleny + j +gama;            
+            gridno = i*bleny + j +gama +dests;            
             x = (((gridno)%bleny)+1)*hx;
             y = (((gridno)/bleny)+1)*hy;
             double f = fxy(x,y);
