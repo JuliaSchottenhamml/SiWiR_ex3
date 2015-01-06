@@ -372,7 +372,7 @@ int main(int argc, char** argv)
         else 
         hn = 0;
 
-                std::cout << "\n ";
+               // std::cout << "\n ";
          MPI_Isend(&Dvec[0],nnx,MPI_DOUBLE, gn, gn+130, MPI_COMM_WORLD,&request);
          
          MPI_Recv(end,nnx, MPI_DOUBLE,hn, rank+130, MPI_COMM_WORLD,&status);
