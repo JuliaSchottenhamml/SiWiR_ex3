@@ -264,9 +264,9 @@ int main(int argc, char** argv)
     gridpoint = nnx*nny;
     hx = (double)((domxh-domxl)/(double)(nx));
     hy = (double)((domyh-domyl)/(double)(ny));
-    bita = -(1.0)/(hx*hx);
-    gama = -(1.0)/(hy*hy);
-    alfa = ( k * k - (2.0)*gama - (2.0)*bita );
+    bita = (1.0)/(hx*hx);
+    gama = (1.0)/(hy*hy);
+    alfa = ( k * k + (2.0)*gama +(2.0)*bita );
      //std::cout << rank << "222 ";
     if (rank == 0)
    {
@@ -519,7 +519,7 @@ int main(int argc, char** argv)
             break;
         }
 
-        double beta = dt1/(dt0);        
+        double beta = dt1/(dt0);         
         
          // std::cout << " 7: " <<  beta  <<  "\n";
          for(int j=0; j< len;j+=2)
