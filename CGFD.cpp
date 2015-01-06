@@ -392,7 +392,8 @@ int main(int argc, char** argv)
         }
          if(rank == size-1)
          {                              
-          end[r]=border((r+1)*hx,1.0);
+          //end[r]=border((r+1)*hx,1.0);
+          end[r] =0.0;
          }
         }
         
