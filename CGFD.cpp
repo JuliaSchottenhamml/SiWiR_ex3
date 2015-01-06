@@ -128,7 +128,7 @@ inline double * matMult( double* vec,int blenx,int bleny,int sx, double alpha,  
             
             e = _mm_add_pd(f,g);
                 
-            result[index++]=e[0]+e[1]+a[0]*a[1];
+            result[index++]=e[0]+e[1]-a[0]*a[1];
 
         }
     }
@@ -161,15 +161,15 @@ inline double * cal_fVec(int blenx,int bleny ,int sx,const double gama,  double 
     {
         for(int j=0; j<bleny ; j++)
         {
-            gridno = i*bleny + j;            
+            gridno = i*bleny + j +gama;            
             x = (((gridno)%bleny)+1)*hx;
             y = (((gridno)/bleny)+1)*hy;
             double f = fxy(x,y);
-            if(dests == -1 && i == le-1)
+            /*if(dests == -1 && i == le-1)
             {
               result[l++] = f-(gama*border(x,domyh));
             }
-            else 
+            else*/ 
                 result[l++] = f;
         }
     }
@@ -264,8 +264,8 @@ int main(int argc, char** argv)
     gridpoint = nnx*nny;
     hx = (double)((domxh-domxl)/(double)(nx));
     hy = (double)((domyh-domyl)/(double)(ny));
-    bita = (1.0)/(hx*hx);
-    gama = (1.0)/(hy*hy);
+    bita = (-1.0)/(hx*hx);
+    gama = (-1.0)/(hy*hy);
     alfa = ( k * k + (2.0)*gama +(2.0)*bita );
      //std::cout << rank << "222 ";
     if (rank == 0)
