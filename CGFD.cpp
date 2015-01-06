@@ -317,22 +317,6 @@ int main(int argc, char** argv)
     double * Rvec = (double *) calloc(len, sizeof(double));
     double * Dvec = (double *) calloc(len, sizeof(double)) ;
     double * Fvec = (double *) calloc(gridpoint, sizeof(double));
-  //  for(int i=0;i<len;i+=2)
-//    {
-//        std:: cout << " " << Dvec[i] ;
-//        std:: cout << " " << Dvec[i+1] ;
-//    }
-       
-    
- //   for(int i=0;i<len;i+=2)
-//    {
-//        Xvec[i]=0.0;
-//        Xvec[i+1]=0.0;
-//        Rvec[i]=0.0;
-//        Rvec[i+1]=0.0;
-//        Dvec[i]=0.0;
-//        Dvec[i+1]=0.0;
-//    }
     
     if(rank == size-1)
     dests = -1;
@@ -343,22 +327,7 @@ int main(int argc, char** argv)
 
        tresult = matMult(Xvec,blenx,nnx,sx, alfa, bita,gama,/*destn,dests,*/len,start,end);        
        fresult = cal_fVec(blenx,nnx,sx,gama, hx ,hy,dests,len);
-       
- //      std:: cout << "@@@@@@";
-//      for(int i=0;i<len;i+=2)
-//    {
-//        std:: cout << " " << tresult[i] ;
-//        std:: cout << " " << tresult[i+1] ;
-//    }
-    
-  //   std:: cout << "$$$$$$$";
-//      for(int i=0;i<len;i+=2)
-//    {
-//        std:: cout << " " << fresult[i] ;
-//        std:: cout << " " << fresult[i+1] ;
-//    }
-
-       
+            
        
     __m128d a,b,c,d,e,f,g,hh,ii,jj;   
        
@@ -383,9 +352,6 @@ int main(int argc, char** argv)
     
     MPI_Allreduce(&resdlocal, &dt0,1, MPI_DOUBLE, MPI_SUM,MPI_COMM_WORLD);
     
-    //std::cout << "\n %%%%%%%%%%%%%%%%%%%  resedual=  " << *dt0 ;
-    //MPI_Barrier(MPI_COMM_WORLD);
-   
     if(fabs(sqrt(dt0)) > error)
      {   
       //std::cout << "\n %% rank = " << rank << "before for "<< size ; 
@@ -405,13 +371,8 @@ int main(int argc, char** argv)
         hn=rank+1;
         else 
         hn = 0;
-//       std::cout << "\n ";
-       // for(int s=0;s<len;s++)
-//         {
-//              std::cout << rank << " " << Dvec[s] ;
-//         }
-//        
-//                 std::cout << "\n ";
+
+                std::cout << "\n ";
          MPI_Isend(&Dvec[0],nnx,MPI_DOUBLE, gn, gn+130, MPI_COMM_WORLD,&request);
          
          MPI_Recv(end,nnx, MPI_DOUBLE,hn, rank+130, MPI_COMM_WORLD,&status);
@@ -430,40 +391,11 @@ int main(int argc, char** argv)
          start[r]=0.0;
         }
          if(rank == size-1)
-         {               
-         end[r]=0.0;
+         {                              
+          end[r]=border((r+1)*hx,1.0);
          }
         }
         
-     //   std::cout << "\n" << rank << " ghost layer end sent \n";
-//         for(int s=0;s<nnx;s++)
-//         {
-//              std::cout << rank << " " << Dvec[s] ;
-//         }
-//         
-//        std::cout << "\n" << rank << " ghost layer end  recvd \n";
-//        
-//        for(int s=0;s<nnx;s++)
-//         {
-//              std::cout << rank << " " << end[s] ;
-//         }
-//         
-//         std::cout << "\n" << rank << "  ghost layer start sent\n";
-//          for(int s=0;s<nnx;s++)
-//         {
-//              std::cout << rank << " " << Dvec[sz-nnx+s] ;
-//         }
-//        
-//        std::cout << "\n" << rank << "  ghost layer start recvd\n";
-//        for(int s=0;s<nnx;s++)
-//         {
-//              std::cout << rank << " " << start[s] ;
-//         }
-//        
-         //std::cout <<  "\n" << rank << " sv nv ev wv " << sv << nv << ev << wv;
-        
-          //MPI_Barrier(MPI_COMM_WORLD);
-          //time = timer.elapsed();
            //std::cout <<  " time, 1:" << time;
          double * mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,len,start,end);
         // mresult = matMult(Dvec, blenx,nnx,sx, alfa, bita, gama,len,start,end);
