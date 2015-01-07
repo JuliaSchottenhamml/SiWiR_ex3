@@ -1,1 +1,23 @@
 \section{Task 2a} 
+
+Latency is $\alpha$\newline
+\text {No. of Elements is k} \newline
+\text {BW of the transfer is} $\beta$ \newline
+\text {So the time required to transfer k elements}  ${T_{k}}$ = $\frac{k}{b}$
+
+So the total time required for communication adding the latency of transfer is,
+
+			${T_{t}}$ = $\alpha$ + $\frac{k}{b}$
+
+As k elements are transferred, total no. of k iterations are possiblle with one transfer.\newline
+And number of updates = $\sum\limits_{i = 1}^{k-1} i$  and X is rhe time required for each update.
+
+So total no. of updates in k iteration = X . $\sum\limits_{i = 1}^{k-1} i$ =  X. $\frac{k (k-1)}{2}$
+
+So total time for k iteration = $\alpha$ + $\frac{k}{b}$ +   X. $\frac{k (k-1)}{2}$ \newline
+Hence parallel  overhead/process/iteration = $\frac{1}{k}$ ($\alpha$ + $\frac{k}{b}$ +   X. $\frac{k (k-1)}{2}$) \newline
+
+So ${T_{tot}}$ = $\frac{\alpha}{k} + \frac{X (k-1)}{2} + \frac{1}{\beta}$ (Answer.)
+
+
+
