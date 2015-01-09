@@ -1,0 +1,1 @@
+Default behaviour of ./cg is not to write the solution file because of its size. To get the solution.txt file add -v command line option and make sure a data directory exists.
