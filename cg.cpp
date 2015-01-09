@@ -116,7 +116,9 @@ int main(int argc, char **argv) {
 	
 	MPI_Waitall( 8, reqs, stats );
 	
-	for (int c = 0; c < params.c; ++c){		
+	int c = 0;
+
+	for (c = 0; c < params.c; ++c){		
 		double	localAlpha = 0.0;
 		for (int y = 0; y < params.by; ++y){
 			for (int x = 0; x < params.bx; ++x){
@@ -168,7 +170,8 @@ int main(int argc, char **argv) {
 	MPI_Barrier( MPI_COMM_WORLD );
 	time = timer.elapsed();
 	if (params.rank == 0){
-		std::cout << "residuum," << sqrt(delta0 / ( params.nx - 2 ) / ( params.ny - 2 )) << std::endl;
+		std::cout << "numberOfIterations," << c << std::endl;
+		std::cout << "residuum," << sqrt(delta1 / ( params.nx - 2 ) / ( params.ny - 2 )) << std::endl;
 		std::cout << "time," << time << std::endl;
 	}
 
